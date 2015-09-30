@@ -1,7 +1,7 @@
 %% Weight Approximation Approximation
 
 %% Fixed Weight
-Wfix=(1+2+19)*225+500; % Attendent, Crew, Passengers
+Wfix=(1+2+19)*225; % Attendent, Crew, Passengers
 
 %% Fuel Use
 % Mission is simple cruise
