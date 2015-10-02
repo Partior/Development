@@ -135,7 +135,7 @@ lgnd(f1)
 %% Axis, Title and Text
 xlabel('Wing Loading, lbs/ft^2')
 ylabel('Thrust to Weight Ratio, lbf/lbm')
-title('Partior Q==1 Design Space')
+title('Partior Q==1: Design Space')
 % Text Output
 xm=xlim;
 text(0.98*xm(2),0.1*ym(2),sprintf('W_{TO}=%6.0f lbs',Wto),...

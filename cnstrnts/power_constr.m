@@ -20,12 +20,12 @@ Preq_man=D(WSdom,V_c,p_sl)*V_c/(p_sl/p_sl);
 %% Graphic Output
 f2=figure(2); clf
 hold on
-plot(WSdom,Preq_cruise/550,'b-')
-plot(WSdom,Preq_serv/550,'g-')
-plot(WSdom,Preq_cc/550,'k-')
+plot(WSdom,Preq_cruise/550,'b--')
+plot(WSdom,Preq_serv/550,'g--')
+plot(WSdom,Preq_cc/550,'k--')
 plot(WSdom,Preq_man/550,'r-.')
 
 legend({'Cruise','Ceiling_{Service}','Ceiling_{Cruise}','2.5g @ SL'})
 xlabel('Wing Loading, lbs/ft^2')
 ylabel('Required Power, hp')
-title('Partior Q==1 Power Requirements')
+title('Partior Q==1: Power Requirements')
