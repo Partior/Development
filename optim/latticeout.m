@@ -15,16 +15,16 @@ addpath('..\cnstrnts'); % needed for scripts
 assumer     % basic assumptions and requirements
 
 % Domains of independent variables
-Rl=3;  Rd=linspace(700,1800,Rl);
-Vl=31;  Vd=linspace(100,550,Vl);
+Rl=5;  Rd=linspace(700,1800,Rl);
+Vl=16;  Vd=linspace(100,550,Vl);
 LDl=1;  LDd=linspace(15,23,LDl);  % Keep resolution of LD <5
-% Domains of independent, Secondary, variables
-WSl=40; WSdom=linspace(5,100,WSl);
+% Resolution of independent, Secondary, variables
+WSl=40;
 
 % Definitions
-% For both cruise and climb conditions, leaving off 1/g(dV/dt) term
-TW_c=@(ws,p,V,n,hdot)...
-    (0.5*p*V.^2)*Cd0./ws+K*n^2./(0.5*p*V.^2).*ws+1./V*(hdot);
+% % For both cruise and climb conditions, leaving off 1/g(dV/dt) term
+% TW_c=@(ws,p,V,n,hdot)...
+%     (0.5*p*V.^2)*Cd0./ws+K*n^2./(0.5*p*V.^2).*ws+1./V*(hdot);
 % Drag for Power
 D=@(ws,v,p,wto) Cd0*0.5*p*v.^2.*(wto./ws)+K*ws*wto./(0.5*p*v.^2);
 
@@ -38,10 +38,10 @@ if isempty(poolobj)
 end
 
 for it_LD=1:LDl
-    parfor it_R=1:Rl
-        for it_V=1:Vl
-            LD=LDd(it_LD);
-            R=Rd(it_R);
+    LD=LDd(it_LD);
+    for it_R=1:Rl
+        R=Rd(it_R);
+        parfor it_V=1:Vl
             V_c=Vd(it_V);
             
             
@@ -59,13 +59,16 @@ for it_LD=1:LDl
             % Compare We_est to Wto_est - Wfix - Wfuel
             Wto=fsolve(@(wt) wt*(1-Wf_Wto)-Wfix-Wept(wt),30e3,optimoptions('fsolve','Display','off'));    % Estimate W_TO
             
+%             Min loading for to meet Range requirement
             WS_r=fsolve(@(x) Wf_Wto*Wto*1.07/sfc*(x/(p_c))^0.5*(AR*e)^(1/4)/Cd0^(3/4)*(1/Wto)-R,10,optimoptions('fsolve','Display','off'));
-            % Wing-loading min to meet C_L_max and V_stall assumptions
-            WS_s=0.5*p_c*V_stall^2*Cl_max;
+%             % Wing-loading min to meet C_L_max and V_stall assumptions
+%             WS_s=0.5*p_c*V_stall^2*Cl_max;
             % Limit on W/S for Landing Distance within required distance, 3 degree
             % angle of approach
             WS_l=fsolve(@(ws) s_T-(79.4*ws/(1*Cl_max)+50/tand(3)),...
                 50,optimoptions('fsolve','display','off'));
+            WSdom=linspace(WS_r,WS_l,WSl);
+            
             % Takeoff Distance
             % W/S and T/W to takeoff at required distance
             s_tm=zeros(1,WSl);
@@ -74,15 +77,15 @@ for it_LD=1:LDl
                     s_T-(20.9*(WSdom(a)/(Cl_max*tw))+69.6*sqrt(WSdom(a)/(Cl_max*tw))*tw),...
                     0.5,optimoptions('fsolve','display','off'));
             end
-            % Cruise Conditions
-            % For Straight, Level Flight at cruise conditions
-            TW_cruise=TW_c(WSdom,p_c,V_c,1,0);
-            % For Service Ceiling, steady, constant speed, 100 ft per min
-            TW_serv=TW_c(WSdom,p_sc,V_md(WSdom,p_sc),1,100/60);
-            % For Cruise Ceiling, steady, constant speed, 300 ft/min
-            TW_cc=TW_c(WSdom,p_c,V_md(WSdom,p_c),1,300/60);
-            % Maneuver at Sea Level, cruise conditions, 2.5 g's
-            TW_man=TW_c(WSdom,p_sl,V_c,2.5,0);  % Run WS/TW data
+%             % Cruise Conditions
+%             % For Straight, Level Flight at cruise conditions
+%             TW_cruise=TW_c(WSdom,p_c,V_c,1,0);
+%             % For Service Ceiling, steady, constant speed, 100 ft per min
+%             TW_serv=TW_c(WSdom,p_sc,V_md(WSdom,p_sc),1,100/60);
+%             % For Cruise Ceiling, steady, constant speed, 300 ft/min
+%             TW_cc=TW_c(WSdom,p_c,V_md(WSdom,p_c),1,300/60);
+%             % Maneuver at Sea Level, cruise conditions, 2.5 g's
+%             TW_man=TW_c(WSdom,p_sl,V_c,2.5,0);  % Run WS/TW data
             
             % Calculations for Power
             % Straight, Level Flight
@@ -103,6 +106,7 @@ for it_LD=1:LDl
             % Optimum is at WSdom(in),C2
             optm=[WSdom(in),c2/550];    % in lbs/ft^2 and hp
             
+            WSD(it_R,it_V,it_LD,:)=[WS_r,WS_l]; % Save the WSdom limits
             optimzd(it_R,it_V,it_LD,:)=optm; % Save Optimized Data
         end
     end
@@ -161,10 +165,10 @@ abse.Units='pixels';
 szax=abse.Position;
 catwid=round((szax(3)/60-4)/3,0); %How many 
 % First, Orginization of the X-axis from WSdom
-X_wslabels={' ',round(WSdom),' '}; % This will loop on the X Axis labels, so only one is needed
+% X_wslabels={' ',round(WSdom),' '}; % This will loop on the X Axis labels, so only one is needed
 X_wsvalues=1:(LDl*(WSl+2)); % This will be the reference to plot onto the Xaxis with
 abse.XTick=X_wsvalues;
-abse.XTickLabel=X_wslabels;
+% abse.XTickLabel=X_wslabels;
 abse.XLim=[1 LDl*(WSl+2)];
 abse.XTickLabelRotation=-60;
 
@@ -172,15 +176,15 @@ abse.XTickLabelRotation=-60;
 for a=1:LDl
 %     Velocity Dependant
     for b=1:Vl
-        plot(abse,(a-1)*(WSl+2)+interp1(WSdom,2:WSl+1,optimzd(:,b,a,1)),optimzd(:,b,a,2))
-        text((a-1)*(WSl+2)+interp1(WSdom,2:WSl+1,optimzd(1,b,a,1)),optimzd(1,b,a,2),sprintf('%0.0f',Vd(b)),...
-            'Verticalalignment','top','horizontalAlignment','center')
+        plot(abse,optimzd(:,b,a,1),optimzd(:,b,a,2),'b-')
+%         text((a-1)*(WSl+2)+interp1(WSdom,2:WSl+1,optimzd(1,b,a,1)),optimzd(1,b,a,2),sprintf('%0.0f',Vd(b)),...
+%             'Verticalalignment','top','horizontalAlignment','center')
     end
     
 %     Range Dependant
     for c=1:Rl
-        plot(abse,(a-1)*(WSl+2)+interp1(WSdom,2:WSl+1,optimzd(c,:,a,1)),optimzd(c,:,a,2))
-        text((a-1)*(WSl+2)+interp1(WSdom,2:WSl+1,optimzd(c,1,a,1)),optimzd(c,1,a,2),sprintf('%0.0f',Rd(c)),...
-            'Verticalalignment','top','horizontalAlignment','center')
+        plot(abse,optimzd(c,:,a,1),optimzd(c,:,a,2),'k-')
+%         text((a-1)*(WSl+2)+interp1(WSdom,2:WSl+1,optimzd(c,1,a,1)),optimzd(c,1,a,2),sprintf('%0.0f',Rd(c)),...
+%             'Verticalalignment','top','horizontalAlignment','center')
     end
 end
