@@ -34,12 +34,12 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 % Service Ceiling
 p_sc=.958e-3;   % slugs per ft^3
 
-% Domains of independent variables
-Rl=5;  Rd=linspace(700,1500,Rl);
-Vl=16;  Vd=linspace(200,350,Vl);
-LDl=4;  LDd=linspace(15,23,LDl);  % Keep resolution of LD <5
+%% Domains of independent variables
+Rl=3;  Rd=linspace(700,1500,Rl);
+Vl=3;  Vd=linspace(200,350,Vl);
+LDl=2;  LDd=linspace(15,23,LDl);  % Keep resolution of LD <5
 % Resolution of independent, Secondary, variables
-WSl=40;
+WSl=10;
 
 % Definitions
 % % For both cruise and climb conditions, leaving off 1/g(dV/dt) term
@@ -281,10 +281,23 @@ bsdc.Enable='on';
         % Used to output custom datatip information, as well as update the detail
         % graphs that show specic information about the selected data.
         pos = get(evntobj,'Position');
+        posout=[interp1(1:length(lbs),lbs,pos(1)-floor(pos(1)/(length(lbs)+1))*(length(lbs)+1)-1),...
+            pos(2)];
         output_txt = {['LDmax: ',num2str(LDd(floor(pos(1)/(length(lbs)+1))+1),3)],...
-            ['X: ',num2str(interp1(1:length(lbs),lbs,...
-            pos(1)-floor(pos(1)/(length(lbs)+1))*(length(lbs)+1)-1),4)],...
-            ['Y: ',num2str(pos(2),4)]};
+            ['X: ',num2str(posout(1),4)],...
+            ['Y: ',num2str(posout(2),4)]};
+        
+        keyboard
+        % Begin graphics
+        [Rin,V_cin]=find(optimzd(:,:,LDinfloor(pos(1)/(length(lbs)+1))+1,2)==posout(2));
+        R=Rd(Rin);
+        V_c=Vd(V_cin);
+        LD=LDd(LDind);
+        WS_r=[]; WS_s=[]; WS_l=[]; TW_c=[]; TW_cruise=[]; TW_serv=[]; TW_cc=[];
+        TW_man=[]; ym=[]; xm=[]; WSD=[];
+        
+        cnstr_n
+        axes(abse)
     end
 
 
