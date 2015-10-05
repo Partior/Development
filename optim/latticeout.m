@@ -7,17 +7,37 @@ function latticeout
 % Alex M Granata
 % 03 OCT 2015
 
-clear all; clc
+close all; clear; clc
 
 %% Initial Assumptions and Requirments of flight
 
-addpath('..\cnstrnts'); % needed for scripts
-assumer     % basic assumptions and requirements
+% Payload
+%     19 Passengers w/ Cargo @ 225 lbs each, plus crew and attendent
+Wfix=(19+2+1)*225;  % lbm
+% Initial Performance Constants
+sfc=0.5;    % specifc fuel consumption, lb_fuel per hour / lb_thrust
+E=0.25;     % i.e. 25 min loiter time
+AR=10;      % Aspect Ratio
+Cd0=0.022;  % 
+e=0.8;      % Oswald Efficency
+% Cruise Enviromental Conditions
+p_c=1.267e-3;  % slugs per ft^3
+% Takeoff Distance
+s_T=3000;   % ft
+% WS Restraint Constants
+Cl_max=1.8;  % Max C_L for takeoff
+V_stall=65*1.688; % Stall speed in ft/s, Sea Level, max 65 knots
+% Convience Conditions
+K=1/(e*pi*AR);
+V_md=@(ws,p) sqrt(2*ws/(p*sqrt(Cd0/K)));
+p_sl=2.3769e-3; %slugs/ft^3, sea level density
+% Service Ceiling
+p_sc=.958e-3;   % slugs per ft^3
 
 % Domains of independent variables
-Rl=5;  Rd=linspace(700,1800,Rl);
-Vl=16;  Vd=linspace(100,550,Vl);
-LDl=1;  LDd=linspace(15,23,LDl);  % Keep resolution of LD <5
+Rl=5;  Rd=linspace(700,1500,Rl);
+Vl=16;  Vd=linspace(200,350,Vl);
+LDl=4;  LDd=linspace(15,23,LDl);  % Keep resolution of LD <5
 % Resolution of independent, Secondary, variables
 WSl=40;
 
@@ -30,6 +50,7 @@ D=@(ws,v,p,wto) Cd0*0.5*p*v.^2.*(wto./ws)+K*ws*wto./(0.5*p*v.^2);
 
 %% Numerical Calculations
 % For loops to calculate WS, TW and P for independent Variables
+tic
 optimzd=zeros(Rl,Vl,LDl,2);
 poolobj = gcp('nocreate'); % If no pool, do not create new one.
 if isempty(poolobj)
@@ -59,10 +80,10 @@ for it_LD=1:LDl
             % Compare We_est to Wto_est - Wfix - Wfuel
             Wto=fsolve(@(wt) wt*(1-Wf_Wto)-Wfix-Wept(wt),30e3,optimoptions('fsolve','Display','off'));    % Estimate W_TO
             
-%             Min loading for to meet Range requirement
+            %             Min loading for to meet Range requirement
             WS_r=fsolve(@(x) Wf_Wto*Wto*1.07/sfc*(x/(p_c))^0.5*(AR*e)^(1/4)/Cd0^(3/4)*(1/Wto)-R,10,optimoptions('fsolve','Display','off'));
-%             % Wing-loading min to meet C_L_max and V_stall assumptions
-%             WS_s=0.5*p_c*V_stall^2*Cl_max;
+            %             % Wing-loading min to meet C_L_max and V_stall assumptions
+            %             WS_s=0.5*p_c*V_stall^2*Cl_max;
             % Limit on W/S for Landing Distance within required distance, 3 degree
             % angle of approach
             WS_l=fsolve(@(ws) s_T-(79.4*ws/(1*Cl_max)+50/tand(3)),...
@@ -77,15 +98,15 @@ for it_LD=1:LDl
                     s_T-(20.9*(WSdom(a)/(Cl_max*tw))+69.6*sqrt(WSdom(a)/(Cl_max*tw))*tw),...
                     0.5,optimoptions('fsolve','display','off'));
             end
-%             % Cruise Conditions
-%             % For Straight, Level Flight at cruise conditions
-%             TW_cruise=TW_c(WSdom,p_c,V_c,1,0);
-%             % For Service Ceiling, steady, constant speed, 100 ft per min
-%             TW_serv=TW_c(WSdom,p_sc,V_md(WSdom,p_sc),1,100/60);
-%             % For Cruise Ceiling, steady, constant speed, 300 ft/min
-%             TW_cc=TW_c(WSdom,p_c,V_md(WSdom,p_c),1,300/60);
-%             % Maneuver at Sea Level, cruise conditions, 2.5 g's
-%             TW_man=TW_c(WSdom,p_sl,V_c,2.5,0);  % Run WS/TW data
+            %             % Cruise Conditions
+            %             % For Straight, Level Flight at cruise conditions
+            %             TW_cruise=TW_c(WSdom,p_c,V_c,1,0);
+            %             % For Service Ceiling, steady, constant speed, 100 ft per min
+            %             TW_serv=TW_c(WSdom,p_sc,V_md(WSdom,p_sc),1,100/60);
+            %             % For Cruise Ceiling, steady, constant speed, 300 ft/min
+            %             TW_cc=TW_c(WSdom,p_c,V_md(WSdom,p_c),1,300/60);
+            %             % Maneuver at Sea Level, cruise conditions, 2.5 g's
+            %             TW_man=TW_c(WSdom,p_sl,V_c,2.5,0);  % Run WS/TW data
             
             % Calculations for Power
             % Straight, Level Flight
@@ -106,27 +127,22 @@ for it_LD=1:LDl
             % Optimum is at WSdom(in),C2
             optm=[WSdom(in),c2/550];    % in lbs/ft^2 and hp
             
-            WSD(it_R,it_V,it_LD,:)=[WS_r,WS_l]; % Save the WSdom limits
             optimzd(it_R,it_V,it_LD,:)=optm; % Save Optimized Data
         end
     end
 end
-
+toc
 %% Figure Setup
 % Base figure will be used to output the optimized Ws/Power, and control
 % the other two design space and optimizer plots
 bs=figure('Name','Optimized Power and Wing Loading',...
-    'DeleteFcn','clear bs abse',...
     'NumberTitle','off',...
     'DockControls','off',...
     'MenuBar','none',...
     'Units','normalized',...
     'Resize','off',...
     'Position',[0 0.5 1 0.5]);
-% Turn on Data Cursor mode for base figure, and assign the appropriate
-% callback function to graph the details
-bsdc=datacursormode(bs);
-bsdc.UpdateFcn=@drawdetails;
+
 % Setup the axes for
 abse=axes('Parent',bs);
 abse.XLimMode='manual';
@@ -138,14 +154,12 @@ hold(abse,'on')
 % Details figure will be a split plot graphic the details of the selected
 % point int he bas figure
 f_det=figure('Name','Point Specifc Details',...
-    'DeleteFcn','clear all',...
     'NumberTitle','off',...
     'DockControls','off',...
     'MenuBar','none',...
     'Units','normalized',...
     'Resize','off',...
-    'Position',[0 0.1 1 0.4],...
-    'Visible','off'); clf;
+    'Position',[0 0.1 1 0.4]);
 aTW=axes('Parent',f_det);
 aTW.XLimMode='manual';
 subplot(1,2,1,aTW);
@@ -157,34 +171,123 @@ aPW.Title.String='Operational Power Curves';
 aPW.XLabel.String='Wing Loading W/S';
 aPW.YLabel.String='Power_{Required}, hp';
 
+%% Setup Xaxis for Lattice Plot
+abse.Units='pixels';
+szax=abse.Position;
+catlim=round(szax(3)/LDl/60-2,0);
+rng=[min(min(min(optimzd(:,:,:,1)))),max(max(max(optimzd(:,:,:,1))))];
+if log10(catlim)>1
+    stepd=1;
+else
+    stepd=0;
+end
+magni=round(log10(rng(2)),0)-1-stepd;
+% Determined magnitude of steps
+optmsmag=[1,2,5];
+rangeoptions=optmsmag'*10^magni*catlim;
+[~,ir]=min(abs(rangeoptions-diff(rng)));
+stepsz=optmsmag(ir)*10^(magni); %determine size of nominal steps
+lbs=floor(rng(1)/stepsz)*stepsz:stepsz:ceil(rng(2)/stepsz)*stepsz; %Actual steps
+x_ticklabel={' ',lbs};
+x_tickvalue=1:((length(lbs)+1)*LDl);
+abse.XTickLabel=x_ticklabel;
+abse.XTick=x_tickvalue;
+abse.XLim=[1 ((length(lbs)+1)*LDl)];
+
 %% Plot the Optimized Data
 % Split Lattice plot in order to display data
 
-% Determine distancing for xaxis
-abse.Units='pixels';
-szax=abse.Position;
-catwid=round((szax(3)/60-4)/3,0); %How many 
-% First, Orginization of the X-axis from WSdom
-% X_wslabels={' ',round(WSdom),' '}; % This will loop on the X Axis labels, so only one is needed
-X_wsvalues=1:(LDl*(WSl+2)); % This will be the reference to plot onto the Xaxis with
-abse.XTick=X_wsvalues;
-% abse.XTickLabel=X_wslabels;
-abse.XLim=[1 LDl*(WSl+2)];
-abse.XTickLabelRotation=-60;
-
+figure(bs);
+axes(abse);
 % Plot Each Carpet by successive LD settings
 for a=1:LDl
-%     Velocity Dependant
+    %     Velocity Dependant
     for b=1:Vl
-        plot(abse,optimzd(:,b,a,1),optimzd(:,b,a,2),'b-')
-%         text((a-1)*(WSl+2)+interp1(WSdom,2:WSl+1,optimzd(1,b,a,1)),optimzd(1,b,a,2),sprintf('%0.0f',Vd(b)),...
-%             'Verticalalignment','top','horizontalAlignment','center')
+        plot(abse,(a-1)*(length(lbs)+1)+1+...
+            interp1(lbs,1:length(lbs),optimzd(:,b,a,1),'pchip'),...
+            optimzd(:,b,a,2),'b-')
+        if Vl*LDl>20
+            if b==1 || b==Vl || b==round(Vl/2)
+                text((a-1)*(length(lbs)+1)+1+...
+                    interp1(lbs,1:length(lbs),optimzd(1,b,a,1),'pchip'),...
+                    optimzd(1,b,a,2),...
+                    sprintf('%0.0f mph',Vd(b)),...
+                    'Verticalalignment','top','horizontalAlignment','center')
+            else
+                continue
+            end
+        else
+            text((a-1)*(length(lbs)+1)+1+...
+                interp1(lbs,1:length(lbs),optimzd(1,b,a,1),'pchip'),...
+                optimzd(1,b,a,2),...
+                sprintf('%0.0f mph',Vd(b)),...
+                'Verticalalignment','top','horizontalAlignment','center')
+        end
     end
     
-%     Range Dependant
+    %     Range Dependant
     for c=1:Rl
-        plot(abse,optimzd(c,:,a,1),optimzd(c,:,a,2),'k-')
-%         text((a-1)*(WSl+2)+interp1(WSdom,2:WSl+1,optimzd(c,1,a,1)),optimzd(c,1,a,2),sprintf('%0.0f',Rd(c)),...
-%             'Verticalalignment','top','horizontalAlignment','center')
+        plot(abse,(a-1)*(length(lbs)+1)+1+...
+            interp1(lbs,1:length(lbs),optimzd(c,:,a,1),'pchip'),...
+            optimzd(c,:,a,2),'k-')
+        if Rl>8
+            if c==1 || b==Vl || b==round(Vl/2)
+                text((a-1)*(length(lbs)+1)+1+...
+                    interp1(lbs,1:length(lbs),optimzd(c,1,a,1),'pchip'),...
+                    optimzd(c,1,a,2),...
+                    sprintf('%0.0f nm',Rd(c)),...
+                    'Verticalalignment','middle','horizontalAlignment','right')
+            else
+                continue
+            end
+        else
+            text((a-1)*(length(lbs)+1)+1+...
+                interp1(lbs,1:length(lbs),optimzd(c,1,a,1),'pchip'),...
+                optimzd(c,1,a,2),...
+                sprintf('%0.0f nm',Rd(c)),...
+                'Verticalalignment','middle','horizontalAlignment','right')
+        end
     end
+end
+
+% Connection Lines for LD_max boxes
+ldconres=25;
+for b=[1 Vl]
+    for c=[1 Rl]
+        tstr0(1:LDl)=optimzd(c,b,:,1); outr0(1:LDl)=optimzd(c,b,:,2);
+        tstr1=((1:LDl)-1)*(length(lbs)+1)+1+...
+            interp1(lbs,1:length(lbs),tstr0,'pchip');
+        outr1=interp1(tstr1,outr0,linspace(tstr1(1),tstr1(end),ldconres),'pchip');
+        plot(abse,linspace(tstr1(1),tstr1(end),ldconres),outr1,'Color',0.7*[1 1 1]);
+    end
+end
+
+% Text Label for LD_Max
+for a=1:LDl
+    text((a-1)*(length(lbs)+1)+round(length(lbs)/2+1),...
+        abse.YLim(1)+0.07*diff(abse.YLim),...
+        sprintf('LD_{max}: %3.0f',LDd(a)),...
+        'Color','g')
+end
+
+%% Data Tip Details and Updater
+% Turn on Data Cursor mode for base figure, and assign the appropriate
+% callback function to graph the details
+bsdc=datacursormode(bs);
+bsdc.UpdateFcn=@drawdetails;
+bsdc.Enable='on';
+
+    function output_txt = drawdetails(~,evntobj)
+        % Used to output custom datatip information, as well as update the detail
+        % graphs that show specic information about the selected data.
+        pos = get(evntobj,'Position');
+        output_txt = {['LDmax: ',num2str(LDd(floor(pos(1)/(length(lbs)+1))+1),3)],...
+            ['X: ',num2str(interp1(1:length(lbs),lbs,...
+            pos(1)-floor(pos(1)/(length(lbs)+1))*(length(lbs)+1)-1),4)],...
+            ['Y: ',num2str(pos(2),4)]};
+    end
+
+
+waitfor(bs)
+close all; clear; clc
 end
