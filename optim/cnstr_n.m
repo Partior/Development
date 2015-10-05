@@ -53,8 +53,6 @@ WS_s=0.5*p_c*V_stall^2*Cl_max;
 % angle of approach
 WS_l=fsolve(@(ws) s_T-(79.4*ws/(1*Cl_max)+50/tand(3)),...
     50,optimoptions('fsolve','display','off'));
-
-
 %% Takeoff Distance
 % W/S and T/W to takeoff at required distance
 s_tm=zeros(1,length(WSD));
@@ -87,7 +85,7 @@ TW_man=TW_c(WSD,p_sl,V_c,2.5,0);
 
 figure(f_det);
 axes(aTW);
-hold on
+cla(aTW)
 plot(aTW,WSD,s_tm,'b-')       % Takeoff Distance Req
 plot(aTW,WSD,TW_cruise,'b--') % Cruise Req
 plot(aTW,WSD,TW_serv,'g--')   % Service Ceiling Req
@@ -95,13 +93,23 @@ plot(aTW,WSD,TW_cc,'k--')     % Cruise Ceiling Req
 plot(aTW,WSD,TW_man,'r-.')    % Maneuver Req
 
 
-
+aTW.XLimMode='auto';
+aTW.YLimMode='auto';
 % Min W/S Req for range and stall
 ym=ylim;
 plot(aTW,WS_r*ones(1,2),ym,'k:')
 plot(aTW,WS_s*ones(1,2),ym,'r:')
 plot(aTW,WS_l*ones(1,2),ym,'b:')
 
+
+D=@(ws,v,p) Cd0*0.5*p*v.^2.*(Wto./ws)+K*ws*Wto./(0.5*p*v.^2);
+%% Optimum Output
+plot(aTW,posout(1),D(posout(1),V_c,p_c)/Wto,...
+    'LineStyle','none',...
+    'Marker','d',...
+    'MarkerSize',13,...
+    'MarkerEdgeColor','r',...
+    'MarkerFaceColor','y')
 %% Visual Adjustments
 % Size Matters
 legend({'Takeoff',...
@@ -113,7 +121,7 @@ legend({'Takeoff',...
 % Text Output
 xm=xlim;
 axes(aTW)
-text(0.98*xm(2),0.1*ym(2),sprintf('W_{TO}=%6.0f lbs',Wto),...
+text(0.98*xm(2),0.05*ym(2),sprintf('W_{TO}=%6.0f lbs',Wto),...
     'horizontalAlignment','right','verticalAlignment','bottom','Parent',aTW)
 text(WS_r,0.95*ym(2),sprintf('%0.0f nm',R/1.151),...
     'horizontalAlignment','left','verticalAlignment','top')
@@ -122,5 +130,3 @@ text(WS_s,0.90*ym(2),sprintf('%0.0f KTAS',V_stall/1.688),...
 text(WS_l,0.95*ym(2),sprintf('%0.0f ft',s_T),...
     'horizontalAlignment','right','verticalAlignment','top')
 ylim(ym)
-
-keyboard

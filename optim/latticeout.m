@@ -35,11 +35,11 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=3;  Rd=linspace(700,1500,Rl);
-Vl=3;  Vd=linspace(200,350,Vl);
-LDl=2;  LDd=linspace(15,23,LDl);  % Keep resolution of LD <5
+Rl=5;  Rd=linspace(800,1200,Rl)*1.151;  %miles
+Vl=21;  Vd=linspace(280,300,Vl)*1.466667;  %ft/sec
+LDl=3;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
 % Resolution of independent, Secondary, variables
-WSl=10;
+WSl=40;
 
 % Definitions
 % % For both cruise and climb conditions, leaving off 1/g(dV/dt) term
@@ -68,7 +68,7 @@ for it_LD=1:LDl
             
             % Fuel Weight Fraction
             % Fuel ratios
-            Wr=exp(-R*sfc/(V_c*(0.943*LD)));
+            Wr=exp(-R*sfc/(V_c/1.46666667*(0.943*LD)));
             We=exp(-E*sfc/(LD));
             % Full ratio
             W1_6=0.97*0.985*Wr*1*We*0.985;
@@ -159,17 +159,19 @@ f_det=figure('Name','Point Specifc Details',...
     'MenuBar','none',...
     'Units','normalized',...
     'Resize','off',...
-    'Position',[0 0.1 1 0.4]);
+    'Position',[0 0.05 1 0.4]);
 aTW=axes('Parent',f_det);
 aTW.XLimMode='manual';
 subplot(1,2,1,aTW);
 aTW.Title.String='Constraints on Wing Loading and Specifc Thrust';
 aTW.XLabel.String='Wing Loading W/S';
 aTW.YLabel.String='Specfic Thrust: T/W';
+hold(aTW,'on')
 aPW=subplot(1,2,2);
 aPW.Title.String='Operational Power Curves';
 aPW.XLabel.String='Wing Loading W/S';
 aPW.YLabel.String='Power_{Required}, hp';
+hold(aPW,'on')
 
 %% Setup Xaxis for Lattice Plot
 abse.Units='pixels';
@@ -211,7 +213,7 @@ for a=1:LDl
                 text((a-1)*(length(lbs)+1)+1+...
                     interp1(lbs,1:length(lbs),optimzd(1,b,a,1),'pchip'),...
                     optimzd(1,b,a,2),...
-                    sprintf('%0.0f mph',Vd(b)),...
+                    sprintf('%0.0f mph',Vd(b)/1.46666667),...
                     'Verticalalignment','top','horizontalAlignment','center')
             else
                 continue
@@ -220,7 +222,7 @@ for a=1:LDl
             text((a-1)*(length(lbs)+1)+1+...
                 interp1(lbs,1:length(lbs),optimzd(1,b,a,1),'pchip'),...
                 optimzd(1,b,a,2),...
-                sprintf('%0.0f mph',Vd(b)),...
+                sprintf('%0.0f mph',Vd(b)/1.46666667),...
                 'Verticalalignment','top','horizontalAlignment','center')
         end
     end
@@ -235,7 +237,7 @@ for a=1:LDl
                 text((a-1)*(length(lbs)+1)+1+...
                     interp1(lbs,1:length(lbs),optimzd(c,1,a,1),'pchip'),...
                     optimzd(c,1,a,2),...
-                    sprintf('%0.0f nm',Rd(c)),...
+                    sprintf('%0.0f nm',Rd(c)/1.151),...
                     'Verticalalignment','middle','horizontalAlignment','right')
             else
                 continue
@@ -244,7 +246,7 @@ for a=1:LDl
             text((a-1)*(length(lbs)+1)+1+...
                 interp1(lbs,1:length(lbs),optimzd(c,1,a,1),'pchip'),...
                 optimzd(c,1,a,2),...
-                sprintf('%0.0f nm',Rd(c)),...
+                sprintf('%0.0f nm',Rd(c)/1.151),...
                 'Verticalalignment','middle','horizontalAlignment','right')
         end
     end
@@ -284,23 +286,22 @@ bsdc.Enable='on';
         posout=[interp1(1:length(lbs),lbs,pos(1)-floor(pos(1)/(length(lbs)+1))*(length(lbs)+1)-1),...
             pos(2)];
         output_txt = {['LDmax: ',num2str(LDd(floor(pos(1)/(length(lbs)+1))+1),3)],...
-            ['X: ',num2str(posout(1),4)],...
-            ['Y: ',num2str(posout(2),4)]};
-        
-        keyboard
+            ['WS: ',num2str(posout(1),4)],...
+            ['P: ',num2str(posout(2),4)]};
+
         % Begin graphics
-        [Rin,V_cin]=find(optimzd(:,:,LDinfloor(pos(1)/(length(lbs)+1))+1,2)==posout(2));
+        [Rin,V_cin]=find(optimzd(:,:,floor(pos(1)/(length(lbs)+1))+1,2)==posout(2));
         R=Rd(Rin);
         V_c=Vd(V_cin);
-        LD=LDd(LDind);
+        LD=LDd(floor(pos(1)/(length(lbs)+1))+1);
         WS_r=[]; WS_s=[]; WS_l=[]; TW_c=[]; TW_cruise=[]; TW_serv=[]; TW_cc=[];
         TW_man=[]; ym=[]; xm=[]; WSD=[];
         
-        cnstr_n
-        axes(abse)
+        
+        try
+            cnstr_n
+            power_cnstr_n
+        end
     end
 
-
-waitfor(bs)
-close all; clear; clc
 end
