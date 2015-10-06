@@ -35,9 +35,10 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=6;  Rd=linspace(500,1500,Rl)*1.151;  %miles
-Vl=11;  Vd=linspace(200,300,Vl)*1.466667;  %ft/sec
-LDl=4;  LDd=linspace(17,22,LDl);  % Keep resolution of LD <5
+Rl=5;  Rd=linspace(800,1200,Rl)*1.151;  %miles
+Vl=5;  Vd=linspace(250,280,Vl)*1.466667;  %ft/sec
+LDl=3;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
+WTOl=4; % Number of isolines for the WTO contours
 
 %% Numerical Calculations
 % For loops to calculate WS, TW and P for independent Variables
@@ -176,8 +177,8 @@ abse.XTickLabel=x_ticklabel;
 abse.XTick=x_tickvalue;
 abse.XLim=[1 ((length(lbs)+1)*LDl)];
 
-% clear szax catlim rnge magni optmsmag rangeoptions ir stepsz
-%% Plot the Optimized Data
+clear szax catlim rnge magni optmsmag rangeoptions ir stepsz
+%% Plot the V/R Optimized Data
 % Split Lattice plot in order to display data
 
 figure(bs);
@@ -189,7 +190,7 @@ for a=1:LDl
     %     Velocity Dependant
     for b=1:Vl
         xint(:,b,a)=(a-1)*(length(lbs)+1)+1+interp1(lbs,1:length(lbs),optimzd(:,b,a,1),'pchip');
-        plot(abse,xint(:,b,a), optimzd(:,b,a,2),'k-')
+        plot(abse,xint(:,b,a), optimzd(:,b,a,2),'Color',0.8*[1 1 1])
         if Vl*LDl>20
             if b==1 || b==Vl || b==round(Vl/2)
                 text(xint(1,b,a),...
@@ -210,9 +211,9 @@ for a=1:LDl
     %     Range Dependant
     for c=1:Rl
         yint(c,:,a)=(a-1)*(length(lbs)+1)+1+interp1(lbs,1:length(lbs),optimzd(c,:,a,1),'pchip');
-        plot(abse,yint(c,:,a),optimzd(c,:,a,2),'k-')
+        plot(abse,yint(c,:,a),optimzd(c,:,a,2),'Color',0.8*[1 1 1])
         if Rl>8
-            if c==1 || b==Vl || b==round(Vl/2)
+            if c==1 || c==Rl || c==round(Rl/2)
                 text(yint(c,1,a),...
                     optimzd(c,1,a,2),...
                     sprintf('%.4g nm',Rd(c)/1.151),...
@@ -230,6 +231,29 @@ for a=1:LDl
 end
 
 clear yint
+
+%% LD Max Indicators
+% Connection Lines for LD_max boxes
+ldconres=25;
+for b=[1 Vl]
+    for c=[1 Rl]
+        tstr0(1:LDl)=optimzd(c,b,:,1); outr0(1:LDl)=optimzd(c,b,:,2);
+        tstr1=((1:LDl)-1)*(length(lbs)+1)+1+...
+            interp1(lbs,1:length(lbs),tstr0,'pchip');
+        outr1=interp1(tstr1,outr0,linspace(tstr1(1),tstr1(end),ldconres),'pchip');
+        plot(abse,linspace(tstr1(1),tstr1(end),ldconres),outr1,'Color',0.8*[1 1 1]);
+    end
+end
+
+% Text Label for LD_Max
+for a=1:LDl
+    text((a-1)*(length(lbs)+1)+round(length(lbs)/2+1),...
+        abse.YLim(1)+0.93*diff(abse.YLim),...
+        sprintf('LD_{max}: %.3g',LDd(a)),...
+        'HorizontalAlignment','center','Color','r')
+end
+
+clear tstr0 tstr1 outr0 outr1
 %% Gross Takeoff Weight Isolines
 % Draw isolines on each independante carpet plot of the W_TO for the V/R
 % pairing. This plot is unique such that it all has to be done at once, so
@@ -256,35 +280,14 @@ for a=1:LDl
     xint0=xint(:,:,a);
     optimzd0=optimzd(:,:,a,2);
     optimzd1=optimzd(:,:,a,3)/1000;
-    contour(abs2,xint0,optimzd0,optimzd1,5,'LineWidth',1.3);
+    contour(abs2,xint0,optimzd0,optimzd1,WTOl,'LineWidth',1.3);
 end
 clb=colorbar;
 clb.Label.String='W_{gross takeoff}, 1,000 lbs';
 abse.Position=abs2.Position;
 
 clear xint optimzd0 optimzd1
-%% LD Max Indicators
-% Connection Lines for LD_max boxes
-ldconres=25;
-for b=[1 Vl]
-    for c=[1 Rl]
-        tstr0(1:LDl)=optimzd(c,b,:,1); outr0(1:LDl)=optimzd(c,b,:,2);
-        tstr1=((1:LDl)-1)*(length(lbs)+1)+1+...
-            interp1(lbs,1:length(lbs),tstr0,'pchip');
-        outr1=interp1(tstr1,outr0,linspace(tstr1(1),tstr1(end),ldconres),'pchip');
-        plot(abse,linspace(tstr1(1),tstr1(end),ldconres),outr1,'Color',0.7*[1 1 1]);
-    end
-end
 
-% Text Label for LD_Max
-for a=1:LDl
-    text((a-1)*(length(lbs)+1)+round(length(lbs)/2+1),...
-        abse.YLim(1)+0.93*diff(abse.YLim),...
-        sprintf('LD_{max}: %.3g',LDd(a)),...
-        'HorizontalAlignment','center','Color','r')
-end
-
-clear tstr0 tstr1 outr0 outr1
 %% Data Tip Details and Updater
 % Turn on Data Cursor mode for base figure, and assign the appropriate
 % callback function to graph the details
