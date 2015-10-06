@@ -35,18 +35,11 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=10;  Rd=linspace(800,1200,Rl)*1.151;  %miles
-Vl=20;  Vd=linspace(250,300,Vl)*1.466667;  %ft/sec
-LDl=4;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
+Rl=5;  Rd=linspace(800,1200,Rl)*1.151;  %miles
+Vl=10;  Vd=linspace(250,285,Vl)*1.466667;  %ft/sec
+LDl=2;  LDd=linspace(17,22,LDl);  % Keep resolution of LD <5
 % Resolution of independent, Secondary, variables
-WSl=60;
-
-% Definitions
-% % For both cruise and climb conditions, leaving off 1/g(dV/dt) term
-% TW_c=@(ws,p,V,n,hdot)...
-%     (0.5*p*V.^2)*Cd0./ws+K*n^2./(0.5*p*V.^2).*ws+1./V*(hdot);
-% Drag for Power
-D=@(ws,v,p,wto) Cd0*0.5*p*v.^2.*(wto./ws)+K*ws*wto./(0.5*p*v.^2);
+WSl=30;
 
 %% Numerical Calculations
 % For loops to calculate WS, TW and P for independent Variables
@@ -65,7 +58,6 @@ for it_LD=1:LDl
         parfor it_V=1:Vl
             V_c=Vd(it_V);
             
-            
             % Fuel Weight Fraction
             % Fuel ratios
             Wr=exp(-R*sfc/(V_c/1.46666667*(0.943*LD)));
@@ -82,8 +74,6 @@ for it_LD=1:LDl
             
             %             Min loading for to meet Range requirement
             WS_r=fsolve(@(x) Wf_Wto*Wto*1.07/sfc*(x/(p_c))^0.5*(AR*e)^(1/4)/Cd0^(3/4)*(1/Wto)-R,10,optimoptions('fsolve','Display','off'));
-            %             % Wing-loading min to meet C_L_max and V_stall assumptions
-            %             WS_s=0.5*p_c*V_stall^2*Cl_max;
             % Limit on W/S for Landing Distance within required distance, 3 degree
             % angle of approach
             WS_l=fsolve(@(ws) s_T-(79.4*ws/(1*Cl_max)+50/tand(3)),...
@@ -98,27 +88,21 @@ for it_LD=1:LDl
                     s_T-(20.9*(WSdom(a)/(Cl_max*tw))+69.6*sqrt(WSdom(a)/(Cl_max*tw))*tw),...
                     0.5,optimoptions('fsolve','display','off'));
             end
-            %             % Cruise Conditions
-            %             % For Straight, Level Flight at cruise conditions
-            %             TW_cruise=TW_c(WSdom,p_c,V_c,1,0);
-            %             % For Service Ceiling, steady, constant speed, 100 ft per min
-            %             TW_serv=TW_c(WSdom,p_sc,V_md(WSdom,p_sc),1,100/60);
-            %             % For Cruise Ceiling, steady, constant speed, 300 ft/min
-            %             TW_cc=TW_c(WSdom,p_c,V_md(WSdom,p_c),1,300/60);
-            %             % Maneuver at Sea Level, cruise conditions, 2.5 g's
-            %             TW_man=TW_c(WSdom,p_sl,V_c,2.5,0);  % Run WS/TW data
+            
+            % Drag for Power
+            D=@(ws,v,p) Cd0*0.5*p*v.^2.*(Wto./ws)+K*ws*Wto./(0.5*p*v.^2);
             
             % Calculations for Power
             % Straight, Level Flight
-            Preq_cruise=D(WSdom,V_c,p_c,Wto)*V_c/(p_c/p_sl);
+            Preq_cruise=D(WSdom,V_c,p_c)*V_c/(p_c/p_sl);
             % Service Ceiling
-            Preq_serv=(D(WSdom,V_md(WSdom,p_sc),p_sc,Wto).*V_md(WSdom,p_sc)/(p_sc/p_sl))+...
+            Preq_serv=(D(WSdom,V_md(WSdom,p_sc),p_sc).*V_md(WSdom,p_sc)/(p_sc/p_sl))+...
                 Wto*(100/60);
             % Cruise Ceiling
-            Preq_cc=D(WSdom,V_md(WSdom,p_c),p_sc,Wto).*V_md(WSdom,p_c)/(p_c/p_sl)+...
+            Preq_cc=D(WSdom,V_md(WSdom,p_c),p_sc).*V_md(WSdom,p_c)/(p_c/p_sl)+...
                 Wto*(300/60);
             % 2.5g Maneuer at Sea Level
-            Preq_man=D(WSdom,V_c,p_sl,Wto)*V_c/(p_sl/p_sl);
+            Preq_man=D(WSdom,V_c,p_sl)*V_c/(p_sl/p_sl);
             
             % Find Max of any given operation at any point:
             [c,~]=max([Preq_cc;Preq_cruise;Preq_man;Preq_serv]);
@@ -334,11 +318,13 @@ bsdc.Enable='on';
         % Begin graphics
         [Rin,V_cin]=find(optimzd(:,:,floor(pos(1)/(length(lbs)+1))+1,2)==posout(2));
         R=Rd(Rin);
-        V_c=Vd(V_cin);
+        V_c=Vd(V_cin)/1.46666;
         LD=LDd(floor(pos(1)/(length(lbs)+1))+1);
         WS_r=[]; WS_s=[]; WS_l=[]; TW_c=[]; TW_cruise=[]; TW_serv=[]; TW_cc=[];
         TW_man=[]; ym=[]; xm=[]; WSD=[];
         
+        keyboard
+        ymabs=abse.YLim;
         try
             cnstr_n
             power_cnstr_n

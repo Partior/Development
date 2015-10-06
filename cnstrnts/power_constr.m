@@ -4,6 +4,7 @@
 close all; clear; clc
 cnstr
 
+V_c=V_c*1.46666;
 %% Cruise Conditions
 % Equilvant Power to various altitudes 
 D=@(ws,v,p) Cd0*0.5*p*v.^2.*(Wto./ws)+K*ws*Wto./(0.5*p*v.^2);

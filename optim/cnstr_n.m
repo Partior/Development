@@ -62,6 +62,8 @@ for a=1:length(WSD)
         0.5,optimoptions('fsolve','display','off'));
 end
 
+%%
+V_c=V_c*1.46666; %Transfere to ft/s for next series of equations
 
 %% Cruise Conditions
 % For both cruise and climb conditions, leaving off 1/g(dV/dt) term
