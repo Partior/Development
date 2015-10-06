@@ -35,9 +35,9 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=4;  Rd=linspace(800,1200,Rl)*1.151;  %miles
-Vl=4;  Vd=linspace(250,300,Vl)*1.466667;  %ft/sec
-LDl=5;  LDd=linspace(17,22,LDl);  % Keep resolution of LD <5
+Rl=6;  Rd=linspace(500,1500,Rl)*1.151;  %miles
+Vl=11;  Vd=linspace(200,300,Vl)*1.466667;  %ft/sec
+LDl=4;  LDd=linspace(17,22,LDl);  % Keep resolution of LD <5
 
 %% Numerical Calculations
 % For loops to calculate WS, TW and P for independent Variables
@@ -162,21 +162,21 @@ clear r bspos f_detpos
 abse.Units='pixels';
 szax=abse.Position;
 catlim=round(szax(3)/LDl/50-2,0);
-rng=[min(min(min(optimzd(:,:,:,1)))),max(max(max(optimzd(:,:,:,1))))];
-magni=floor(log10(rng(2)))-1;
+rnge=[min(min(min(optimzd(:,:,:,1)))),max(max(max(optimzd(:,:,:,1))))];
+magni=round(log10(diff(rnge)))-1;
 % Determined magnitude of steps
 optmsmag=[1,2,5];
 rangeoptions=optmsmag'*10^magni*catlim;
-[~,ir]=min(abs(rangeoptions-diff(rng)));
+[~,ir]=min(abs(rangeoptions-diff(rnge)));
 stepsz=optmsmag(ir)*10^(magni); %determine size of nominal steps
-lbs=floor(rng(1)/stepsz)*stepsz:stepsz:ceil(rng(2)/stepsz)*stepsz; %Actual steps
+lbs=floor(rnge(1)/stepsz)*stepsz:stepsz:ceil(rnge(2)/stepsz)*stepsz; %Actual steps
 x_ticklabel={' ',lbs};
 x_tickvalue=1:((length(lbs)+1)*LDl);
 abse.XTickLabel=x_ticklabel;
 abse.XTick=x_tickvalue;
 abse.XLim=[1 ((length(lbs)+1)*LDl)];
 
-clear szax catlim rng magni optmsmag rangeoptions ir stepsz
+% clear szax catlim rnge magni optmsmag rangeoptions ir stepsz
 %% Plot the Optimized Data
 % Split Lattice plot in order to display data
 
@@ -194,7 +194,7 @@ for a=1:LDl
             if b==1 || b==Vl || b==round(Vl/2)
                 text(xint(1,b,a),...
                     optimzd(1,b,a,2),...
-                    sprintf('%0.0f mph',Vd(b)/1.46666667),...
+                    sprintf('%.4g mph',Vd(b)/1.46666667),...
                     'Verticalalignment','top','horizontalAlignment','left')
             else
                 continue
@@ -202,7 +202,7 @@ for a=1:LDl
         else
             text(xint(1,b,a),...
                 optimzd(1,b,a,2),...
-                sprintf('%0.0f mph',Vd(b)/1.46666667),...
+                sprintf('%.4g mph',Vd(b)/1.46666667),...
                 'Verticalalignment','top','horizontalAlignment','left')
         end
     end
@@ -215,7 +215,7 @@ for a=1:LDl
             if c==1 || b==Vl || b==round(Vl/2)
                 text(yint(c,1,a),...
                     optimzd(c,1,a,2),...
-                    sprintf('%0.0f nm',Rd(c)/1.151),...
+                    sprintf('%.4g nm',Rd(c)/1.151),...
                     'Verticalalignment','middle','horizontalAlignment','right')
             else
                 continue
@@ -223,7 +223,7 @@ for a=1:LDl
         else
             text(yint(c,1,a),...
                 optimzd(c,1,a,2),...
-                sprintf('%0.0f nm',Rd(c)/1.151),...
+                sprintf('%.4g nm',Rd(c)/1.151),...
                 'Verticalalignment','middle','horizontalAlignment','right')
         end
     end
@@ -280,7 +280,7 @@ end
 for a=1:LDl
     text((a-1)*(length(lbs)+1)+round(length(lbs)/2+1),...
         abse.YLim(1)+0.93*diff(abse.YLim),...
-        sprintf('LD_{max}: %3.0f',LDd(a)),...
+        sprintf('LD_{max}: %.3g',LDd(a)),...
         'HorizontalAlignment','center','Color','r')
 end
 
