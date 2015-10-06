@@ -35,11 +35,11 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=5;  Rd=linspace(800,1200,Rl)*1.151;  %miles
-Vl=21;  Vd=linspace(280,300,Vl)*1.466667;  %ft/sec
-LDl=3;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
+Rl=10;  Rd=linspace(800,1200,Rl)*1.151;  %miles
+Vl=20;  Vd=linspace(250,300,Vl)*1.466667;  %ft/sec
+LDl=4;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
 % Resolution of independent, Secondary, variables
-WSl=40;
+WSl=60;
 
 % Definitions
 % % For both cruise and climb conditions, leaving off 1/g(dV/dt) term
@@ -51,7 +51,7 @@ D=@(ws,v,p,wto) Cd0*0.5*p*v.^2.*(wto./ws)+K*ws*wto./(0.5*p*v.^2);
 %% Numerical Calculations
 % For loops to calculate WS, TW and P for independent Variables
 tic
-optimzd=zeros(Rl,Vl,LDl,2);
+optimzd=zeros(Rl,Vl,LDl,3);
 poolobj = gcp('nocreate'); % If no pool, do not create new one.
 if isempty(poolobj)
     parpool('local')
@@ -127,7 +127,7 @@ for it_LD=1:LDl
             % Optimum is at WSdom(in),C2
             optm=[WSdom(in),c2/550];    % in lbs/ft^2 and hp
             
-            optimzd(it_R,it_V,it_LD,:)=optm; % Save Optimized Data
+            optimzd(it_R,it_V,it_LD,:)=[optm,Wto]; % Save Optimized Data
         end
     end
 end
@@ -135,13 +135,23 @@ toc
 %% Figure Setup
 % Base figure will be used to output the optimized Ws/Power, and control
 % the other two design space and optimizer plots
+r=groot;
+if size(r.MonitorPositions,1)>1
+    bspos=r.MonitorPositions(1,:);
+    f_detpos=r.MonitorPositions(2,:);
+else
+    bspos=r.MonitorPositions(1,:).*[1 1 1 0.5];
+    f_detpos=[r.MonitorPositions(1,1),r.MonitorPositions(1,4)/2,r.MonitorPositions(1,3:4).*[1 0.5]];
+end
+
 bs=figure('Name','Optimized Power and Wing Loading',...
     'NumberTitle','off',...
     'DockControls','off',...
     'MenuBar','none',...
-    'Units','normalized',...
+    'Units','pixels',...
     'Resize','off',...
-    'Position',[0 0.5 1 0.5]);
+    'Position',bspos,...
+    'deletefcn','close all; clear; clc;');
 
 % Setup the axes for
 abse=axes('Parent',bs);
@@ -149,6 +159,7 @@ abse.XLimMode='manual';
 abse.Title.String='Power Requirments and Wing Loading';
 abse.XLabel.String='Wing Loading W/S, lbs/ft^2 by LD_{max}';
 abse.YLabel.String='Power_{Required}, hp';
+abse.Color='none';
 hold(abse,'on')
 
 % Details figure will be a split plot graphic the details of the selected
@@ -157,9 +168,10 @@ f_det=figure('Name','Point Specifc Details',...
     'NumberTitle','off',...
     'DockControls','off',...
     'MenuBar','none',...
-    'Units','normalized',...
+    'Units','pixels',...
     'Resize','off',...
-    'Position',[0 0.05 1 0.4]);
+    'Position',f_detpos,...
+    'deletefcn','close all; clear; clc;');
 aTW=axes('Parent',f_det);
 aTW.XLimMode='manual';
 subplot(1,2,1,aTW);
@@ -173,17 +185,13 @@ aPW.XLabel.String='Wing Loading W/S';
 aPW.YLabel.String='Power_{Required}, hp';
 hold(aPW,'on')
 
+clear r bspos f_detpos
 %% Setup Xaxis for Lattice Plot
 abse.Units='pixels';
 szax=abse.Position;
-catlim=round(szax(3)/LDl/60-2,0);
+catlim=round(szax(3)/LDl/50-2,0);
 rng=[min(min(min(optimzd(:,:,:,1)))),max(max(max(optimzd(:,:,:,1))))];
-if log10(catlim)>1
-    stepd=1;
-else
-    stepd=0;
-end
-magni=round(log10(rng(2)),0)-1-stepd;
+magni=floor(log10(rng(2)))-1;
 % Determined magnitude of steps
 optmsmag=[1,2,5];
 rangeoptions=optmsmag'*10^magni*catlim;
@@ -196,22 +204,23 @@ abse.XTickLabel=x_ticklabel;
 abse.XTick=x_tickvalue;
 abse.XLim=[1 ((length(lbs)+1)*LDl)];
 
+clear szax catlim rng magni optmsmag rangeoptions ir stepsz
 %% Plot the Optimized Data
 % Split Lattice plot in order to display data
 
 figure(bs);
 axes(abse);
+xint=zeros(Rl,Vl,LDl);
+yint=zeros(Rl,Vl,LDl);
 % Plot Each Carpet by successive LD settings
 for a=1:LDl
     %     Velocity Dependant
     for b=1:Vl
-        plot(abse,(a-1)*(length(lbs)+1)+1+...
-            interp1(lbs,1:length(lbs),optimzd(:,b,a,1),'pchip'),...
-            optimzd(:,b,a,2),'b-')
+        xint(:,b,a)=(a-1)*(length(lbs)+1)+1+interp1(lbs,1:length(lbs),optimzd(:,b,a,1),'pchip');
+        plot(abse,xint(:,b,a), optimzd(:,b,a,2),'k-')
         if Vl*LDl>20
             if b==1 || b==Vl || b==round(Vl/2)
-                text((a-1)*(length(lbs)+1)+1+...
-                    interp1(lbs,1:length(lbs),optimzd(1,b,a,1),'pchip'),...
+                text(xint(1,b,a),...
                     optimzd(1,b,a,2),...
                     sprintf('%0.0f mph',Vd(b)/1.46666667),...
                     'Verticalalignment','top','horizontalAlignment','center')
@@ -219,8 +228,7 @@ for a=1:LDl
                 continue
             end
         else
-            text((a-1)*(length(lbs)+1)+1+...
-                interp1(lbs,1:length(lbs),optimzd(1,b,a,1),'pchip'),...
+            text(xint(1,b,a),...
                 optimzd(1,b,a,2),...
                 sprintf('%0.0f mph',Vd(b)/1.46666667),...
                 'Verticalalignment','top','horizontalAlignment','center')
@@ -229,13 +237,11 @@ for a=1:LDl
     
     %     Range Dependant
     for c=1:Rl
-        plot(abse,(a-1)*(length(lbs)+1)+1+...
-            interp1(lbs,1:length(lbs),optimzd(c,:,a,1),'pchip'),...
-            optimzd(c,:,a,2),'k-')
+        yint(c,:,a)=(a-1)*(length(lbs)+1)+1+interp1(lbs,1:length(lbs),optimzd(c,:,a,1),'pchip');
+        plot(abse,yint(c,:,a),optimzd(c,:,a,2),'k-')
         if Rl>8
             if c==1 || b==Vl || b==round(Vl/2)
-                text((a-1)*(length(lbs)+1)+1+...
-                    interp1(lbs,1:length(lbs),optimzd(c,1,a,1),'pchip'),...
+                text(yint(c,1,a),...
                     optimzd(c,1,a,2),...
                     sprintf('%0.0f nm',Rd(c)/1.151),...
                     'Verticalalignment','middle','horizontalAlignment','right')
@@ -243,8 +249,7 @@ for a=1:LDl
                 continue
             end
         else
-            text((a-1)*(length(lbs)+1)+1+...
-                interp1(lbs,1:length(lbs),optimzd(c,1,a,1),'pchip'),...
+            text(yint(c,1,a),...
                 optimzd(c,1,a,2),...
                 sprintf('%0.0f nm',Rd(c)/1.151),...
                 'Verticalalignment','middle','horizontalAlignment','right')
@@ -252,6 +257,41 @@ for a=1:LDl
     end
 end
 
+clear yint
+%% Gross Takeoff Weight Isolines
+% Draw isolines on each independante carpet plot of the W_TO for the V/R
+% pairing. This plot is unique such that it all has to be done at once, so
+% that a colorbar may be added to the side of the plot for indications
+
+% First, define an axis that matches directly on top of abse
+abs2=axes('Parent',bs);
+abs2.Units='pixels';
+abs2.XLimMode='manual';
+abs2.Title.String=' ';
+abs2.XLabel.String=' ';
+abs2.YLabel.String=' ';
+hold(abs2,'on')
+abs2.XTickLabel=' ';
+abs2.XTick=x_tickvalue;
+abs2.XColor='none'; abs2.YColor='none';
+abs2.XLimMode='manual'; abs2.XLim=abse.XLim;
+abs2.YLimMode='manual'; abs2.YLim=abse.YLim;
+abs2.ZLimMode='manual';
+bs.Children=[bs.Children(2);bs.Children(1)];
+
+% Grab C data from each WTO/LD system,
+for a=1:LDl
+    xint0=xint(:,:,a);
+    optimzd0=optimzd(:,:,a,2);
+    optimzd1=optimzd(:,:,a,3)/1000;
+    contour(abs2,xint0,optimzd0,optimzd1,5,'LineWidth',1.3);
+end
+clb=colorbar;
+clb.Label.String='W_{gross takeoff}, 1,000 lbs';
+abse.Position=abs2.Position;
+
+clear xint optimzd0 optimzd1
+%% LD Max Indicators
 % Connection Lines for LD_max boxes
 ldconres=25;
 for b=[1 Vl]
@@ -267,14 +307,16 @@ end
 % Text Label for LD_Max
 for a=1:LDl
     text((a-1)*(length(lbs)+1)+round(length(lbs)/2+1),...
-        abse.YLim(1)+0.07*diff(abse.YLim),...
+        abse.YLim(1)+0.93*diff(abse.YLim),...
         sprintf('LD_{max}: %3.0f',LDd(a)),...
-        'Color','g')
+        'HorizontalAlignment','center','Color','r')
 end
 
+clear tstr0 tstr1 outr0 outr1
 %% Data Tip Details and Updater
 % Turn on Data Cursor mode for base figure, and assign the appropriate
 % callback function to graph the details
+bs.CurrentAxes=abse;
 bsdc=datacursormode(bs);
 bsdc.UpdateFcn=@drawdetails;
 bsdc.Enable='on';
@@ -296,7 +338,6 @@ bsdc.Enable='on';
         LD=LDd(floor(pos(1)/(length(lbs)+1))+1);
         WS_r=[]; WS_s=[]; WS_l=[]; TW_c=[]; TW_cruise=[]; TW_serv=[]; TW_cc=[];
         TW_man=[]; ym=[]; xm=[]; WSD=[];
-        
         
         try
             cnstr_n
