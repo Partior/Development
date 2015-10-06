@@ -35,11 +35,9 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=5;  Rd=linspace(800,1200,Rl)*1.151;  %miles
-Vl=10;  Vd=linspace(250,285,Vl)*1.466667;  %ft/sec
-LDl=2;  LDd=linspace(17,22,LDl);  % Keep resolution of LD <5
-% Resolution of independent, Secondary, variables
-WSl=30;
+Rl=4;  Rd=linspace(800,1200,Rl)*1.151;  %miles
+Vl=4;  Vd=linspace(250,300,Vl)*1.466667;  %ft/sec
+LDl=5;  LDd=linspace(17,22,LDl);  % Keep resolution of LD <5
 
 %% Numerical Calculations
 % For loops to calculate WS, TW and P for independent Variables
@@ -72,44 +70,34 @@ for it_LD=1:LDl
             % Compare We_est to Wto_est - Wfix - Wfuel
             Wto=fsolve(@(wt) wt*(1-Wf_Wto)-Wfix-Wept(wt),30e3,optimoptions('fsolve','Display','off'));    % Estimate W_TO
             
-            %             Min loading for to meet Range requirement
+            % Min loading for to meet Range requirement
             WS_r=fsolve(@(x) Wf_Wto*Wto*1.07/sfc*(x/(p_c))^0.5*(AR*e)^(1/4)/Cd0^(3/4)*(1/Wto)-R,10,optimoptions('fsolve','Display','off'));
             % Limit on W/S for Landing Distance within required distance, 3 degree
             % angle of approach
             WS_l=fsolve(@(ws) s_T-(79.4*ws/(1*Cl_max)+50/tand(3)),...
                 50,optimoptions('fsolve','display','off'));
-            WSdom=linspace(WS_r,WS_l,WSl);
-            
-            % Takeoff Distance
-            % W/S and T/W to takeoff at required distance
-            s_tm=zeros(1,WSl);
-            for a=1:WSl
-                s_tm(a)=fsolve(@(tw) ...
-                    s_T-(20.9*(WSdom(a)/(Cl_max*tw))+69.6*sqrt(WSdom(a)/(Cl_max*tw))*tw),...
-                    0.5,optimoptions('fsolve','display','off'));
-            end
             
             % Drag for Power
             D=@(ws,v,p) Cd0*0.5*p*v.^2.*(Wto./ws)+K*ws*Wto./(0.5*p*v.^2);
             
             % Calculations for Power
             % Straight, Level Flight
-            Preq_cruise=D(WSdom,V_c,p_c)*V_c/(p_c/p_sl);
+            Preq_cruise=@(ws) D(ws,V_c,p_c)*V_c/(p_c/p_sl);
             % Service Ceiling
-            Preq_serv=(D(WSdom,V_md(WSdom,p_sc),p_sc).*V_md(WSdom,p_sc)/(p_sc/p_sl))+...
+            Preq_serv=@(ws) (D(ws,V_md(ws,p_sc),p_sc).*V_md(ws,p_sc)/(p_sc/p_sl))+...
                 Wto*(100/60);
             % Cruise Ceiling
-            Preq_cc=D(WSdom,V_md(WSdom,p_c),p_sc).*V_md(WSdom,p_c)/(p_c/p_sl)+...
+            Preq_cc=@(ws) D(ws,V_md(ws,p_c),p_sc).*V_md(ws,p_c)/(p_c/p_sl)+...
                 Wto*(300/60);
             % 2.5g Maneuer at Sea Level
-            Preq_man=D(WSdom,V_c,p_sl)*V_c/(p_sl/p_sl);
+            Preq_man=@(ws) D(ws,V_c,p_sl)*V_c/(p_sl/p_sl);
+            mat=[{Preq_cruise};{Preq_cc};{Preq_man};{Preq_serv}]
             
-            % Find Max of any given operation at any point:
-            [c,~]=max([Preq_cc;Preq_cruise;Preq_man;Preq_serv]);
-            % Find the index of the minumum of 'c'
-            [c2,in]=min(c);
-            % Optimum is at WSdom(in),C2
-            optm=[WSdom(in),c2/550];    % in lbs/ft^2 and hp
+            [wsx,py]=fminbnd(@(ws) max([mat{1}(ws),mat{2}(ws),mat{3}(ws),mat{4}(ws)]),WS_r,WS_l)
+            if numel(wsx>1)
+                wsx=wsx(1);
+            end
+            optm=[wsx,py/550];    % in lbs/ft^2 and hp
             
             optimzd(it_R,it_V,it_LD,:)=[optm,Wto]; % Save Optimized Data
         end
@@ -207,7 +195,7 @@ for a=1:LDl
                 text(xint(1,b,a),...
                     optimzd(1,b,a,2),...
                     sprintf('%0.0f mph',Vd(b)/1.46666667),...
-                    'Verticalalignment','top','horizontalAlignment','center')
+                    'Verticalalignment','top','horizontalAlignment','left')
             else
                 continue
             end
@@ -215,7 +203,7 @@ for a=1:LDl
             text(xint(1,b,a),...
                 optimzd(1,b,a,2),...
                 sprintf('%0.0f mph',Vd(b)/1.46666667),...
-                'Verticalalignment','top','horizontalAlignment','center')
+                'Verticalalignment','top','horizontalAlignment','left')
         end
     end
     
@@ -321,14 +309,11 @@ bsdc.Enable='on';
         V_c=Vd(V_cin)/1.46666;
         LD=LDd(floor(pos(1)/(length(lbs)+1))+1);
         WS_r=[]; WS_s=[]; WS_l=[]; TW_c=[]; TW_cruise=[]; TW_serv=[]; TW_cc=[];
-        TW_man=[]; ym=[]; xm=[]; WSD=[];
+        TW_man=[]; ym=[]; xm=[]; WSD=[]; s_tm=[];
         
-        keyboard
         ymabs=abse.YLim;
-        try
             cnstr_n
             power_cnstr_n
-        end
     end
 
 end
