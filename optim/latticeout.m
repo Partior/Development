@@ -35,8 +35,8 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=8;  Rd=linspace(800,1500,Rl)*1.151;  %miles
-Vl=5;  Vd=linspace(250,290,Vl)*1.466667;  %ft/sec
+Rl=5;  Rd=linspace(1000,1200,Rl)*1.151;  %miles
+Vl=7;  Vd=linspace(260,290,Vl)*1.466667;  %ft/sec
 LDl=3;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
 WTOl=4; % Number of isolines for the WTO contours
 
@@ -307,14 +307,20 @@ bsdc.Enable='on';
         % Used to output custom datatip information, as well as update the detail
         % graphs that show specic information about the selected data.
         pos = get(evntobj,'Position');
+        ldind=floor(pos(1)/(length(lbs)+1))+1;
+        ldout=LDd(ldind);
+        [ri,ci]=find(optimzd(:,:,ldind,2)==pos(2));
+        WSout=optimzd(ri,ci,ldind,1);
+        Wto_out=optimzd(ri,ci,ldind,3);
         posout=[interp1(1:length(lbs),lbs,pos(1)-floor(pos(1)/(length(lbs)+1))*(length(lbs)+1)-1),...
             pos(2)];
-        output_txt = {['LDmax: ',num2str(LDd(floor(pos(1)/(length(lbs)+1))+1),3)],...
-            ['WS: ',num2str(posout(1),4)],...
-            ['P: ',num2str(posout(2),4)]};
+        output_txt = {['LDmax: ',num2str(ldout,3)],...
+            ['WS: ',num2str(WSout,4)],...
+            ['P: ',num2str(pos(2),4)],...
+            ['W_{takeoff}:  ',num2str(Wto_out)]};
 
         % Begin graphics
-        [Rin,V_cin]=find(optimzd(:,:,floor(pos(1)/(length(lbs)+1))+1,2)==posout(2));
+        [Rin,V_cin]=find(optimzd(:,:,floor(pos(1)/(length(lbs)+1))+1,2)==pos(2));
         R=Rd(Rin);
         V_c=Vd(V_cin)/1.46666;
         LD=LDd(floor(pos(1)/(length(lbs)+1))+1);
