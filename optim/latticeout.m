@@ -16,7 +16,7 @@ close all; clear; clc
 Wfix=(19+2+1)*225;  % lbm
 % Initial Performance Constants
 sfc=0.5;    % specifc fuel consumption, lb_fuel per hour / lb_thrust
-E=0.25;     % i.e. 25 min loiter time
+E=0;     % i.e. 25 min loiter time
 AR=10;      % Aspect Ratio
 Cd0=0.022;  % 
 e=0.8;      % Oswald Efficency
@@ -25,18 +25,19 @@ p_c=1.267e-3;  % slugs per ft^3
 % Takeoff Distance
 s_T=3000;   % ft
 % WS Restraint Constants
-Cl_max=1.8;  % Max C_L for takeoff
-V_stall=65*1.688; % Stall speed in ft/s, Sea Level, max 65 knots
+Cl_max=1.7;  % Max C_L for takeoff
+V_stall=75*1.688; % Stall speed in ft/s, Sea Level, max 65 knots
 % Convience Conditions
 K=1/(e*pi*AR);
 V_md=@(ws,p) sqrt(2*ws/(p*sqrt(Cd0/K)));
+V_mp=@(ws,p) sqrt(2*ws/p)*(K/3*Cd0)^(1/4);
 p_sl=2.3769e-3; %slugs/ft^3, sea level density
 % Service Ceiling
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=5;  Rd=linspace(1000,1200,Rl)*1.151;  %miles
-Vl=7;  Vd=linspace(260,290,Vl)*1.466667;  %ft/sec
+Rl=5;  Rd=linspace(800,1500,Rl)*1.151;  %miles
+Vl=7;  Vd=linspace(200,350,Vl)*1.466667;  %ft/sec
 LDl=3;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
 WTOl=4; % Number of isolines for the WTO contours
 
@@ -78,16 +79,16 @@ for it_LD=1:LDl
                 50,optimoptions('fsolve','display','off'));
             
             % Drag for Power
-            D=@(ws,v,p) Cd0*0.5*p*v.^2.*(Wto./ws)+K*ws*Wto./(0.5*p*v.^2);
+            D=@(ws,v,p) Cd0*0.5*p*v.^2.*ws+K*ws/(0.5*p*v.^2);
             
             % Calculations for Power
             % Straight, Level Flight
             Preq_cruise=@(ws) D(ws,V_c,p_c)*V_c/(p_c/p_sl);
             % Service Ceiling
-            Preq_serv=@(ws) (D(ws,V_md(ws,p_sc),p_sc).*V_md(ws,p_sc)/(p_sc/p_sl))+...
+            Preq_serv=@(ws) (D(ws,V_mp(ws,p_sc),p_sc).*V_mp(ws,p_sc)/(p_sc/p_sl))+...
                 Wto*(100/60);
             % Cruise Ceiling
-            Preq_cc=@(ws) D(ws,V_md(ws,p_c),p_sc).*V_md(ws,p_c)/(p_c/p_sl)+...
+            Preq_cc=@(ws) D(ws,V_mp(ws,p_c),p_sc).*V_mp(ws,p_c)/(p_c/p_sl)+...
                 Wto*(300/60);
             % 2.5g Maneuer at Sea Level
             Preq_man=@(ws) D(ws,V_c,p_sl)*V_c/(p_sl/p_sl);

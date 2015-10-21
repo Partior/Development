@@ -6,15 +6,15 @@ cnstr
 
 %% Cruise Conditions
 % Equilvant Power to various altitudes 
-D=@(ws,v,p) Cd0*0.5*p*v.^2.*(Wto./ws)+K*ws*Wto./(0.5*p*v.^2);
+D=@(ws,v,p) Cd0*0.5*p*v.^2.*(ws)+K*ws./(0.5*p*v.^2);
 
 % Straight, Level Flight
 Preq_cruise=D(WSdom,V_c,p_c)*V_c/(p_c/p_sl);
 % Service Ceiling
-Preq_serv=(D(WSdom,V_md(WSdom,p_sc),p_sc).*V_md(WSdom,p_sc)/(p_sc/p_sl))+...
+Preq_serv=(D(WSdom,V_mp(WSdom,p_sc),p_sc).*V_mp(WSdom,p_sc)/(p_sc/p_sl))+...
     Wto*(100/60);
 % Cruise Ceiling
-Preq_cc=D(WSdom,V_md(WSdom,p_c),p_sc).*V_md(WSdom,p_c)/(p_c/p_sl)+...
+Preq_cc=D(WSdom,V_mp(WSdom,p_c),p_sc).*V_mp(WSdom,p_c)/(p_c/p_sl)+...
     Wto*(300/60);
 % 2.5g Maneuer at Sea Level
 Preq_man=D(WSdom,V_c,p_sl)*V_c/(p_sl/p_sl);

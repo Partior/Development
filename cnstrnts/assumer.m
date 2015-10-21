@@ -7,7 +7,7 @@ R=800*1.151;  % miles, 800 nautical miles
 Wfix=(19+2+1)*225;  % lbm
 
 % Cruise Speed
-V_c=250;  % mph
+V_c=265;  % mph
 
 % Service Ceiling
 %     100 ft/min Rate of Climb
@@ -28,6 +28,7 @@ e=0.8;      % Oswald Efficency
 % Convience Constants
 K=1/(e*pi*AR);
 V_md=@(ws,p) sqrt(2*ws/(p*sqrt(Cd0/K)));
+V_mp=@(ws,p) sqrt(2*ws/p)*(K/3*Cd0)^(1/4);
 p_sl=2.3769e-3; %slugs/ft^3, sea level density
 
 % Conditional Constants
