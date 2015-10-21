@@ -25,7 +25,7 @@ LD=18;
 % Lift over drag at cruise conditions
 
 % Power
-P=1550; % hp, provided by all engines
+P=1000; % hp, provided by all engines
 
 % Takeoff conditions
 CLg=1.7;

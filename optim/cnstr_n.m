@@ -74,10 +74,10 @@ TW_c=@(ws,p,V,n,hdot)...
 TW_cruise=TW_c(WSD,p_c,V_c,1,0);
 
 % For Service Ceiling, steady, constant speed, 100 ft per min
-TW_serv=TW_c(WSD,p_sc,V_md(WSD,p_sc),1,100/60);
+TW_serv=TW_c(WSD,p_sc,V_mp(WSD,p_sc),1,100/60);
 
 % For Cruise Ceiling, steady, constant speed, 300 ft/min
-TW_cc=TW_c(WSD,p_c,V_md(WSD,p_c),1,300/60);
+TW_cc=TW_c(WSD,p_c,V_mp(WSD,p_c),1,300/60);
 
 % Maneuver at Sea Level, cruise conditions, 2.5 g's
 TW_man=TW_c(WSD,p_sl,V_c,2.5,0);

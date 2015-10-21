@@ -15,7 +15,7 @@ close all; clear; clc
 %     19 Passengers w/ Cargo @ 225 lbs each, plus crew and attendent
 Wfix=(19+2+1)*225;  % lbm
 % Initial Performance Constants
-sfc=0.5;    % specifc fuel consumption, lb_fuel per hour / lb_thrust
+sfc=0.55;    % specifc fuel consumption, lb_fuel per hour / lb_thrust
 E=0;     % i.e. 25 min loiter time
 AR=10;      % Aspect Ratio
 Cd0=0.022;  % 
@@ -26,7 +26,7 @@ p_c=1.267e-3;  % slugs per ft^3
 s_T=3000;   % ft
 % WS Restraint Constants
 Cl_max=1.7;  % Max C_L for takeoff
-V_stall=75*1.688; % Stall speed in ft/s, Sea Level, max 65 knots
+V_stall=75*1.688; % Stall speed in ft/s, Sea Level, max 75 knots
 % Convience Conditions
 K=1/(e*pi*AR);
 V_md=@(ws,p) sqrt(2*ws/(p*sqrt(Cd0/K)));
@@ -36,9 +36,9 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=5;  Rd=linspace(800,1500,Rl)*1.151;  %miles
-Vl=7;  Vd=linspace(200,350,Vl)*1.466667;  %ft/sec
-LDl=3;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
+Rl=5;  Rd=linspace(800,1200,Rl)*1.151;  %miles
+Vl=6;  Vd=linspace(250,300,Vl)*1.466667;  %ft/sec
+LDl=2;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
 WTOl=4; % Number of isolines for the WTO contours
 
 %% Numerical Calculations
@@ -54,7 +54,7 @@ for it_LD=1:LDl
     LD=LDd(it_LD);
     for it_R=1:Rl
         R=Rd(it_R);
-        parfor it_V=1:Vl
+        for it_V=1:Vl
             V_c=Vd(it_V);
             
             % Fuel Weight Fraction
@@ -71,6 +71,8 @@ for it_LD=1:LDl
             % Compare We_est to Wto_est - Wfix - Wfuel
             Wto=fsolve(@(wt) wt*(1-Wf_Wto)-Wfix-Wept(wt),30e3,optimoptions('fsolve','Display','off'));    % Estimate W_TO
             
+            % Wing-loading min to meet C_L_max and V_stall assumptions
+            WS_s=0.5*p_c*V_stall^2*Cl_max;
             % Min loading for to meet Range requirement
             WS_r=fsolve(@(x) Wf_Wto*Wto*1.07/sfc*(x/(p_c))^0.5*(AR*e)^(1/4)/Cd0^(3/4)*(1/Wto)-R,10,optimoptions('fsolve','Display','off'));
             % Limit on W/S for Landing Distance within required distance, 3 degree
@@ -79,29 +81,36 @@ for it_LD=1:LDl
                 50,optimoptions('fsolve','display','off'));
             
             % Drag for Power
-            D=@(ws,v,p) Cd0*0.5*p*v.^2.*ws+K*ws/(0.5*p*v.^2);
-            
+            D=@(ws,V,p,dhdt,n) (Wto*dhdt)/V + (Cd0*V^2*Wto*p)/(2*ws) + (2*K*Wto*n^2*ws)/(V^2*p);
+
             % Calculations for Power
             % Straight, Level Flight
-            Preq_cruise=@(ws) D(ws,V_c,p_c)*V_c/(p_c/p_sl);
+            Preq_cruise=@(ws) D(ws,V_c,p_c,0,1)*V_c/(p_c/p_sl);
             % Service Ceiling
-            Preq_serv=@(ws) (D(ws,V_mp(ws,p_sc),p_sc).*V_mp(ws,p_sc)/(p_sc/p_sl))+...
-                Wto*(100/60);
+            Preq_serv=@(ws) (D(ws,V_mp(ws,p_sc),p_sc,100/60,1).*V_mp(ws,p_sc)/(p_sc/p_sl));
             % Cruise Ceiling
-            Preq_cc=@(ws) D(ws,V_mp(ws,p_c),p_sc).*V_mp(ws,p_c)/(p_c/p_sl)+...
-                Wto*(300/60);
+            Preq_cc=@(ws) D(ws,V_mp(ws,p_c),p_c,300/60,1).*V_mp(ws,p_c)/(p_c/p_sl);
             % 2.5g Maneuer at Sea Level
-            Preq_man=@(ws) D(ws,V_c,p_sl)*V_c/(p_sl/p_sl);
+            Preq_man=@(ws) D(ws,V_c,p_sl,0,2.5)*V_c/(p_sl/p_sl);
+ 
             % Takeoff Power, from Takeoff T/W
-            s_tmop=@(ws) fsolve(@(tw) ...
-                s_T-(20.9*(ws/(Cl_max*tw))+69.6*sqrt(ws/(Cl_max*tw))*tw),...
-                0.5,optimoptions('fsolve','display','off'));
-            Preq_TOop=@(ws) (s_tmop(ws)*Wto)*(V_stall*1.3);
+            VTO=V_stall*1.2;
+            n=6; d=5;
+            T0=@(p) 0.25*(p./n.*d).^(2/3);
+            T0t=@(p) T0(p).*n;
+            a=@(p) ((p/VTO)-T0t(p))/(VTO)^2;
+            A=@(p) 32.2*(T0t(p)/15000-0.04);
+            mu=0.04; % Firm Turf
+            Cdg=0.0527; %Ground roll drag
+            CLg=1.7; % max ground lift
+            B=@(p,ws) 32.2/Wto*(0.5*p_sl*(Wto/ws)*(Cdg-mu*CLg)+a(p));
+            s=@(p,ws) 1./(2*B(p,ws)).*log(A(p)./(A(p)-B(p,ws)*(VTO)^2));
+            Preq_TOop=@(ws) fsolve(@(p) s(p,ws)-2000,600*550,optimoptions('fsolve','Display','off'));
             
-            mat=[{Preq_cruise};{Preq_cc};{Preq_man};{Preq_serv};{Preq_TOop}]
+            mat=[{Preq_cruise};{Preq_cc};{Preq_man};{Preq_serv};{Preq_TOop}];
             [wsx,py]=fminbnd(@(ws) ...
                 max([mat{1}(ws),mat{2}(ws),mat{3}(ws),mat{4}(ws),mat{5}(ws)]),...
-                WS_r,WS_l)
+                max(WS_r,WS_s),WS_l);
             if numel(wsx>1)
                 wsx=wsx(1);
             end
@@ -327,9 +336,10 @@ bsdc.Enable='on';
         LD=LDd(floor(pos(1)/(length(lbs)+1))+1);
         WS_r=[]; WS_s=[]; WS_l=[]; TW_c=[]; TW_cruise=[]; TW_serv=[]; TW_cc=[];
         TW_man=[]; ym=[]; xm=[]; WSD=[]; s_tm=[];
-        Preq_TO=[];
-        
+        Preq_TO=[]; Pr=[];
+
         ymabs=abse.YLim;
+        keyboard
         cnstr_n
         power_cnstr_n
     end
