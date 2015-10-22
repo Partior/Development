@@ -32,6 +32,20 @@ title('Rate of Climb by Altitude')
 xlabel('Altitude, 1000 ft')
 ylabel('dh/dt, ft/min')
 
+%% V-N Diagram
+subplot(2,2,3)
+[vx,ny]=fplot(@(V) vn(V),vdom); %105=stall speed (ft/s)
+[vx2,gy]=fplot(@(V) 1/(2*WTO(19))*(2*pi)*p_sl*S*(1.466*15)*V,vdom); %15 mph gust @ SL
+plot(vx/1.466,ny)
+hold on;
+plot(vx2/1.466,gy+1);
+legend({'Sea Level','Cruise','Gust 15 mph, sl'},'Location','southeast')
+title('V-n at 19 pax')
+xlabel('Velocity, mph')
+ylabel('n loading, g''s')
+ylim([0 3])
+
+
 %% Power Avalilble
 subplot(2,2,4)
 vdom=[0 350]*1.466;
@@ -46,17 +60,4 @@ legend({'SL','10e3ft','20e3ft','28e3ft'})
 grid on
 xlabel('Velocity, mph')
 ylabel('n loading, g''s')
-
-%% V-N Diagram
-subplot(2,2,3)
-[vx,ny]=fplot(@(V) vn(V),vdom); %105=stall speed (ft/s)
-[vx2,gy]=fplot(@(V) 1/(2*WTO(19))*(2*pi)*p_sl*S*(1.466*15)*V,vdom); %15 mph gust @ SL
-plot(vx/1.466,ny)
-hold on;
-plot(vx2/1.466,gy+1);
-legend({'Sea Level','Cruise','Gust 15 mph, sl'},'Location','southeast')
-title('V-n at 19 pax')
-xlabel('Velocity, mph')
-ylabel('n loading, g''s')
-ylim([0 3])
 
