@@ -35,10 +35,10 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=5;  Rd=linspace(1100,1300,Rl)*1.151;  %miles
-Vl=5;  Vd=linspace(260,280,Vl)*1.466667;  %ft/sec
-LDl=4;  LDd=linspace(20,23,LDl);  % Keep resolution of LD <5
-WTOl=5; % Number of isolines for the WTO contours
+Rl=5;  Rd=linspace(800,1200,Rl)*1.151;  %miles
+Vl=5;  Vd=linspace(250,280,Vl)*1.466667;  %ft/sec
+LDl=3;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
+WTOl=4; % Number of isolines for the WTO contours
 
 %% Numerical Calculations
 % For loops to calculate WS, TW and P for independent Variables
