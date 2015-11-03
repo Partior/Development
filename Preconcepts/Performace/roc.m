@@ -1,7 +1,8 @@
 function [dhdt]=roc(h)
 
 parm
-ph=p_sl*exp(-3.8329e-05*h);
+ph=p_sl*exp(-3.24e-05*h);
+Pa=P*550*sqrt(ph/p_sl);
 WTO=We+Wf+225*(3+19);
 K=1/(e*pi*AR);
 Cd0=0.022; %guess
@@ -10,4 +11,4 @@ q=0.5*ph*V^2;
 dvdt=0; % no acceleration
 n=1; % no stressing
 g=32.2;
-dhdt=-V*((K*WTO*n^2)/(S*q)-(P*550)/V/WTO+dvdt/g+(Cd0*S*q)/WTO);
+dhdt=-V*((K*WTO*n^2)/(S*q)-Pa/V/WTO+dvdt/g+(Cd0*S*q)/WTO);

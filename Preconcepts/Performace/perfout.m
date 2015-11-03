@@ -1,6 +1,6 @@
 %% Performance Out
 % Take Parametrics and output Performance based graphs
-clear; clc; figure(1); clf
+clear; clc; figure(4); clf
 parm
 
 %% Performance by PAx
@@ -21,12 +21,12 @@ hold on
 ax=plotyy(x1,y1,x2,y2);
 title('Performance by Pax')
 ax(1).YLabel.String='Ground Roll Distance, ft';
-ax(2).YLabel.String='Range, Miles, ft';
+ax(2).YLabel.String='Range, Miles';
 xlabel('Passengers')
 
 %% Rate of Climb
 subplot(2,2,2)
-[hx,ry]=fplot(@(h) roc(h),[0 28e3]);
+[hx,ry]=fplot(@(h) roc(h),[0 30e3]);
 plot(hx/1e3,ry*60)
 title('Rate of Climb by Altitude')
 xlabel('Altitude, 1000 ft')
@@ -34,30 +34,40 @@ ylabel('dh/dt, ft/min')
 
 %% V-N Diagram
 subplot(2,2,3)
-[vx,ny]=fplot(@(V) vn(V),vdom); %105=stall speed (ft/s)
-[vx2,gy]=fplot(@(V) 1/(2*WTO(19))*(2*pi)*p_sl*S*(1.466*15)*V,vdom); %15 mph gust @ SL
-plot(vx/1.466,ny)
-hold on;
-plot(vx2/1.466,gy+1);
-legend({'Sea Level','Cruise','Gust 15 mph, sl'},'Location','southeast')
-title('V-n at 19 pax')
-xlabel('Velocity, mph')
-ylabel('n loading, g''s')
-ylim([0 3])
+hold on
+vdom=linspace(50,300)*1.466;
+% for h=[0 20e3];
+% [vx,ny]=fplot(@(V) vn(V,h),vdom); %105=stall speed (ft/s)
+%  plot(vx/1.466,ny)
+% end
+% [vx2,gy]=fplot(@(V) 1/(2*WTO(19))*(2*pi)*p_sl*S*(1.466*15)*V,vdom); %15 mph gust @ S
+% hold on;
+% plot(vx2/1.466,gy+1);
+% legend({'Sea Level','Cruise','Gust 15 mph, sl'},'Location','southeast')
+% title('V-n at 19 pax')
+% xlabel('Velocity, mph')
+% ylabel('n loading, g''s')
+% ylim([0 3])
 
 
 %% Power Avalilble
-subplot(2,2,4)
-vdom=[0 350]*1.466;
+subplot(2,2,3:4)
 hold on
-for h=[0,10e3,20e3,28e3]
-    [x3,y3]=fplot(@(v) expow(v,h),vdom);
-    plot(x3/1.466,y3)
+hdom=[0,10e3,20e3,28e3];
+plt=[];
+for h=1:length(hdom)
+    y3=expow(vdom,hdom(h));
+    ny=vn(vdom,hdom(h)); %105=stall speed (ft/s)
+    plot(vdom/1.466,y3,'-.')
+    plot(vdom/1.466,ny,'-.')
+    plt(h)=plot(vdom/1.4666,min(y3,ny));
 end
-plot(vdom/1.466,[2.5 2.5],'k:') %2.5g limit
+plot([vdom(1),vdom(end)]/1.466,[2.5,1;2.5,1],'k:') %2.5g limit
 title('Excess Power at Alititudes')
-legend({'SL','10e3ft','20e3ft','28e3ft'})
-grid on
+legend(plt,{'SL','10e3ft','20e3ft','28e3ft'})
+% grid on
+ylim([0 3])
+xlim([50 300])
 xlabel('Velocity, mph')
 ylabel('n loading, g''s')
 

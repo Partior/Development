@@ -18,7 +18,7 @@ WS=35; % wingloading
 A=32.2*(T0t/Wto-rest);
 B=32.2/Wto*(0.5*p_sl*(Wto/WS)*(Cdg-rest*CLg)+a);
 s=1./(2*B).*log(A./(A-B*(VTO)^2));
-mesh(d,n,s)
+mesh(d,n,s,'FaceColor','none')
 xlabel('Blade Diameter, ft')
 ylabel('Number of Engines')
 zlabel('Takeoff Ground Roll, ft')
@@ -35,3 +35,9 @@ xlabel('rpm')
 ylabel('Max Diameter, ft')
 title('Max Diameter for M=0.85')
 legend({'Static','V_{TO}'})
+
+figure(3); clf
+mesh(d,n,T0t,'FaceColor','none')
+xlabel('Blade Diameter, ft')
+ylabel('Number of Engines')
+zlabel('Total Static Thrust')
