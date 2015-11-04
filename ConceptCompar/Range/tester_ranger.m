@@ -63,7 +63,24 @@ V=r(:,2)/1.4666;
 W=r(:,3);
 
 subplot(2,2,1); hold on; plot(t,R)
-legend({'Thrust','AoA','Vel'})
+subplot(2,2,2); hold on; plot(t,V)
+subplot(2,2,3); hold on; plot(t(2:end),diff(W)./diff(t*60))
+subplot(2,2,4); hold on; plot(t,W/1e3)
+
+%% ROUND 4
+[t,r]=ode45(@DR4,[0 800*60],...
+    [0,V0,W0(pdom(itp)),pdom(itp),p(hdom(ith))],...
+    odeset('RelTol',1e-2));
+t=t(diff(r(:,1))~=0);
+r=r((diff(r(:,1))~=0),:);
+
+t=t/60;
+R=r(:,1)/5280;
+V=r(:,2)/1.4666;
+W=r(:,3);
+
+subplot(2,2,1); hold on; plot(t,R)
+legend({'Thrust','AoA','Vel','Power'})
 subplot(2,2,2); hold on; plot(t,V)
 subplot(2,2,3); hold on; plot(t(2:end),diff(W)./diff(t*60))
 subplot(2,2,4); hold on; plot(t,W/1e3)
