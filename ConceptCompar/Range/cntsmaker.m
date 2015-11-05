@@ -6,8 +6,8 @@ if exist(flnm)
 end
 
 Wfix=@(px) 225*(3+px);
-We=8700;
-Wf=2500;
+We=9078.7;
+Wf=2654.7;
 W0=@(pw) Wfix(pw)+We+Wf;
 SFC=0.4;
 p=@(h) 2.3769e-3*exp(-3.2e-5*h);

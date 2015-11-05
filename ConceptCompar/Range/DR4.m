@@ -9,7 +9,7 @@ Wt=val(3);
 Payt=val(4);
 p=val(5);
 
-if Wt<W0(Payt)-Wf*0.8
+if Wt<W0(Payt)-Wf*0.5262
     return
 end
     
