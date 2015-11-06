@@ -22,8 +22,7 @@ R=r(:,1)/5280;
 V=r(:,2)/1.4666;
 W=r(:,3);
 
-nm=(sprintf('h=%0.f; pax=%.0f',hdom(ith),pdom(itp)));
-figure('Name',nm); clf
+figure(1); clf
 subplot(2,2,1); plot(t,R)
 xlabel('Time'); ylabel('Range')
 subplot(2,2,2); plot(t,V)
@@ -80,7 +79,7 @@ V=r(:,2)/1.4666;
 W=r(:,3);
 
 subplot(2,2,1); hold on; plot(t,R)
-legend({'Thrust','AoA','Vel','Power'})
+legend({'Thrust','AoA','Vel','Power'},'Location','southeast')
 subplot(2,2,2); hold on; plot(t,V)
 subplot(2,2,3); hold on; plot(t(2:end),diff(W)./diff(t*60))
 subplot(2,2,4); hold on; plot(t,W/1e3)
