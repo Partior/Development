@@ -1,6 +1,6 @@
 function dr=DR3(t,val)
 
-load('constants.mat')
+load('../constants.mat')
 
 dr=zeros(size(val));
 Rt=val(1);

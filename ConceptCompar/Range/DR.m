@@ -1,5 +1,5 @@
 function dr=DR(~,val)
-load('constants.mat')
+load('../constants.mat')
 dr=zeros(size(val));
 Rt=val(1);
 Vt=val(2);

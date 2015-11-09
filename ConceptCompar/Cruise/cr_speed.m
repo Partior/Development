@@ -9,13 +9,13 @@ figure(1); clf
 hold on
 xlabel('Altitude, 1000 ft')
 ylabel('Velocity, mph')
-title('Travel Speeds, -0 pax, --Max pax')
+title('Travel Speeds, --0 pax, -Max pax')
 
-for pl=[0,19]
+for pl=[19,0]
     if pl==0
-        ln='-';
-    else
         ln='--';
+    else
+        ln='-';
     end
     fplot(@(h) mxsp(P,h*1e3,pl)/1.4666,[18,28],['k',ln])    % max
     fplot(@(h) mnsp(P,h*1e3,pl)/1.4666,[18,28],['r',ln])    % min
@@ -31,13 +31,13 @@ figure(2); clf
 hold on
 xlabel('Velocity, mph')
 ylabel('Miles per Pound of Fuel')
-title('Fuel Efficiency, -0 pax, --Max pax')
+title('Fuel Efficiency, --0 pax, -Max pax')
 
-for pl=[0,19]
+for pl=[19,0]
     if pl==0
-        ln='-';
-    else
         ln='--';
+    else
+        ln='-';
     end
     for h=[18:4:28]
         [vx,gy]=fplot(@(V) V/(SFC/3600*((Cd0*S*V^2*p(h*1e3))/2 + (2*K*W0(pl)^2)/(S*V^2*p(h*1e3)))),[50 400]*1.4666);    % max min

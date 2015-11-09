@@ -1,6 +1,6 @@
 clear; clc
 
-load('constants.mat')
+load('../constants.mat')
 
 wb=waitbar(0,'Waiting, Constant Thrust');
 optm=zeros(hc,pyc,6);
@@ -20,7 +20,7 @@ for ith=1:hc
         cl=(W0(pdom(itp))-Wf)/(0.5*p(hdom(ith))*Vend^2*S);
         Cd=0.02+K*cl^2;
         T=0.5*p(hdom(ith))*Vend^2*S*Cd
-        P=Vend*T;
+        P=Vend*T*sqrt(p(0)/p(hdom(ith)));
         opmt(ith,itp,:)=[t(end),r(end,:),P]
     end 
      waitbar(ith/hc,wb)

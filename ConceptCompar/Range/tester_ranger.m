@@ -1,6 +1,6 @@
 %% TESTER
 
-load('constants.mat')
+load('../constants.mat')
 
 itp=pyc;
 ith=floor(hc/2);
@@ -24,13 +24,13 @@ W=r(:,3);
 
 figure(1); clf
 subplot(2,2,1); plot(t,R)
-xlabel('Time'); ylabel('Range')
+xlabel('Time, min'); ylabel('Range, Miles')
 subplot(2,2,2); plot(t,V)
-xlabel('Time'); ylabel('Vel')
+xlabel('Time, min'); ylabel('Vel, mph')
 subplot(2,2,3); plot(t(2:end),diff(W)./diff(t*60))
-xlabel('Time'); ylabel('\delta W')
+xlabel('Time, min'); ylabel('\delta W')
 subplot(2,2,4); plot(t,W/1e3)
-xlabel('Time'); ylabel('W, 1e3')
+xlabel('Time, min'); ylabel('W, 1e3 lbs')
 
 %% ROUND 2
 [t,r]=ode45(@DR2,[0 800*60],...
