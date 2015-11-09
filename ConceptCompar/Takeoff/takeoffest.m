@@ -120,6 +120,7 @@ plot(St,Vt/1.4666,'b')
 xlabel('Dist, ft'); ylabel('Vel, mph')
 grid on
 
+save('outdat.mat','t','Wt','Vt','St','Sbr_disp','Sa')
 
 
 

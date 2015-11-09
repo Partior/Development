@@ -2,7 +2,7 @@
 
 clear; clc
 figure(1); clf
-cntsmaker
+run('../cntsmaker.m')
 
 constant_alpha % usesDR2
 % constant_thrust% usesDR
