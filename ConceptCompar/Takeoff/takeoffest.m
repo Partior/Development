@@ -14,7 +14,6 @@ vdom=linspace(0,a*0.5,300);
 Vstall=sqrt(2*W/(S*2.3e-3*(Clg+0.1)));
 
 n=6; %number of engines
-Pa=860*550;
 T=proppower(n,Pa);
 
 %% Ground Run

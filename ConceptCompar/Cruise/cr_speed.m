@@ -2,7 +2,6 @@
 
 
 load('../constants.mat')
-P=1000*550;
 
 % Speed Versus Altitude and loading
 figure(1); clf
@@ -17,8 +16,8 @@ for pl=[19,0]
     else
         ln='-';
     end
-    fplot(@(h) mxsp(P,h*1e3,pl)/1.4666,[18,28],['k',ln])    % max
-    fplot(@(h) mnsp(P,h*1e3,pl)/1.4666,[18,28],['r',ln])    % min
+    fplot(@(h) mxsp(Pa,h*1e3,pl)/1.4666,[18,28],['k',ln])    % max
+    fplot(@(h) mnsp(Pa,h*1e3,pl)/1.4666,[18,28],['r',ln])    % min
     fplot(@(h) (K*W0(pl)^2/(Cd0*p(h*1e3)^2*S^2))^(1/4)/1.4666,[18,28],['c',ln]) %min drag
     fplot(@(h) (K*W0(pl)^2/(3/4*Cd0*p(h*1e3)^2*S^2))^(1/4)/1.4666,[18,28],['b',ln]) %min power
     fplot(@(h) ((12*K*W0(pl)^2)/(Cd0*S^2*p(h*1e3)^2))^(1/4)/1.4666,[18,28],['g',ln])    %max eff
