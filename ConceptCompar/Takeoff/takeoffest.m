@@ -1,39 +1,18 @@
-function takeoffest
+clear; clc
 
-W=16500;
-SFC=0.45/3600;
-mu=0.04;
-Cdg=0.05;
-Clg=1.6;
-S=425;
-p=2.3e-3;
+load('../constants.mat')
+load('takeoff_const.mat')
+Pa=Pa*0.9; % 90% power for takeoff
 
-a=1125.33;
-vdom=linspace(0,a*0.5,300);
-
-Vstall=sqrt(2*W/(S*2.3e-3*(Clg+0.1)));
+RTOL=1e-4;
 
 n=6; %number of engines
 T=proppower(n,Pa);
 
 %% Ground Run
-    function dval=groundrun(t,val)
-        dval=zeros(size(val));
-        if val(2)>Vstall*1.15   %reached takeoff speed
-            return
-        end
-        W=val(1);
-        V=val(2);
-        Ss=val(3);
-        Tt=T(V)*nm;
-        dval(1)=-Tt*SFC; % dW
-        dval(2)=32.2*(Tt/W-mu)-32.2/W*1/2*p*S*V^2*(Cdg-mu*Clg);
-        dval(3)=V;
-    end
-
-opts=odeset('RelTol',1e-5);
 nm=1; % Running with full power
-[t,r]=ode45(@groundrun,[0 360],[W,0.1,0],opts);
+[t,r]=ode45(@groundrun,[0 360],[W0(19),0.1,0],...
+    odeset('RelTol',RTOL),nm,T);
 
 t=t(diff(r(:,1))~=0);
 r=r(diff(r(:,1))~=0,:);
@@ -44,39 +23,49 @@ St=r(:,3);
 
 %% Stopping Distance
 % as Lift determines normal forces
-muTire=0.72;
-    function dval=sbrake(t,val)
-        dval=zeros(size(val));
-        Vs=val(1);
-        Ss=val(2);
-        Ws=val(3);
-        if Vs<=0
-            return
-        end
-        dval(2)=Vs;
-        dval(3)=0;
-        L=0.5*2.3e-3*Vs^2*S*Clg;
-        abrake=32.2*muTire*(1-L/Ws);
-        dval(1)=-abrake;
-    end
+poolobj = gcp('nocreate'); % If no pool, do not create new one.
+if isempty(poolobj)
+    parpool('local')
+end
 
-Vlof_basic=sqrt(W/(0.5*2.3e-3*S*Clg));
-vsdom=Vt(Vt<Vlof_basic);
-for itr=1:length(vsdom)
-    [tSss,Sss]=ode45(@sbrake,[0 150],[vsdom(itr),0,Wt(itr)],opts);
+
+parfor itr=1:length(t)
+    [tSss,Sss]=ode45(@sbrake,[0 150],[Vt(itr),St(itr),Wt(itr)],...
+        odeset('RelTol',RTOL*10));
     Sst=Sss(Sss(:,1)~=0,:);
     tSst=tSss(Sss(:,1)~=0);
     S_b(itr,1)=Sst(end,2);
     t_b(itr,1)=tSst(end);
 end
 
-[~,ind]=min(abs(3000-St(1:length(vsdom))-S_b));
-[~,Sbr_disp]=ode45(@sbrake,[0 150],[vsdom(ind),St(ind),Wt(ind)],opts);
+[~,ind]=min(abs(3000-S_b));
+vtF=griddedInterpolant((ind-5:ind+5),Vt(ind-5:ind+5));
+stF=griddedInterpolant((ind-5:ind+5),St(ind-5:ind+5));
+wtF=griddedInterpolant((ind-5:ind+5),Wt(ind-5:ind+5));
+newres=50;
+vtdom=vtF(linspace(ind-5,ind+5,newres));
+stdom=stF(linspace(ind-5,ind+5,newres));
+wtdom=wtF(linspace(ind-5,ind+5,newres));
+
+
+parfor itr=1:newres
+    [tSss,Sss]=ode45(@sbrake,[0 150],[vtdom(itr),stdom(itr),wtdom(itr)],...
+        odeset('RelTol',RTOL));
+    Sst=Sss(Sss(:,1)~=0,:);
+    tSst=tSss(Sss(:,1)~=0);
+    S_b2(itr,1)=Sst(end,2);
+    t_b2(itr,1)=tSst(end);
+end
+
+[~,ind]=min(abs(3000-S_b2));
+[~,Sbr_disp]=ode45(@sbrake,[0 150],[vtdom(ind),stdom(ind),wtdom(ind)],...
+    odeset('RelTol',RTOL)); % for graphout
     
 %% One Engine Inoperable
 % Worst Case Scenario, engine out at S_br
 nm=(n-1)/n; % running OEI
-[t_oei,r_oei]=ode45(@groundrun,[0 100],[Wt(ind),Vt(ind),St(ind)],opts);
+[t_oei,r_oei]=ode45(@groundrun,[0 100],[Wt(ind),Vt(ind),St(ind)],...
+    odeset('RelTol',RTOL),nm,T);
 t_oei=t_oei(diff(r_oei(:,1))~=0)+t(ind);
 r_oei=r_oei(diff(r_oei(:,1))~=0,:);
 
@@ -87,8 +76,8 @@ St_oei=r_oei(:,3);
 %% Airborne Distance
 V2=max(172,Vstall*1.2); % ft/s, Vmp for climbing
 Vlof=1.1*Vstall;
-Sa=Wt(end)/(Pa/V2-0.5*p*V2^2*S*Cdg)*((V2^2-Vlof^2)/(2*32.2)+35);
-Sa_oei=Wt_oei(end)/(nm*Pa/V2-0.5*p*V2^2*S*Cdg)*((V2^2-Vlof^2)/(2*32.2)+35);
+Sa=Wt(end)/(Pa/V2-0.5*p(0)*V2^2*S*Cdg)*((V2^2-Vlof^2)/(2*32.2)+35);
+Sa_oei=Wt_oei(end)/(nm*Pa/V2-0.5*p(0)*V2^2*S*Cdg)*((V2^2-Vlof^2)/(2*32.2)+35);
 
 %% Graphs
 
@@ -113,14 +102,11 @@ plot(St(ind),t(ind),'r*')
 grid on
 
 subplot(2,2,4)
-plot(S_b,vsdom/1.4666,'r')
+plot(S_b,Vt/1.4666,'r')
 hold on
 plot(St,Vt/1.4666,'b')
 xlabel('Dist, ft'); ylabel('Vel, mph')
+legend({'Braking','Takeoff'})
 grid on
 
 save('outdat.mat','t','Wt','Vt','St','Sbr_disp','Sa')
-
-
-
-end
