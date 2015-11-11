@@ -7,7 +7,7 @@ h=val(1);
 Wt=val(2);
 Vt=val(3);
 
-if Vt>250*1.466
+if Vt>225*1.466
     return
 end
 
@@ -15,7 +15,7 @@ pc=p(h);
 
 D=1/2*pc*Vt^2*S*Cd0+K*Wt^2/(1/2*pc*Vt^2*S);
 
-acc=(Pa*0.8*sqrt(pc/p(0)))/Vt-D;
+acc=((Pa*0.95*sqrt(pc/p(0)))/Vt-D)/(Wt/32.2);
 
 dval(1)=0;
 dval(2)=-D*SFC/3600;
