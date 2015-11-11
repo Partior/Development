@@ -1,6 +1,6 @@
 %% Cruise Speed Analysis
 
-
+clear; clc
 load('../constants.mat')
 
 % Speed Versus Altitude and loading
