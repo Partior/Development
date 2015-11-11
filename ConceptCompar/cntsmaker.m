@@ -22,7 +22,7 @@ K=1/(AR*0.8*pi);
 
 V0=250*1.4666;
 
-Pa=1200*550;
+Pa=1300*550;
 
 hc=8; hdom=linspace(18e3,28e3,hc);
 pyc=8; pdom=linspace(0,19,pyc);
