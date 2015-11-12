@@ -2,7 +2,7 @@ clear; clc
 
 load('../constants.mat')
 load('takeoff_const.mat')
-Pa=Pa*0.9; % 90% power for takeoff
+Pa=Pa*0.95; % 90% power for takeoff
 
 RTOL=1e-4;
 
@@ -110,5 +110,3 @@ plot(St,Vt/1.4666,'b')
 xlabel('Dist, ft'); ylabel('Vel, mph')
 legend({'Braking','Takeoff'})
 grid on
-
-save('outdat.mat','t','Wt','Vt','St','Sbr_disp','Sa')
