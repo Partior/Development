@@ -28,7 +28,6 @@ if isempty(poolobj)
     parpool('local')
 end
 
-
 parfor itr=1:length(t)
     [tSss,Sss]=ode45(@sbrake,[0 40],[Wt(itr),Vt(itr),St(itr)],...
         odeset('RelTol',RTOL*10));
@@ -48,7 +47,6 @@ tdom=tF(linspace(ind-1,ind+1,newres));
 vtdom=vtF(linspace(ind-1,ind+1,newres));
 stdom=stF(linspace(ind-1,ind+1,newres));
 wtdom=wtF(linspace(ind-1,ind+1,newres));
-
 
 parfor itr=1:newres
     [tSss,Sss]=ode45(@sbrake,[0 40],[wtdom(itr),vtdom(itr),stdom(itr)],...
