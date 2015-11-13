@@ -13,6 +13,7 @@ Ss=val(3);
 if Vs<=0
     return
 end
+
 dval(1)=0; %dW=0 (no fuel)
 dval(3)=Vs; % ds/dt=V
 

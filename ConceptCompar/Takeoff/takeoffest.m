@@ -58,8 +58,10 @@ parfor itr=1:newres
 end
 
 [~,ind]=min(abs(3000-S_b2));
-[~,Sbr_disp]=ode45(@sbrake,[0 40],[wtdom(ind),vtdom(ind),stdom(ind)],...
+[tbr_disp,Sbr_disp]=ode45(@sbrake,[0 40],[wtdom(ind),vtdom(ind),stdom(ind)],...
     odeset('RelTol',RTOL)); % for graphout
+tbr_disp=tbr_disp(diff(Sbr_disp(:,2))<0);
+Sbr_disp=Sbr_disp(diff(Sbr_disp(:,2))<0,:);
     
 %% One Engine Inoperable
 % Worst Case Scenario, engine out at S_br
@@ -98,7 +100,7 @@ hold on
 plot(St_oei,t_oei,'g')
 plot(St(end)+Sa,t(end)+Sa/V2,'b*')
 plot(St_oei(end)+Sa_oei,t_oei(end)+Sa_oei/V2,'g*')
-plot(stdom(ind),tdom(ind),'r*')
+plot(Sbr_disp(:,3),tbr_disp+tdom(ind),'r')
 grid on
 
 subplot(2,2,4)
@@ -106,5 +108,5 @@ plot(S_b,Vt/1.4666,'r')
 hold on
 plot(St,Vt/1.4666,'b')
 xlabel('Dist, ft'); ylabel('Vel, mph')
-legend({'Braking','Takeoff'})
+legend({'Braking','Takeoff'},'location','south')
 grid on

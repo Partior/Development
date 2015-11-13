@@ -9,7 +9,7 @@ end
 Clg=1.6;
 mu=0.04;
 Cdg=Cd0+K*Clg^2;
-muTire=0.72;
+muTire=0.35;
 
 Vstall=sqrt(2*W0(19)/(S*p(0)*(Clg+0.1))); % used later
 
