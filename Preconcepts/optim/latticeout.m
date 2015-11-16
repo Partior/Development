@@ -7,7 +7,7 @@ function latticeout
 % Alex M Granata
 % 03 OCT 2015
 
-close all; clear; clc
+% close all; clear; clc
 
 %% Initial Assumptions and Requirments of flight
 
@@ -36,8 +36,8 @@ p_sl=2.3769e-3; %slugs/ft^3, sea level density
 p_sc=.958e-3;   % slugs per ft^3
 
 %% Domains of independent variables
-Rl=5;  Rd=linspace(800,1200,Rl)*1.151;  %miles
-Vl=6;  Vd=linspace(250,300,Vl)*1.466667;  %ft/sec
+Rl=4;  Rd=linspace(800,1500,Rl)*1.151;  %miles
+Vl=4;  Vd=linspace(250,290,Vl)*1.466667;  %ft/sec
 LDl=2;  LDd=linspace(18,22,LDl);  % Keep resolution of LD <5
 WTOl=4; % Number of isolines for the WTO contours
 
@@ -109,12 +109,12 @@ for it_LD=1:LDl
             
             mat=[{Preq_cruise};{Preq_cc};{Preq_man};{Preq_serv};{Preq_TOop}];
             [wsx,py]=fminbnd(@(ws) ...
-                max([mat{1}(ws),mat{2}(ws),mat{3}(ws),mat{4}(ws),mat{5}(ws)]),...
+                max([mat{1}(ws),0*mat{2}(ws),0*mat{3}(ws),1/4*mat{4}(ws),mat{5}(ws)]),...
                 max(WS_r,WS_s),WS_l);
             if numel(wsx>1)
                 wsx=wsx(1);
             end
-            optm=[wsx,py/550];    % in lbs/ft^2 and hp
+            optm=[wsx,py/16.7e3];    % in lbs/ft^2 and hp
             
             optimzd(it_R,it_V,it_LD,:)=[optm,Wto]; % Save Optimized Data
         end
@@ -124,29 +124,28 @@ toc
 %% Figure Setup
 % Base figure will be used to output the optimized Ws/Power, and control
 % the other two design space and optimizer plots
-r=groot;
-if size(r.MonitorPositions,1)>1
-    bspos=r.MonitorPositions(1,:);
-    f_detpos=r.MonitorPositions(2,:);
-else
-    bspos=r.MonitorPositions(1,:).*[1 1 1 0.5];
-    f_detpos=[r.MonitorPositions(1,1),r.MonitorPositions(1,4)/2,r.MonitorPositions(1,3:4).*[1 0.5]];
-end
+% r=groot;
+% if size(r.MonitorPositions,1)>1
+%     bspos=r.MonitorPositions(1,:);
+%     f_detpos=r.MonitorPositions(2,:);
+% else
+%     bspos=r.MonitorPositions(1,:).*[1 1 1 0.5];
+%     f_detpos=[r.MonitorPositions(1,1),r.MonitorPositions(1,4)/2,r.MonitorPositions(1,3:4).*[1 0.5]];
+% end
 
 bs=figure('Name','Optimized Power and Wing Loading',...
     'NumberTitle','off',...
     'DockControls','off',...
     'MenuBar','none',...
-    'Units','pixels',...     'Resize','off',...
-    'Position',bspos,...
-    'deletefcn','close all; clear; clc;');
+    'Units','pixels'); %,...     'Resize','off',...%     'Position',bspos,...
+%     'deletefcn','close all; clear; clc;');
 
 % Setup the axes for
 abse=axes('Parent',bs);
 abse.XLimMode='manual';
 abse.Title.String='Power Requirments and Wing Loading';
-abse.XLabel.String='Wing Loading W/S, lbs/ft^2 by LD_{max}';
-abse.YLabel.String='Power_{Required}, hp';
+abse.XLabel.String='Wing Loading W/S, and L/D_{max}';
+abse.YLabel.String='Specifc Power';
 abse.Color='none';
 hold(abse,'on')
 
@@ -156,9 +155,8 @@ f_det=figure('Name','Point Specifc Details',...
     'NumberTitle','off',...
     'DockControls','off',...
     'MenuBar','none',...
-    'Units','pixels',...'Resize','off',...
-    'Position',f_detpos,...
-    'deletefcn','close all; clear; clc;');
+    'Units','pixels')' %,...'Resize','off',...%     'Position',f_detpos,...
+%     'deletefcn','close all; clear; clc;');
 aTW=axes('Parent',f_det);
 aTW.XLimMode='manual';
 subplot(1,2,1,aTW);
