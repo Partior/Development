@@ -26,5 +26,5 @@ plot(vdom/1.4666,(pa-pr)/W0(19))
 title('Excess Power')
 grid on; xlabel('Velocity, mph'); ylabel('P/W')
 yl=ylim;
-ylim([max(yl(1),-40) yl(2)])
+ylim([max(yl(1),-20) yl(2)])
 legend({'Sea Level','18,000 ft','24,000 ft'})
