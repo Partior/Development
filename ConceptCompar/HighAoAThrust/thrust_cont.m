@@ -4,27 +4,33 @@
 
 clear; clc
 load('../constants.mat')
+
 vdom=linspace(10,350)*1.4666;
+
+fl1=cd;
+cd ../Takeoff
+T=proppower(6,Pa,false);
+cd(fl1)
 
 %% Basic Equations
 % Assuming Steady, Level Flight
-% 
+%
 % Flight Path is Horizontal: $\gamma = 0$
-% 
+%
 % Thrust invaraint with AoA: $dT_{\alpha} = 0$
-% 
+%
 % $$\vec{L}=\hat{k}\{L\}$$
-% 
+%
 % $$\vec{D}=\hat{i}\{-D\}$$
-% 
+%
 % Thrust is function of attack angle
-% 
+%
 % $$\vec{T} = \hat{i}\{\cos(\alpha)T\}+\hat{k}\{\sin(\alpha)T\}$$
-% 
+%
 % Summing Forces:
-% 
+%
 % $$\Sigma F_{\hat{k}} = L + \cos(\alpha)T - W$$
-% 
+%
 % $$\Sigma F_{\hat{i}} = -D + \sin(\alpha)T$$
 
 %% Thrust Invariant Calculations
@@ -34,7 +40,7 @@ Cl_old=W0(19)./(1/2*p(0)*S*vdom.^2);
 a_old=Cl_old/CLa;
 D_old=(Cd0+K*(CLa*a_old).^2)*1/2*p(0).*vdom.^2*S;
 vmin_ind=find(a_old>15,1,'last');
-plvl=D_old./(Pa./vdom);
+plvl=D_old./(T(vdom));
 
 %% Thrust Variant Calculations
 
@@ -45,7 +51,13 @@ t_solver=@(al) ...
 
 for itr=1:length(a_old)
     ali=a_old(itr);
-    v_new(itr,:)=t_solver(ali);
+    tmp=t_solver(ali);
+    if isreal(tmp)
+        nfrac=Pa/tmp(1)/T(tmp(1));
+    else
+        nfrac=1;
+    end
+    v_new(itr,:)=[tmp(1),nfrac*tmp(2)];
 end
 tlim_ind=find(v_new(:,2)<=1,1,'last');
 
@@ -56,10 +68,10 @@ figure(1); clf
 % Velocity to Power level
 subplot(2,2,1); hold on
 plot(vdom/1.4666,100*plvl)
-yl=ylim;
+yl=[0 150];
 plot([1;1]*vdom([vmin_ind,tlim_ind])/1.4666,[0 yl(2)],'r--')
 ylim(yl)
-xlabel('Velocity'); ylabel('Power Level, %')
+xlabel('Velocity, mph'); ylabel('Power Level, %')
 grid on
 
 % AoA to Change in Power

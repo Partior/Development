@@ -1,6 +1,12 @@
-function T=proppower(n,Pa)
+function T=proppower(n,Pa,varargin)
 %% POWER 
 % Detailed look into power proudced by props
+
+if nargin<3
+    gph=true;
+else
+    gph=varargin{1};
+end
 
 a=1125.33;
 vdom=linspace(0,a*0.5,300);
@@ -20,14 +26,16 @@ T_r=[T0*ones(1,ind1-1),yt,T_i(ind2+1:end)];
 pT=griddedInterpolant(vdom,T_r,'linear');
 T=@(V) n*pT(V);
 
-figure(2); clf
-hold on; plot(vdom/a,T_i/T0,'--')
-plot(vdom/a,T(vdom)/(T0*n))
-ylim([0 1.25])
-grid on
-legend({'Ideal','Assumed'})
-title('Thrust Curve')
-ylabel('T/T_0')
-xlabel('Mach')
-tt=sprintf('Pa=%.0f hp, n=%g \nT_0=%0.f R_{max}=%0.2f ft',Pa/550,n,T(0),Rmax);
-text(0.3,0.8,tt)
+if gph
+    figure(2); clf
+    hold on; plot(vdom/a,T_i/T0,'--')
+    plot(vdom/a,T(vdom)/(T0*n))
+    ylim([0 1.25])
+    grid on
+    legend({'Ideal','Assumed'})
+    title('Thrust Curve')
+    ylabel('T/T_0')
+    xlabel('Mach')
+    tt=sprintf('Pa=%.0f hp, n=%g \nT_0=%0.f R_{max}=%0.2f ft',Pa/550,n,T(0),Rmax);
+    text(0.3,0.8,tt)
+end
