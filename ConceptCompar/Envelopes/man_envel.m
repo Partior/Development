@@ -29,7 +29,7 @@ D_max=10000; % lbs_force
 %% Mesh Calculations and Plot
 navail=nsolv(h_msh,m_msh.*a(h_msh));
 
-figure(1); clf; hold on
+figure(2); clf; hold on
 [~,h]=contour(m_msh,h_msh/1e3,real(navail),[0.5 0.75 1 1.25 1.5 1.75 2 2.25]);
 set(h,'LineColor','k','LineStyle','-',...
     'ShowText','on','LabelSpacing',572);
@@ -52,12 +52,12 @@ end
 CLmax=1.6;
 v_stall=sqrt(W0(19)./(1/2*p([hdom(hdom<h_sc),h_sc])*S*CLmax));
     
-plot(v_stall./a(hdom2),hdom2/1e3,'r-','LineWidth',1)
-plot([v_stall(end),V_max(end)]./([1 1]*a(h_sc)),[1 1]*h_sc/1e3,'r-','LineWidth',1)
-plot(V_max./a(hdom2),hdom2/1e3,'r-','LineWidth',1)
+plot(v_stall./a(hdom2),hdom2/1e3,'r-','LineWidth',1.6)
+plot([v_stall(end),V_max(end)]./([1 1]*a(h_sc)),[1 1]*h_sc/1e3,'r-','LineWidth',1.6)
+plot(V_max./a(hdom2),hdom2/1e3,'r-','LineWidth',1.6)
 
 %% Label
-title('Altitude Envelope, Max G Manuever and \color{red}Steady Level Flight Envelope')
+title('Altitude Envelope, Max G Manuever and \color{red}Level Flight Envelope')
 xlabel('Mach'); ylabel('Altitude, 1,000 ft')
 xlim(xl)
 ylim(yl)

@@ -37,11 +37,11 @@ sPreq=sP(hi,m_msh*a(hi),nreq);
 figure(1); clf; hold on
 % Specific power
 [~,h]=contour(m_msh,om_msh*180/pi,sPreq,linspace(-20,20,9));
-set(h,'LineColor','r','LineStyle','-',...
+set(h,'LineColor','k','LineStyle','-',...
     'ShowText','on','LabelSpacing',500);    
 % G's
 [~,h2]=contour(m_msh,om_msh*180/pi,nreq,[1.1 1.5,2,2.5,3,3.5,4]);
-set(h2,'LineColor','b','LineStyle','-',...
+set(h2,'LineColor','b','LineStyle','-.',...
     'ShowText','on','LabelSpacing',500);
 
 %% Boundaries
@@ -99,5 +99,5 @@ plot(V_stall_trate/a(hi),[omdom(1:length(V_stall_trate)-1)*180/pi,om_max],'m-','
 %% Touches
 %labeling
 xlabel('Mach'); ylabel('Turn Rate deg/sec')
-title('\color{red}Specific Power \color{black}and \color{blue}G-turn \color{black}and \color{magenta}Level Flight Envelope \color{black}at Sea Level')
+title('Specific Excess Power and \color{blue}G-turn \color{black}and \color{magenta}Level Flight Envelope \color{black}at Sea Level')
 ylim([0 omdom(end)*180/pi])
