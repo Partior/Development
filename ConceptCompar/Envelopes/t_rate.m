@@ -36,12 +36,16 @@ sPreq=sP(hi,m_msh*a(hi),nreq);
 %% Graphing
 figure(1); clf; hold on
 % Specific power
-[~,h]=contour(m_msh,om_msh*180/pi,sPreq,linspace(-20,20,9));
-set(h,'LineColor','k','LineStyle','-',...
+[~,h_s]=contour(m_msh,om_msh*180/pi,sPreq,linspace(-20,20,9));
+set(h_s,'LineColor','k','LineStyle',':');
+[~,h_m]=contour(m_msh,om_msh*180/pi,sPreq,[0 10 20]);
+set(h_m,'LineColor','k','LineStyle','-',...
     'ShowText','on','LabelSpacing',500);    
 % G's
-[~,h2]=contour(m_msh,om_msh*180/pi,nreq,[1.1 1.5,2,2.5,3,3.5,4]);
-set(h2,'LineColor','b','LineStyle','-.',...
+[~,h2_s]=contour(m_msh,om_msh*180/pi,nreq,[1.1 1.5 2.5 3.5]);
+set(h2_s,'LineColor','b','LineStyle',':');
+[~,h2_m]=contour(m_msh,om_msh*180/pi,nreq,[2 3 4]);
+set(h2_m,'LineColor','b','LineStyle','-.',...
     'ShowText','on','LabelSpacing',500);
 
 %% Boundaries

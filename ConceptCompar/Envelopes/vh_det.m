@@ -10,10 +10,6 @@ lv=length(v);
 plvl=zeros(lh,lv);
 for ita=1:lh
     for itb=1:lv
-        try
-            plvl(ita,itb)=fzero(@(pl) exP(h(ita),v(itb),1,pl),[0 2]);
-        catch
-            plvl(ita,itb)=NaN;
-        end
+        
     end
 end
