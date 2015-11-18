@@ -38,7 +38,7 @@ figure(1); clf; hold on
 % Specific power
 [~,h_s]=contour(m_msh,om_msh*180/pi,sPreq,linspace(-20,20,9));
 set(h_s,'LineColor','k','LineStyle',':');
-[~,h_m]=contour(m_msh,om_msh*180/pi,sPreq,[0 10 20]);
+[~,h_m]=contour(m_msh,om_msh*180/pi,sPreq,[-20 0 10 20]);
 set(h_m,'LineColor','k','LineStyle','-',...
     'ShowText','on','LabelSpacing',500);    
 % G's
