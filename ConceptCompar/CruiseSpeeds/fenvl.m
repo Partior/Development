@@ -1,7 +1,6 @@
 function out=fenvl(P,h,PAY)
 
 load('../constants.mat')
-Cd0=0.02;
 
 pc=p(h);
 Pa=P*sqrt(pc/p(0));
