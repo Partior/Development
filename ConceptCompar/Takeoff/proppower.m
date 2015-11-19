@@ -1,4 +1,4 @@
-function tcmp_t=proppower(n,Pa,varargin)
+function T=proppower(n,Pa,varargin)
 %% POWER
 % Detailed look into power proudced by props
 

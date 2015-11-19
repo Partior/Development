@@ -18,12 +18,13 @@ vdom=mdom.*a(hdom);
 
 %% Mesh Calcultations
 gmma=@(v,h,py) v./(SFC/3600*(cd(v,h)*S.*v.^2.*p(h)*1/2+2*K*W0(py)^2./(S*v.^2.*p(h))));
+plvl=@(v,h,py) (0.5*v.^3.*p(h)*S.*cd(v,h)+K*W0(py)^2./(0.5*v.*p(h)*S))./(Pa*sqrt(p(h)/p(0)));
 
 gmma_m=gmma(v_msh,h_msh,19);
-plvl_m=(0.5*v_msh.^3.*p(h_msh)*S.*cd(v_msh,h_msh)+K*W0(19)^2./(0.5*v_msh.*p(h_msh)*S))./(Pa*sqrt(p(h_msh)/p(0)));
+plvl_m=plvl(v_msh,h_msh,19);
 
 gmma_e=gmma(v_msh,h_msh,0);
-plvl_e=(0.5*v_msh.^3.*p(h_msh)*S.*cd(v_msh,h_msh)+K*W0(0)^2./(0.5*v_msh.*p(h_msh)*S))./(Pa*sqrt(p(h_msh)/p(0)));
+plvl_e=plvl(v_msh,h_msh,0);
 
 %% Optima Calculations
 hsc=log(p(40e3)/p(0))/(40e3);
