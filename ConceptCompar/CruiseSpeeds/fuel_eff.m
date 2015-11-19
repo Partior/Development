@@ -60,6 +60,8 @@ h_sc_e=fsolve(@(h) sP(h,V_mp(h),1,0)-100/60,40e3,optimoptions('fsolve','Display'
 
 %% Plotting
 figure(2); clf; hold on
+ax1=gca;
+ax1.Color=0.5*[1 1 1];
 
 % Fuel Consumption
 gmdom=0:0.05:1;
@@ -80,7 +82,7 @@ set(h,'LineColor','r','LineStyle','-','LineWidth',1.5,...
 
 ylm=ylim;
 xlm=xlim;
-plot(m_opt_m,hdom/1e3,'c')
+plot(m_opt_m,hdom/1e3,'c','LineWidth',1.5)
 
 plot(v_stall_m./a(hdom3_m),hdom3_m/1e3,'b-','LineWidth',1.4)
 plot(mdom([1,end]),h_sc_m*[1,1]/1e3,'m--')
@@ -114,6 +116,8 @@ title({'Fuel Efficiency, Max payload';tl;tl2})
 
 %% Empty Plotting
 figure(3); clf; hold on
+ax2=gca;
+ax2.Color=0.5*[1 1 1];
 
 % Fuel Consumption
 [~,h2e]=contour(m_msh,h_msh/1e3,gmma_e/5280,gmdom);
@@ -123,7 +127,7 @@ set(h2e,'LineColor','r','LineStyle',':','LineWidth',1);
 set(he,'LineColor','r','LineStyle','-','LineWidth',1.5,...
     'ShowText','on')
 
-plot(m_opt_e,hdom/1e3,'c')
+plot(m_opt_e,hdom/1e3,'c','LineWidth',1.5)
 
 plot(v_stall_e./a(hdom3_e),hdom3_e/1e3,'b-','LineWidth',1.4)
 plot(mdom([1,end]),h_sc_e*[1,1]/1e3,'m--')
