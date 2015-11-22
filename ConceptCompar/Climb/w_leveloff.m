@@ -7,7 +7,7 @@ h=val(1);
 Wt=val(2);
 Vt=val(3);
 
-if Vt>225*1.466
+if Vt>250*1.466
     return
 end
 

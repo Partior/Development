@@ -22,7 +22,7 @@ pa=vdom.*T(vdom)*sqrt(p(hdom)/p(0));
 
 % Plot
 figure(1); clf
-plot(vdom/1.4666,(pa-pr)/W0(19))
+plot(vdom/1.4666,(pa-pr)/W0(19)) % excess = (Pa - pr) / W
 title('Excess Power')
 grid on; xlabel('Velocity, mph'); ylabel('P/W')
 yl=ylim;
