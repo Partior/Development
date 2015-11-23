@@ -20,9 +20,11 @@ vdom=mdom.*a(hdom);
 
 %% Mesh Calcultations
 gmma=@(v,h,py) v./(SFC/3600*(cd(v,h)*S.*v.^2.*p(h)*1/2+2*K*W0(py)^2./(S*v.^2.*p(h))));
+plvl=@(v,h,py) (0.5*v.^3.*p(h)*S.*cd(v,h)+K*W0(py)^2./(0.5*v.*p(h)*S))./(Pa*sqrt(p(h)/p(0)));
 
 gmma_m=gmma(v_msh,h_msh,pay);
 plvl_m=(0.5*v_msh.^3.*p(h_msh)*S.*cd(v_msh,h_msh)+K*W0(pay)^2./(0.5*v_msh.*p(h_msh)*S))./(Pa*sqrt(p(h_msh)/p(0)));
+
 %% Optima Calculations
 hsc=log(p(40e3)/p(0))/(40e3);
 dg2=@(V,h,W) 1.5528616e27*V^6*exp(-0.000096*h) - 1.0676833e22*V^6*h*exp(-0.000096*h) - 4.6661618e28*V^2*W^2*exp(-0.000032*h)*((4.3980465e22*V^2 + 3.7692584e23*h - 5.4820909e28)/(3.7692584e23*h - 5.4820909e28))^(3/2) + 3.2082594e23*V^2*W^2*h*exp(-0.000032*h)*((4.3980465e22*V^2 + 3.7692584e23*h - 5.4820909e28)/(3.7692584e23*h - 5.4820909e28))^(3/2);
@@ -47,6 +49,8 @@ h_sc_m=fsolve(@(h) sP(h,V_mp(h),1,pay)-100/60,40e3,optimoptions('fsolve','Displa
 
 %% Plotting
 figure(2); clf; hold on
+ax1=gca;
+ax1.Color=0.5*[1 1 1];
 
 % Fuel Consumption
 gmdom=0:0.05:1;
@@ -67,7 +71,7 @@ set(h,'LineColor','r','LineStyle','-','LineWidth',1.5,...
 
 ylm=ylim;
 xlm=xlim;
-plot(m_opt_m,hdom/1e3,'c')
+plot(m_opt_m,hdom/1e3,'c','LineWidth',1.5)
 
 plot(v_stall_m./a(hdom3_m),hdom3_m/1e3,'b-','LineWidth',1.4)
 plot(mdom([1,end]),h_sc_m*[1,1]/1e3,'m--')
@@ -98,4 +102,40 @@ t0=sprintf('fuel Eggiciency, %g Passengers',pay);
 tl='\color{red}Miles Per Pound Fuel\color{black}, \color{black}Power Setting \color{black} and \color{cyan}Optima Line';
 tl2='\color{blue}Stall Line\color{black}, \color{magenta}Service Ceiling';
 xlabel(xl); ylabel(yl)
+<<<<<<< HEAD
 title({t0;tl;tl2})
+=======
+title({'Fuel Efficiency, Max payload';tl;tl2})
+
+%% Empty Plotting
+figure(3); clf; hold on
+ax2=gca;
+ax2.Color=0.5*[1 1 1];
+
+% Fuel Consumption
+[~,h2e]=contour(m_msh,h_msh/1e3,gmma_e/5280,gmdom);
+set(h2e,'LineColor','r','LineStyle',':','LineWidth',1);
+
+[~,he]=contour(m_msh,h_msh/1e3,gmma_e/5280,gmint);
+set(he,'LineColor','r','LineStyle','-','LineWidth',1.5,...
+    'ShowText','on')
+
+plot(m_opt_e,hdom/1e3,'c','LineWidth',1.5)
+
+plot(v_stall_e./a(hdom3_e),hdom3_e/1e3,'b-','LineWidth',1.4)
+plot(mdom([1,end]),h_sc_e*[1,1]/1e3,'m--')
+ylim(ylm)
+xlim(xlm)
+
+% Power Levels
+[~,h3e]=contour(m_msh,h_msh/1e3,plvl_e*100,pldom*100);
+set(h3e,'LineColor','k','LineStyle',':','LineWidth',1);
+
+[~,h4e]=contour(m_msh,h_msh/1e3,plvl_e*100,plint*100);
+set(h4e,'LineColor','k','LineStyle','-','LineWidth',1.5,...
+    'ShowText','on')
+
+%% Pretty
+xlabel(xl); ylabel(yl)
+title({'Fuel Efficiency, Empty payload';tl;tl2})
+>>>>>>> 4ed8a89e120cba0002ed3a0a8889befbecdcf4cc

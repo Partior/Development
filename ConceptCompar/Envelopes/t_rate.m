@@ -35,17 +35,30 @@ sPreq=sP(hi,m_msh*a(hi),nreq);
 
 %% Graphing
 figure(1); clf; hold on
+ax1=gca;
+ax1.Color=0.5*[1 1 1];
+
+gmdom=linspace(-20,20,9);
+gmint=[-20 0 10 20];
+for itr=1:length(gmdom)
+    if any(abs(gmdom(itr)-gmint)<1e-8)
+        gmdom(itr)=0;
+    end
+end
+gmdom=nonzeros(gmdom);
 % Specific power
-[~,h_s]=contour(m_msh,om_msh*180/pi,sPreq,linspace(-20,20,9));
-set(h_s,'LineColor','k','LineStyle',':');
-[~,h_m]=contour(m_msh,om_msh*180/pi,sPreq,[-20 0 10 20]);
-set(h_m,'LineColor','k','LineStyle','-',...
+[~,h_s]=contour(m_msh,om_msh*180/pi,sPreq,gmdom);
+set(h_s,'LineColor','k','LineStyle',':','LineWidth',1);
+[~,h_m]=contour(m_msh,om_msh*180/pi,sPreq,gmint);
+set(h_m,'LineColor','k','LineStyle','-','LineWidth',1.5,...
     'ShowText','on','LabelSpacing',500);    
+
+
 % G's
 [~,h2_s]=contour(m_msh,om_msh*180/pi,nreq,[1.1 1.5 2.5 3.5]);
-set(h2_s,'LineColor','b','LineStyle',':');
+set(h2_s,'LineColor','b','LineStyle',':','LineWidth',1);
 [~,h2_m]=contour(m_msh,om_msh*180/pi,nreq,[2 3 4]);
-set(h2_m,'LineColor','b','LineStyle','-.',...
+set(h2_m,'LineColor','b','LineStyle','-','LineWidth',1.5,...
     'ShowText','on','LabelSpacing',500);
 
 %% Boundaries

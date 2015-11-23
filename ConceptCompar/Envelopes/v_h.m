@@ -41,28 +41,44 @@ h_sc=fsolve(@(h) sP(h,V_mp(h),1)-100/60,40e3,optimoptions('fsolve','Display','of
 
 %% Plotting
 figure(1); clf; hold on
+
 % Not doing the '1' for the contour line as it matches the power levels
-[~,h2_m]=contour(m_msh,h_msh/1e3,real(navail),[0.5 1.5 2]);
-set(h2_m,'LineColor','r','LineStyle','--',...
+gmdom=0.75:0.25:2.25;
+gmint=[0.5 1.5 2];
+for itr=1:length(gmdom)
+    if any(abs(gmdom(itr)-gmint)<1e-8)
+        gmdom(itr)=0;
+    end
+end
+gmdom=nonzeros(gmdom);
+[~,h2_m]=contour(m_msh,h_msh/1e3,real(navail),gmint);
+set(h2_m,'LineColor','r','LineStyle','-','LineWidth',1.5,...
     'LineWidth',1.5,...
     'ShowText','on','LabelSpacing',400);
-[~,h2_s]=contour(m_msh,h_msh/1e3,real(navail),[0.75 1.25 1.75 2.25]);
-set(h2_s,'LineColor','r','LineStyle',':',...
+[~,h2_s]=contour(m_msh,h_msh/1e3,real(navail),gmdom);
+set(h2_s,'LineColor','r','LineStyle',':','LineWidth',1,...
     'LineWidth',0.5);
 
-[~,h_m]=contour(m_msh,h_msh/1e3,plvl,[0.5 0.75 1 1.5]);
-set(h_m,'LineColor','k','LineStyle','-',...
+gmdom=0.3:0.1:1.4;
+gmint=[0.5 0.75 1 1.5];
+for itr=1:length(gmdom)
+    if any(abs(gmdom(itr)-gmint)<1e-8)
+        gmdom(itr)=0;
+    end
+end
+[~,h_m]=contour(m_msh,h_msh/1e3,plvl,gmint);
+set(h_m,'LineColor','k','LineStyle','-','LineWidth',1.5,...
     'LineWidth',1.5,...
     'ShowText','on','LabelSpacing',400);
-[~,h_s]=contour(m_msh,h_msh/1e3,plvl,[0.3 0.4 0.6 0.7 0.8 0.9 1.1 1.2 1.3 1.4]);
-set(h_s,'LineColor','k','LineStyle',':',...
+[~,h_s]=contour(m_msh,h_msh/1e3,plvl,gmdom);
+set(h_s,'LineColor','k','LineStyle',':','LineWidth',1,...
     'LineWidth',0.1);
 
 xl=xlim;
 yl=ylim;
 
 plot(v_stall./a(hdom3),hdom3/1e3,'b-','LineWidth',1.4)
-plot(mdom([1,end]),h_sc*[1,1]/1e3,'m:')
+plot(mdom([1,end]),h_sc*[1,1]/1e3,'m--')
 
 %% Pretty
 xlabel('Mach'); ylabel('Altitude, 1,000 ft')
