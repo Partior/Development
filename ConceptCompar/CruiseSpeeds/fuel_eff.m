@@ -102,40 +102,4 @@ t0=sprintf('fuel Eggiciency, %g Passengers',pay);
 tl='\color{red}Miles Per Pound Fuel\color{black}, \color{black}Power Setting \color{black} and \color{cyan}Optima Line';
 tl2='\color{blue}Stall Line\color{black}, \color{magenta}Service Ceiling';
 xlabel(xl); ylabel(yl)
-<<<<<<< HEAD
 title({t0;tl;tl2})
-=======
-title({'Fuel Efficiency, Max payload';tl;tl2})
-
-%% Empty Plotting
-figure(3); clf; hold on
-ax2=gca;
-ax2.Color=0.5*[1 1 1];
-
-% Fuel Consumption
-[~,h2e]=contour(m_msh,h_msh/1e3,gmma_e/5280,gmdom);
-set(h2e,'LineColor','r','LineStyle',':','LineWidth',1);
-
-[~,he]=contour(m_msh,h_msh/1e3,gmma_e/5280,gmint);
-set(he,'LineColor','r','LineStyle','-','LineWidth',1.5,...
-    'ShowText','on')
-
-plot(m_opt_e,hdom/1e3,'c','LineWidth',1.5)
-
-plot(v_stall_e./a(hdom3_e),hdom3_e/1e3,'b-','LineWidth',1.4)
-plot(mdom([1,end]),h_sc_e*[1,1]/1e3,'m--')
-ylim(ylm)
-xlim(xlm)
-
-% Power Levels
-[~,h3e]=contour(m_msh,h_msh/1e3,plvl_e*100,pldom*100);
-set(h3e,'LineColor','k','LineStyle',':','LineWidth',1);
-
-[~,h4e]=contour(m_msh,h_msh/1e3,plvl_e*100,plint*100);
-set(h4e,'LineColor','k','LineStyle','-','LineWidth',1.5,...
-    'ShowText','on')
-
-%% Pretty
-xlabel(xl); ylabel(yl)
-title({'Fuel Efficiency, Empty payload';tl;tl2})
->>>>>>> 4ed8a89e120cba0002ed3a0a8889befbecdcf4cc

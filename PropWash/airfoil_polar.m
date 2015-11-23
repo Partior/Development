@@ -1,7 +1,7 @@
 %% Drag Polar for Airfoil
 % Using xfoil for NACA 23015
 
-dta=importdata('C:\Users\granataa\Desktop\Classes\15 Fall\Design\xfoil\naca_polar.txt',' ',12);
+dta=importdata('naca_polar.txt',' ',12);
 
 alfa=dta.data(:,1);
 cl=dta.data(:,2);

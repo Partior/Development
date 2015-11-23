@@ -8,7 +8,7 @@ T_i=P_i./vdom;
 
 rpm=3500; % max rpm rating
 Mt=@(v,h,r) sqrt((v/(a(h)))^2+((rpm*2*pi/60)*r/a(h))^2);
-Rmax=fsolve(@(r) 0.85-Mt(300*1.4666,18e3,r),2.5,...
+Rmax=fsolve(@(r) 0.85-Mt(0.3*a(0),24e3,r),2.5,...
     optimoptions('fsolve','display','off'));
 A=Rmax^2*pi;
 
@@ -22,10 +22,13 @@ pT=griddedInterpolant(vdom,T_r,'linear');
 % Mach conisderations and imperical assumptions
 % Create an assumption that decreases thrust as tip approaches and surpass
 % mach 0.85
-pp=spline([0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.9],[0 1 1 1 1 1 0.98 0.95 0.9 0.4 -4]);
-m_effect=@(v,h) ppval(pp,v/a(h));
+m_effect=@(m) 1-(-atan((m-1.2)*4)+atan(-4*1.2))/(2*atan(-4*1.2));
 
+alt_effect=@(h) 1.132*p(h)/p(0)-0.132; %http://www.dept.aoe.vt.edu/~lutze/AOE3104/thrustmodels.pdf
+alt_effect=@(h) sqrt(p(h)/p(0)); % but I like this better
 % final thrust equation
-T=@(V,h) n*pT(V)*m_effect(Mt(V,h,Rmax)*a(h),h)/m_effect(Mt(0,h,Rmax)*a(h),h);
+T=@(V,h) n*pT(V)*...
+    m_effect(Mt(V,h,Rmax))/m_effect(Mt(0,0,Rmax))*...
+    alt_effect(h);   %set af equal to 0 to negate altitue effects
 
 clearvars P_i T_i rpm ind2 yt T_r pT T0 pp

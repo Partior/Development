@@ -1,13 +1,14 @@
 %% New Drag Polar for the entire Aircraft
 % Uses dynamic pressure ratios, % of props on, travel height and velocity
 % to provie a drag polar for the entire aircraft
-% 
+%
 % Combines the drag polar for the aircraft fuesalge (with assumeptions for
 % appendeges) and adds the polar for the arifoil, assumeing higher flow
 % velocity
 
 %% Init
 % run scripts to initalize variables
+clear; clc
 load('../ConceptCompar/constants.mat')
 n=12; % reset number of props to redo prop_T
 prop_T
@@ -17,8 +18,9 @@ airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
 
 % Lift for the entire airplane will be approximated as the lift for the
-% airfoil alone
-%% Equations
+% airfoil alone with imperical factor
+
+%% Power Equations
 % Lift and Drag, then calculate Cl and Cd or L/D or Cl/Cd
 % Because Drag is a function of each component, and nothing to do with Cd
 % of each component.
@@ -44,48 +46,72 @@ Dw=@(aoa,h,v,on) (...
     1/2*p(h)*v2(v,T(v,h),h)^2*Cda(aoa*ang(v,h))*((2*Rmax*on)*chrd)); % prop wash drag
 D=@(aoa,h,v,on) Df(aoa,h,v)+Dw(aoa,h,v,on);
 
-%% Plotting
+% Fuel Efficiency
+gmma=@(aoa,h,v,on) v./(SFC/3600*(D(aoa,h,v,on)));
+
+%% Domain and Constants
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 75% power levels
 % Stall line for each
 
-[m_msh,h_msh]=meshgrid(linspace(0.1,0.8,40),linspace(0,52e3,40));
-taoa=zeros(40);
-pl=zeros(40);
+resol=40;
+[m_msh,h_msh]=meshgrid(linspace(0.1,0.5,resol),linspace(0,40e3,resol));
+taoa=zeros(resol);
+pl=zeros(resol);
 % started at 0.1 mach to not have to deal with wierd AoAs
 
 % First, power required equation:
 plvl=@(aoa,h,v,on) ...
     D(aoa,h,v,on)/(T(v,h)*on/n);
-pl=zeros(40);
+pl=zeros(resol);
+gm=zeros(resol);
 
-figure(1); clf; hold on
+figure(2); clf; hold on
+
 prim=[0.5 1];
-supp=0.55:0.05:.95;
+supp=[0.1:0.1:0.4,0.6:0.1:.9];
 clr=['k','b','c','g','y','r'];
-wb=waitbar(0,'Waiting');
 
-for ne=[12]
-    for ita=1:40
-        waitbar(ita/40,wb)
-        parfor itb=1:40
+pll=gcp('nocreate');
+if isempty(pll)
+    parpool('local')
+end
+
+%% Execution
+wb=waitbar(0,'Waiting');
+for ne=[8,10]
+    subplot(1,2,(ne-6)/2); hold on
+    for ita=1:resol
+        waitbar(ita/40,wb,sprintf('Waiting, %g',ne))
+        parfor itb=1:resol
             hi=h_msh(ita,itb);
             vi=m_msh(ita,itb)*a(h_msh(ita,itb));
-            taoa(ita,itb)=fsolve(@(rr) L(rr,hi,vi,ne)-W0(19),5,optimoptions('fsolve','Display','off'));
+            taoa(ita,itb)=fsolve(@(rr) L(rr,hi,vi,ne)-W0(19),0,optimoptions('fsolve','display','off'));
             if isnan(taoa(ita,itb))
                 pl(ita,itb)=NaN;
+                gm(ita,itb)=NaN;
             else
                 pl(ita,itb)=plvl(taoa(ita,itb),hi,vi,ne);
+                gm(ita,itb)=gmma(taoa(ita,itb),hi,vi,ne);
             end
         end
     end
+    
+    pl_plot=reshape(pl(imag(pl)==0),size(pl));
+    
     cli=clr(ne/2);
-    [~,h_m]=contour(m_msh,h_msh/1e3,pl,prim);
-    set(h_m,'LineColor',cli,'LineStyle','-','LineWidth',1.5,...
-        'LineWidth',1.5,...
+    [~,h_m]=contour(m_msh,h_msh/1e3,pl_plot,prim);
+    set(h_m,'LineColor','k','LineStyle','-','LineWidth',1.5,...
         'ShowText','on','LabelSpacing',400);
-    [~,h_s]=contour(m_msh,h_msh/1e3,pl,supp);
-    set(h_s,'LineColor',cli,'LineStyle',':','LineWidth',1,...
+    [~,h_s]=contour(m_msh,h_msh/1e3,pl_plot,supp);
+    set(h_s,'LineColor','k','LineStyle',':','LineWidth',1,...
         'LineWidth',0.1);
+    [~,hg]=contour(m_msh,h_msh/1e3,gm/5280,0.4:0.1:1);
+    set(hg,'LineColor','r','LineStyle','-.','LineWidth',1,...
+        'ShowText','on','LabelSpacing',400);
+    
+    [~,hs]=contour(m_msh,h_msh/1e3,m_msh.*a(h_msh),[250,300]*1.4666);
+    set(hs,'LineColor','c','LineStyle',':','LineWidth',1.5);
+    
 end
 close(wb)
