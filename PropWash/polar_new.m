@@ -11,7 +11,7 @@
 load('../ConceptCompar/constants.mat')
 n=12; % reset number of props to redo prop_T
 prop_T
-v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio
+v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
 
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
@@ -26,10 +26,14 @@ cd_new      % sets up airfoil drag polar
 b=sqrt(AR*S);
 chrd=S/b;
 beta=@(m) sqrt(1-m.^2);
+% How much of free stream wind is the AoA versus zero degress from prop?
+% impercial formula made up
+ang=@(v,h) v/v2(v,T(v,h),h);
+
 % First, determine lift from airfoil and velcoty ratios
 L=@(aoa,h,v,on) (...
     1/2*p(h)*v^2*Cla(aoa)*((b-2*Rmax*on)*chrd)+...free stream wing lift
-    1/2*p(h)*v2(v,T(v),h)^2*Cla(aoa/3)*((2*Rmax*on)*chrd))+... prop wash lift
+    1/2*p(h)*v2(v,T(v,h),h)^2*Cla(aoa*ang(v,h))*((2*Rmax*on)*chrd))+... prop wash lift
     1/2*p(h)*v^2*Cla(aoa)*(S)*0.2; % Approximation for Fuselage lift
 
 % For induced drag, we are taking that the lift of the fuselage is 10% of
@@ -37,7 +41,7 @@ L=@(aoa,h,v,on) (...
 Df=@(aoa,h,v) 1/2*p(h)*v^2*(CD0_plane(v,h)+(K*Cla(aoa)^2)*0.1)/beta(v/a(h))*(80*5); % 80*5 is length * diamter for approx surface area
 Dw=@(aoa,h,v,on) (...
     1/2*p(h)*v^2*Cda(aoa)*((b-2*Rmax*on)*chrd)+...free stream wing drag
-    1/2*p(h)*v2(v,T(v),h)^2*Cda(aoa/3)*((2*Rmax*on)*chrd)); % prop wash drag
+    1/2*p(h)*v2(v,T(v,h),h)^2*Cda(aoa*ang(v,h))*((2*Rmax*on)*chrd)); % prop wash drag
 D=@(aoa,h,v,on) Df(aoa,h,v)+Dw(aoa,h,v,on);
 
 %% Plotting
@@ -46,28 +50,32 @@ D=@(aoa,h,v,on) Df(aoa,h,v)+Dw(aoa,h,v,on);
 % Stall line for each
 
 [m_msh,h_msh]=meshgrid(linspace(0.1,0.8,40),linspace(0,52e3,40));
+taoa=zeros(40);
+pl=zeros(40);
+% started at 0.1 mach to not have to deal with wierd AoAs
+
 % First, power required equation:
 plvl=@(aoa,h,v,on) ...
-    D(aoa,h,v,on)*v/(Pa*(on/n));
+    D(aoa,h,v,on)/(T(v,h)*on/n);
 pl=zeros(40);
 
 figure(1); clf; hold on
-set(gca,'Color',0.4*[1 1 1])
 prim=[0.5 1];
 supp=0.55:0.05:.95;
 clr=['k','b','c','g','y','r'];
 wb=waitbar(0,'Waiting');
 
 for ne=[12]
-    parfor ita=1:40
-        for itb=1:40
+    for ita=1:40
+        waitbar(ita/40,wb)
+        parfor itb=1:40
             hi=h_msh(ita,itb);
             vi=m_msh(ita,itb)*a(h_msh(ita,itb));
-            t=fsolve(@(rr) L(rr,hi,vi,ne)-W0(19),5,optimoptions('fsolve','Display','off'));
-            if isnan(t)
+            taoa(ita,itb)=fsolve(@(rr) L(rr,hi,vi,ne)-W0(19),5,optimoptions('fsolve','Display','off'));
+            if isnan(taoa(ita,itb))
                 pl(ita,itb)=NaN;
             else
-                pl(ita,itb)=plvl(t,hi,vi,ne);
+                pl(ita,itb)=plvl(taoa(ita,itb),hi,vi,ne);
             end
         end
     end
