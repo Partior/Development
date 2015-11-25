@@ -9,12 +9,12 @@ end
 
 
 Wfix=@(px) 225*(3+px);
-We=9078.7;
-Wf=2654.7;
+We=8300; %recently modified for Propwash
+Wf=1883.0;  %recently modified for Propwash
 W0=@(pw) Wfix(pw)+We+Wf;
 SFC=0.45;
 p=@(h) 2.3769e-3*exp(-3.2e-5*h);
-S=375;
+S=350;
 AR=10;
 Cd0=0.024;
 
@@ -23,7 +23,7 @@ K=1/(AR*e*pi);
 
 V0=250*1.4666;
 
-Pa=1300*550;
+Pa=1000*550;
 n=6;
 
 hc=8; hdom=linspace(18e3,28e3,hc);

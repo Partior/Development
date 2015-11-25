@@ -9,6 +9,7 @@ cd=dta.data(:,3);
 cm=dta.data(:,5);
 
 Cd0=min(cd);
+Cl0=-1.1793;
 
 Cla=griddedInterpolant(alfa(4:end),cl(4:end),'pchip','none');
 Cda=griddedInterpolant(alfa(4:end),cd(4:end),'pchip','none');
