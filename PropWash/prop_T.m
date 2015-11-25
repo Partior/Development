@@ -22,10 +22,11 @@ pT=griddedInterpolant(vdom,T_r,'linear');
 % Mach conisderations and imperical assumptions
 % Create an assumption that decreases thrust as tip approaches and surpass
 % mach 0.85
-m_effect=@(m) 1-(-atan((m-1.2)*4)+atan(-4*1.2))/(2*atan(-4*1.2));
+m_effect=@(m) 1-(-atan((m-1.2)*6)+atan(-6*1.2))/(2*atan(-6*1.2));
 
 alt_effect=@(h) 1.132*p(h)/p(0)-0.132; %http://www.dept.aoe.vt.edu/~lutze/AOE3104/thrustmodels.pdf
 alt_effect=@(h) sqrt(p(h)/p(0)); % but I like this better
+
 % final thrust equation
 T=@(V,h) n*pT(V)*...
     m_effect(Mt(V,h,Rmax))/m_effect(Mt(0,0,Rmax))*...
