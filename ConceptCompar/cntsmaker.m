@@ -14,7 +14,7 @@ Wf=1883.0;  %recently modified for Propwash
 W0=@(pw) Wfix(pw)+We+Wf;
 SFC=0.45;
 p=@(h) 2.3769e-3*exp(-3.2e-5*h);
-S=350;
+S=300;
 AR=10;
 Cd0=0.024;
 

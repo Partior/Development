@@ -3,12 +3,14 @@ a=@(h) sqrt(1.4*287.058*Temp(h))*3.28084;   % mach 1 in feet per second
 
 vdom=linspace(0,0.7,300)*a(0);
 
+n=8;
+
 P_i=Pa/n;
 T_i=P_i./vdom;
 
 rpm=3500; % max rpm rating
 Mt=@(v,h,r) sqrt((v/(a(h)))^2+((rpm*2*pi/60)*r/a(h))^2);
-Rmax=fsolve(@(r) 0.85-Mt(0.3*a(0),24e3,r),2.5,...
+Rmax=fsolve(@(r) 0.85-Mt(250,25e3,r),2,...
     optimoptions('fsolve','display','off'));
 A=Rmax^2*pi;
 
@@ -29,7 +31,7 @@ alt_effect=@(h) sqrt(p(h)/p(0)); % but I like this better
 
 % final thrust equation
 T=@(V,h) n*pT(V)*...
-    m_effect(Mt(V,h,Rmax))/m_effect(Mt(0,0,Rmax))*...
-    alt_effect(h);   %set af equal to 0 to negate altitue effects
+    m_effect(Mt(V,h,Rmax))*...
+    alt_effect(h);
 
 clearvars P_i T_i rpm ind2 yt T_r pT T0 pp

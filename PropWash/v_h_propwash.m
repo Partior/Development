@@ -1,3 +1,17 @@
+%% Init
+% run scripts to initalize variables
+clear; clc
+load('C:\Users\granata\Desktop\MATLAB Files\Partior\ConceptCompar\constants.mat')
+
+AR=15;
+S=143;
+
+prop_T
+v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
+
+airfoil_polar   % sets up fuselage drag
+cd_new      % sets up airfoil drag polar
+
 equations_wash  % sets up lift and drag functions
 
 % Lift for the entire airplane will be approximated as the lift for the
@@ -19,6 +33,9 @@ plvl=@(aoa,h,v,on) ...
 pl=zeros(resol);
 gm=zeros(resol);
 
+% Fuel Efficiency
+gmma=@(aoa,h,v,on) v./(SFC/3600*(D(aoa,h,v,on)));
+
 figure(2); clf; hold on
 
 prim=[0.5 1];
@@ -32,14 +49,15 @@ end
 
 %% Execution
 wb=waitbar(0,'Waiting');
-for ne=[2,4,6,8]
-    subplot(2,2,ne/2); hold on
+for ne=[6,8]
+    subplot(1,2,(ne-4)/2); cla; hold on
     for ita=1:resol
-        waitbar(ita/40,wb,sprintf('Waiting, %g',ne))
+        waitbar(ita/resol,wb,sprintf('Waiting, %g',ne))
         parfor itb=1:resol
             hi=h_msh(ita,itb);
             vi=m_msh(ita,itb)*a(h_msh(ita,itb));
             taoa(ita,itb)=fsolve(@(rr) L(rr,hi,vi,ne)-W0(0),0,optimoptions('fsolve','display','off'));
+            LD(ita,itb)=L(taoa(ita,itb),hi,vi,ne)/D(taoa(ita,itb),hi,vi,ne);
             if isnan(taoa(ita,itb))
                 pl(ita,itb)=NaN;
                 gm(ita,itb)=NaN;
@@ -57,14 +75,24 @@ for ne=[2,4,6,8]
     set(h_m,'LineColor','k','LineStyle','-','LineWidth',1.5,...
         'ShowText','on','LabelSpacing',400);
     [~,h_s]=contour(m_msh,h_msh/1e3,pl_plot,supp);
-    set(h_s,'LineColor','k','LineStyle',':','LineWidth',1,...
-        'LineWidth',0.1);
-    [~,hg]=contour(m_msh,h_msh/1e3,gm/5280,0.1:0.1:1.5);
-    set(hg,'LineColor','r','LineStyle','-.','LineWidth',1,...
+    set(h_s,'LineColor','k','LineStyle',':','LineWidth',0.1);
+    
+    [~,h_a]=contour(m_msh,h_msh/1e3,taoa,-1:4);
+    set(h_a,'LineColor','b','LineStyle','-','LineWidth',0.6,...
         'ShowText','on','LabelSpacing',400);
     
+    [~,hLD]=contour(m_msh,h_msh/1e3,LD,[16:2:26]);
+    set(hLD,'LineColor','m','LineStyle','--','LineWidth',0.6,...
+        'ShowText','on','LabelSpacing',400);
+
+    [~,hg]=contour(m_msh,h_msh/1e3,gm/5280,[0.5 1]);
+    set(hg,'LineColor','r','LineStyle','-','LineWidth',1.5,...
+        'ShowText','on','LabelSpacing',400);
+    [~,hgs]=contour(m_msh,h_msh/1e3,gm/5280,0.6:0.1:0.9);
+    set(hgs,'LineColor','r','LineStyle',':','LineWidth',0.1);
+    
     [~,hs]=contour(m_msh,h_msh/1e3,m_msh.*a(h_msh),[250,300]*1.4666);
-    set(hs,'LineColor','c','LineStyle',':','LineWidth',1.5);
+    set(hs,'LineColor','c','LineStyle','-','LineWidth',0.6);
     
     grid on
     
