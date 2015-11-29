@@ -8,18 +8,19 @@ clear; clc
 load('C:\Users\granata\Desktop\MATLAB Files\Partior\ConceptCompar\constants.mat')
 
 AR=15;
-S=143;
+S=200;
+n=8;
 
 %% Constants
 h=25e3;
 v=366;  %250mph
-ne=6;
+ne=6;   % running engines
 
 %% Domain
-var=    'ne'  ;
+var=    'AR'  ;
 resol=  8      ;
-dstart= 1      ;
-dend=   8       ;
+dstart= 7     ;
+dend=   20       ;
 
 varince=linspace(dstart,dend,resol);
 
@@ -36,10 +37,10 @@ for itr=1:resol
     % Force Speciic
     equations_wash  % sets up lift and drag functions
     
-    AA=fsolve(@(rr) L(rr,h,v,ne)-W0(0),0,optimoptions('fsolve','display','off'));
+    AA=fsolve(@(rr) L(rr,h,v,ne)-W0(19),0,optimoptions('fsolve','display','off'));
 
     % Assign Value
-    plvl(itr)=D(AA,h,v,ne)/(T(v,h)*ne/n);
+    plvl(itr)=D(AA,h,v,ne)/(T(v,h,Pa/n)*ne);
     gmma(itr)=v./(SFC/3600*(D(AA,h,v,ne)));
 end
 
