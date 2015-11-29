@@ -43,21 +43,21 @@ h_sc=fsolve(@(h) sP(h,V_mp(h),1)-100/60,40e3,optimoptions('fsolve','Display','of
 figure(1); clf; hold on
 
 % Not doing the '1' for the contour line as it matches the power levels
-gmdom=0.75:0.25:2.25;
-gmint=[0.5 1.5 2];
-for itr=1:length(gmdom)
-    if any(abs(gmdom(itr)-gmint)<1e-8)
-        gmdom(itr)=0;
-    end
-end
-gmdom=nonzeros(gmdom);
-[~,h2_m]=contour(m_msh,h_msh/1e3,real(navail),gmint);
-set(h2_m,'LineColor','r','LineStyle','-','LineWidth',1.5,...
-    'LineWidth',1.5,...
-    'ShowText','on','LabelSpacing',400);
-[~,h2_s]=contour(m_msh,h_msh/1e3,real(navail),gmdom);
-set(h2_s,'LineColor','r','LineStyle',':','LineWidth',1,...
-    'LineWidth',0.5);
+% gmdom=0.75:0.25:2.25;
+% gmint=[0.5 1.5 2];
+% for itr=1:length(gmdom)
+%     if any(abs(gmdom(itr)-gmint)<1e-8)
+%         gmdom(itr)=0;
+%     end
+% end
+% gmdom=nonzeros(gmdom);
+% [~,h2_m]=contour(m_msh,h_msh/1e3,real(navail),gmint);
+% set(h2_m,'LineColor','r','LineStyle','-','LineWidth',1.5,...
+%     'LineWidth',1.5,...
+%     'ShowText','on','LabelSpacing',400);
+% [~,h2_s]=contour(m_msh,h_msh/1e3,real(navail),gmdom);
+% set(h2_s,'LineColor','r','LineStyle',':','LineWidth',1,...
+%     'LineWidth',0.5);
 
 gmdom=0.3:0.1:1.4;
 gmint=[0.5 0.75 1 1.5];

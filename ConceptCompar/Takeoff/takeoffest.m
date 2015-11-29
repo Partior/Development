@@ -88,10 +88,10 @@ Sa_oei=Wt_oei(end)/(nm*Pa/V2-0.5*p(0)*V2^2*S*Cdg)*((V2^2-Vlof^2)/(2*32.2)+35); %
 
 figure(1); clf
 subplot(2,2,1:2)
-plot(St,Vt/1.4666); xlabel('Dist, ft'); ylabel('Vel, mph')
+plot(St,Vt/1.4666,'LineWidth',1.5); xlabel('Dist, ft'); ylabel('Vel, mph')
 hold on
-plot(Sbr_disp(:,3),Sbr_disp(:,2)/1.4666,'r')
-plot(St_oei,Vt_oei/1.4666,'g')
+plot(Sbr_disp(:,3),Sbr_disp(:,2)/1.4666,'r','LineWidth',1.5)
+plot(St_oei,Vt_oei/1.4666,'g','LineWidth',1.5)
 plot(St(end)+Sa,V2/1.4666,'b*')
 plot(St_oei(end)+Sa_oei,V2/1.4666,'g*')
 legend({'Takeoff','Emerg Brake','OEI'},'Location','south')

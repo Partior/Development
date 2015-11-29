@@ -51,7 +51,7 @@ TW_c=@(ws,p,V,n,hdot)...
     (0.5*p*V.^2)*Cd0./ws+K*n^2./(0.5*p*V.^2).*ws+1./V*(hdot);
 
 % For Straight, Level Flight at cruise conditions
-TW_cruise=TW_c(WSdom,p_c,V_c,1,0);
+TW_cruise=TW_c(WSdom,p_c,V_c*1.4666,1,0);
 
 % For Service Ceiling, steady, constant speed, 100 ft per min
 TW_serv=TW_c(WSdom,p_sc,V_mp(WSdom,p_sc),1,100/60);
@@ -68,13 +68,13 @@ TW_man=TW_c(WSdom,p_sl,V_c,2.5,0);
 f1=figure(1); clf
 hold on
 if vales(1)
-    plot(WSdom,s_tm,'b-')       % Takeoff Distance Req
+    plot(WSdom,s_tm*180,'b-')       % Takeoff Distance Req
 end
 if vales(2)
-    plot(WSdom,TW_cruise,'b--') % Cruise Req
+    plot(WSdom,TW_cruise*440,'r--') % Cruise Req
 end
 if vales(3)
-    plot(WSdom,TW_serv,'g--')   % Service Ceiling Req
+    plot(WSdom,TW_serv*V_mp(40,p_sc),'g--')   % Service Ceiling Req
 end
 if vales(4)
     plot(WSdom,TW_cc,'k--')     % Cruise Ceiling Req
@@ -85,7 +85,7 @@ end
 
 
 % Min W/S Req for range and stall
-ym=ylim;
+ym=[0 80];
 if vales(6)
     plot(WS_r*ones(1,2),ym,'k:')
 end
@@ -104,9 +104,9 @@ TWdom=linspace(ym(1),ym(2),ms);
 designspace=zeros(ms);
 for a=1:ms
     for b=1:ms
-        tstmat=[TWspace(a,b)>s_tm(b);
-            TWspace(a,b)>TW_cruise(b);
-            TWspace(a,b)>TW_serv(b);
+        tstmat=[TWspace(a,b)>s_tm(b)*180;
+            TWspace(a,b)>TW_cruise(b)*440;
+            TWspace(a,b)>TW_serv(b)*V_mp(40,p_sc);
             TWspace(a,b)>TW_cc(b);
             TWspace(a,b)>TW_man(b);
             WSspace(a,b)>WS_r;
@@ -134,22 +134,22 @@ lgnd(f1)
 
 %% Axis, Title and Text
 xlabel('Wing Loading, lbs/ft^2')
-ylabel('Thrust to Weight Ratio, lbf/lbm')
+ylabel('Power to Weight Ratio, ft/sec')
 title('Partior Q==1: Design Space')
 % Text Output
-xm=xlim;
-text(0.98*xm(2),0.1*ym(2),sprintf('W_{TO}=%6.0f lbs',Wto),...
-    'horizontalAlignment','right','verticalAlignment','bottom')
-if vales(6)
-text(WS_r,0.95*ym(2),sprintf('%0.0f nm',R/1.151),...
-    'horizontalAlignment','left','verticalAlignment','top')
-end
-if vales(7)
-text(WS_s,0.90*ym(2),sprintf('%0.0f KTAS',V_stall/1.688),...
-    'horizontalAlignment','left','verticalAlignment','top')
-end
-if vales(8)
-text(WS_l,0.95*ym(2),sprintf('%0.0f ft',s_T),...
-    'horizontalAlignment','right','verticalAlignment','top')
-end
+% xm=xlim;
+% text(0.98*xm(2),0.1*ym(2),sprintf('W_{TO}=%6.0f lbs',Wto),...
+%     'horizontalAlignment','right','verticalAlignment','bottom')
+% if vales(6)
+% text(WS_r,0.95*ym(2),sprintf('%0.0f nm',R/1.151),...
+%     'horizontalAlignment','left','verticalAlignment','top')
+% end
+% if vales(7)
+% text(WS_s,0.90*ym(2),sprintf('%0.0f KTAS',V_stall/1.688),...
+%     'horizontalAlignment','left','verticalAlignment','top')
+% end
+% if vales(8)
+% text(WS_l,0.95*ym(2),sprintf('%0.0f ft',s_T),...
+%     'horizontalAlignment','right','verticalAlignment','top')
+% end
 ylim(ym)
