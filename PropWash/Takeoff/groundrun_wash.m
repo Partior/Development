@@ -13,7 +13,7 @@ Vt=val(2);
 % formulation of dV/dt
 Lg=L(0,0,Vt,ne);
 Dr=max(0,mu*(Wt-Lg)); % rolling resistance
-Tt=T(Vt,0)*ne/n;
+Tt=T(Vt,0,Pa/n)*ne;
 Dg=D(0,0,Vt,ne); % air drag resistance
 dval(2)=32.2/Wt*(nm*Tt-Dg-Dr);
 
