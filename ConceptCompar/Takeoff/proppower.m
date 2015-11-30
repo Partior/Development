@@ -17,8 +17,10 @@ vdom=linspace(0,0.7,300)*a(0);
 P_i=Pa/n;
 T_i=P_i./vdom;
 
-rpm=3000; % max rpm rating
-Rmax=sqrt((a(0)*0.85)^2-(270*1.466)^2)/(rpm*2*pi/60);
+rpm=2000; % max rpm rating
+Mt=@(v,h,r) sqrt((v/(a(h)))^2+((rpm*2*pi/60)*r/a(h))^2);
+Rmax=fsolve(@(r) 0.85-Mt(350,25e3,r),2,...
+    optimoptions('fsolve','display','off'));
 A=Rmax^2*pi; p=2.3e-3;
 
 T0=P_i^(2/3)*(2*p*A)^(1/3);

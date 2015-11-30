@@ -26,7 +26,7 @@ equations_wash  % sets up lift and drag functions
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 50% power levels
 
-resol=20;
+resol=30;
 [m_msh,h_msh]=meshgrid(linspace(0.1,0.6,resol),linspace(0,52e3,resol));
 % started at 0.1 mach to not have to deal with wierd AoAs
 
@@ -48,7 +48,7 @@ if isempty(pll)
     parpool('local')
 end
 %% Execution
-for ne=[8]
+for ne=[4]
     %     subplot(1,2,(ne-4)/2);
     cla; hold on
     

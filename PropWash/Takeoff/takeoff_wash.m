@@ -29,6 +29,7 @@ muTire=0.35;    % Braking resistance, tires to grass
 VLOF=100*1.4666; % liftoff speed to which ground run goes to
 ne=n;   % all engines
 
+Pa=Pa*0.5;
 save('takeoff_const.mat')
 %% Ground Run
 nm=1; % Running with all engines
@@ -106,6 +107,7 @@ nm=(n-1)/n; % running OEI
 % end
 
 %% Airborne Distance
+Pa=Pa*2;
 V2=max(172,VLOF*1.1); % ft/s, Vmp for climbing
 Cdg=D(3,0,V2,ne)/(0.5*p(0)*V2^2*S);
 Sa=Wt(end)/(Pa/V2-0.5*p(0)*V2^2*S*Cdg)*((V2^2-VLOF^2)/(2*32.2)+35); % airborne distance
