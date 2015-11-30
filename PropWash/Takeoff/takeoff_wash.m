@@ -10,7 +10,8 @@ clear; clc
 load('C:\Users\granata\Desktop\MATLAB Files\Partior\ConceptCompar\constants.mat')
 
 AR=15;
-S=143;
+S=200;
+n=8;
 
 prop_T
 v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h

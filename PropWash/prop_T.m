@@ -3,14 +3,13 @@ a=@(h) sqrt(1.4*287.058*Temp(h))*3.28084;   % mach 1 in feet per second
 
 vdom=linspace(0,0.7,300)*a(0);
 
-rpm=3500; % max rpm rating
+rpm=2000; % max rpm rating
 Mt=@(v,h,r) sqrt((v/(a(h)))^2+((rpm*2*pi/60)*r/a(h))^2);
-Rmax=fsolve(@(r) 0.85-Mt(250,25e3,r),2,...
+Rmax=fsolve(@(r) 0.85-Mt(350,25e3,r),2,...
     optimoptions('fsolve','display','off'));
 A=Rmax^2*pi;
 
 Padom=linspace(50,800,30)*550;
-
 for itPa=1:30
     Pi=Padom(itPa);
     T_i=Pi./vdom;

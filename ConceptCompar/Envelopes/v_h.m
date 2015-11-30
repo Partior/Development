@@ -3,6 +3,7 @@
 
 clear; clc
 load('../constants.mat')
+S=375;
 Temp=@(h) 15.0-6.5*(h/3280.84)+273.15;  % input h of feet, output of Temp in kel
 a=@(h) sqrt(1.4*287.058*Temp(h))*3.28084;   % mach 1 in feet per second
 beta=@(m) sqrt(1-m.^2); % Praudnlt-gluaert trransformation

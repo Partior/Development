@@ -26,8 +26,8 @@ equations_wash  % sets up lift and drag functions
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 50% power levels
 
-resol=150;
-[m_msh,h_msh]=meshgrid(linspace(0.15,0.45,resol),linspace(0,45e3,resol));
+resol=20;
+[m_msh,h_msh]=meshgrid(linspace(0.1,0.6,resol),linspace(0,52e3,resol));
 % started at 0.1 mach to not have to deal with wierd AoAs
 
 % First, power required equation:
@@ -48,7 +48,7 @@ if isempty(pll)
     parpool('local')
 end
 %% Execution
-for ne=[6]
+for ne=[8]
     %     subplot(1,2,(ne-4)/2);
     cla; hold on
     
@@ -99,7 +99,7 @@ for ne=[6]
     
     if vals{5}
         % mph lines across altitudes
-        [~,hs]=contour(m_msh,h_msh/1e3,m_msh.*a(h_msh),[0,250]*1.4666);
+        [~,hs]=contour(m_msh,h_msh/1e3,m_msh.*a(h_msh),[0,250,300]*1.4666);
         set(hs,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','m_msh.*a(h_msh)',...
             'LineColor','m','LineStyle','-','LineWidth',0.6);
     end
