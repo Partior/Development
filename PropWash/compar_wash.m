@@ -17,10 +17,10 @@ v=366;  %250mph
 ne=6;   % running engines
 
 %% Domain
-var=    'rpm'  ;
+var=    'incd'  ;
 resol=  20      ;
-dstart= 1e3     ;
-dend=   4e3       ;
+dstart= 6     ;
+dend=   8       ;
 
 varince=linspace(dstart,dend,resol);
 

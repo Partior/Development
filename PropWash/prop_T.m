@@ -3,9 +3,9 @@ a=@(h) sqrt(1.4*287.058*Temp(h))*3.28084;   % mach 1 in feet per second
 
 vdom=linspace(0,0.7,300)*a(0);
 
-rpm=2000; % max rpm rating
+rpm=2500; % max rpm rating
 Mt=@(v,h,r) sqrt((v/(a(h)))^2+((rpm*2*pi/60)*r/a(h))^2);
-Rmax=fsolve(@(r) 0.85-Mt(350,25e3,r),2,...
+Rmax=fsolve(@(r) 0.90-Mt(366,25e3,r),2,...
     optimoptions('fsolve','display','off'));
 A=Rmax^2*pi;
 
@@ -25,7 +25,7 @@ pT=griddedInterpolant({vdom,Padom},T_r,'linear','none');
 % Mach conisderations and imperical assumptions
 % Create an assumption that decreases thrust as tip approaches and surpass
 % mach 0.85
-m_effect=@(m) 1-(-atan((m-1.2)*6)+atan(-6*1.2))/(2*atan(-6*1.2));
+m_effect=@(m) 1-(-atan((m-1.4)*6)+atan(-6*1.4))/(2*atan(-6*1.4));
 
 alt_effect=@(h) 1.132*p(h)/p(0)-0.132; %http://www.dept.aoe.vt.edu/~lutze/AOE3104/thrustmodels.pdf
 alt_effect=@(h) sqrt(p(h)/p(0)); % but I like this better
