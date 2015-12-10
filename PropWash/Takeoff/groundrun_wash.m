@@ -17,5 +17,5 @@ Tt=T(Vt,0,Pa/n)*ne;
 Dg=D(0,0,Vt,ne); % air drag resistance
 dval(2)=32.2/Wt*(nm*Tt-Dg-Dr);
 
-dval(1)=-Tt*SFC/3600; % dW
+dval(1)=-SFC_eq(Pa/550); % dW
 dval(3)=Vt;

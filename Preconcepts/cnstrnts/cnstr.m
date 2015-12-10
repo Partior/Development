@@ -18,6 +18,11 @@ assumer
 % in assignment to Wto
 W_est
 
+e=0.76;
+Wto=15350;
+LD=22;
+AR=10;
+
 %% Ranges for W/S 
 WSdom=linspace(5,60,25);
 ms=length(WSdom);
@@ -41,7 +46,7 @@ s_tm=zeros(1,ms);
 for a=1:ms
     s_tm(a)=fsolve(@(tw) ...
         s_T-(20.9*(WSdom(a)/(Cl_max*tw))+69.6*sqrt(WSdom(a)/(Cl_max*tw))*tw),...
-        0.5,optimoptions('fsolve','display','off'));
+        0.5,optimoptions('fsolve','display','off'))*160;
 end
 
 
@@ -51,10 +56,10 @@ TW_c=@(ws,p,V,n,hdot)...
     (0.5*p*V.^2)*Cd0./ws+K*n^2./(0.5*p*V.^2).*ws+1./V*(hdot);
 
 % For Straight, Level Flight at cruise conditions
-TW_cruise=TW_c(WSdom,p_c,V_c,1,0);
+TW_cruise=TW_c(WSdom,p_c,V_c,1,0)*366*p_sl/p_c;
 
 % For Service Ceiling, steady, constant speed, 100 ft per min
-TW_serv=TW_c(WSdom,p_sc,V_mp(WSdom,p_sc),1,100/60);
+TW_serv=TW_c(WSdom,p_sc,V_mp(WSdom,p_sc),1,100/60).*V_mp(WSdom,p_sc);
 
 % For Cruise Ceiling, steady, constant speed, 300 ft/min
 TW_cc=TW_c(WSdom,p_c,V_mp(WSdom,p_c),1,300/60);

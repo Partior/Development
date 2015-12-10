@@ -4,14 +4,7 @@ clear; clc
 addpath('../')
 
 %% INIT
-
-
-clear; clc
-load('C:\Users\granata\Desktop\MATLAB Files\Partior\ConceptCompar\constants.mat')
-
-AR=15;
-S=200;
-n=8;
+prop_const
 
 prop_T
 v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
@@ -107,7 +100,7 @@ nm=(n-1)/n; % running OEI
 % end
 
 %% Airborne Distance
-Pa=Pa*2;
+% Pa=Pa*2;
 V2=max(172,VLOF*1.1); % ft/s, Vmp for climbing
 Cdg=D(3,0,V2,ne)/(0.5*p(0)*V2^2*S);
 Sa=Wt(end)/(Pa/V2-0.5*p(0)*V2^2*S*Cdg)*((V2^2-VLOF^2)/(2*32.2)+35); % airborne distance
