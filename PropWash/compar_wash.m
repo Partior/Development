@@ -6,7 +6,7 @@
 % run scripts to initalize variables
 clear; clc
 prop_const
-
+n=12;
 %% Constants
 h=25e3;
 v=366;  %250mph
@@ -15,16 +15,17 @@ ne=n;   % running engines
 gmm=@(v,P) v/SFC_eq(P/550)/5280;
 
 %% Domain
-var=    'S'  ;
-resol=  30      ;
-dstart= 200     ;
-dend=   350       ;
+var=    'n'  ;
+resol=  12      ;
+dstart= 2     ;
+dend=   12       ;
 
 varince=linspace(dstart,dend,resol);
 
 for itr=1:resol
     % Variable Assignment
     eval([var,'=',num2str(varince(itr)),';']);
+    ne=n;
  
     % Prop Specific
     prop_T

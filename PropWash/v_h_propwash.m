@@ -88,7 +88,7 @@ if ~vals{3}
 end
 
 % N-turns
-[~,hnp]=contour(m_msh,h_msh/1e3,n_t,[0.5 1 2 4]);
+[~,hnp]=contour(m_msh,h_msh/1e3,n_t,[1 2 4]);
 set(hnp,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','n_t',...
     'LineColor','g','LineStyle','-','LineWidth',1.5,...
     'ShowText','on','LabelSpacing',400);
@@ -108,9 +108,15 @@ for ita=1:resol
     parfor itb=1:resol
         hi=h_msh(ita,itb);
         vi=m_msh(ita,itb)*a(h_msh(ita,itb));
+        n_t(ita,itb)=L(15-incd,hi,vi,ne)/W0(19);
+        if n_t(ita,itb)<0.9;
+            continue
+        end
         taoa(ita,itb)=fsolve(@(rr) L(rr,hi,vi,ne)-W0(19),0,optimoptions('fsolve','display','off'));
         pl(ita,itb)=plvl(taoa(ita,itb),hi,vi,ne);
-        n_t(ita,itb)=L(13-incd,hi,vi,ne)/W0(19);
+        if pl(ita,itb)>1;
+            continue
+        end
         gm(ita,itb)=gmma(vi,pl(ita,itb)*Pa*ne/n);
     end
     refreshdata

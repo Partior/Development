@@ -36,17 +36,15 @@ ind2=find(ntn(1,:)==2);
 nturn=ntn(:,ind+1:ind2-1);
 ntnl=pchip(nturn(1,:),nturn(2,:));
 [~,inm]=max(plc(2,:));
-if plc(2,inm)>ppval(ntnl,plc(1,inm))
-    for itr=1:length(plc)
-        if plc(2,itr)>ppval(ntnl,plc(1,itr))
-            plc(2,itr)=0;
-        end
+pl2=pl;
+pl2(isnan(pl2))=0;
+ppl=griddedInterpolant({linspace(0,45e3,resol),linspace(0.1,0.6,resol)},pl2);
+for itr=1:length(plc)
+    if plc(2,itr)>ppval(ntnl,plc(1,itr))
+        plc(2,itr)=0;
     end
-    scsc=max(plc(2,:))*1e3;
-else
-    ms=fzero(@(m) ppl(ppval(ntnl,m)*1e3,m)-plvlclmb,nturn(1,[1,end]),optimoptions('fsolve','Display','none'));
-    scsc=ppval(ntnl,plc(1,inm));
 end
+scsc=max(plc(2,:))*1e3;
 fprintf('\t\t%20s %7.0f    ft \n','Service Ceiling',scsc)
 % Max Mach
 pll=h_m.ContourMatrix;
@@ -71,7 +69,6 @@ fprintf('\t\t%20s %10.2f mph \n','Stall Speed',nturn(1,nn)*a(nturn(2,nn))/1.4666
 fprintf('\n\tCRUISE CONDITIONS: \n')
 fprintf('\t 250 mph, 25e3 ft \n')
 % Power Level
-ppl=griddedInterpolant({linspace(0,45e3,resol),linspace(0.1,0.6,resol)},pl);
 fprintf('\t\t%20s %10.2f %% \n','Cruise Power',ppl(25e3,366/a(25e3))*100)
 % Fuel Efficiency
 gml=griddedInterpolant({linspace(0,45e3,resol),linspace(0.1,0.6,resol)},gm);
@@ -96,23 +93,23 @@ fprintf('\t\t%20s %10.2f m/lb \n','Max Fuel Eff',gml(25e3,mxgm))
 fprintf('\t\t%20s %10.2f mph \n','Max Fuel Eff Speed',mxgm*a(25e3)/1.4666)
 
 %%
-
-xlswrite('testing.xlsx',...
-    [scsc;
-    mx_mc;
-    mxp(2,ind)*1e3;
-    mx_sp/1.4666;
-    mxp(2,ind)*1e3;
-    n_t(ri,ci);
-    nturn(1,nn)*a(nturn(2,nn))/1.4666;
-    ppl(25e3,366/a(25e3))*100;
-    gml(25e3,366/a(25e3));
-    taa(25e3,366/a(25e3));
-    ppval(ntnl2,25)*a(25e3)/1.46666;
-    ppval(mxpin,25)*a(25e3)/1.46666;
-    gml(25e3,mxgm);
-    mxgm*a(25e3)/1.4666]',...
-    'Sheet1',['A',num2str(n)])
+% 
+% xlswrite('testing.xlsx',...
+%     [scsc;
+%     mx_mc;
+%     mxp(2,ind)*1e3;
+%     mx_sp/1.4666;
+%     mxp(2,ind)*1e3;
+%     n_t(ri,ci);
+%     nturn(1,nn)*a(nturn(2,nn))/1.4666;
+%     ppl(25e3,366/a(25e3))*100;
+%     gml(25e3,366/a(25e3));
+%     taa(25e3,366/a(25e3));
+%     ppval(ntnl2,25)*a(25e3)/1.46666;
+%     ppval(mxpin,25)*a(25e3)/1.46666;
+%     gml(25e3,mxgm);
+%     mxgm*a(25e3)/1.4666]',...
+%     'Sheet1',['A',num2str(n)])
     
 
 

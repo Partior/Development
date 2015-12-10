@@ -5,10 +5,9 @@ vdom=linspace(0,0.7,300)*a(0);
 
 rpm=2500; % max rpm rating
 Mt=@(v,h,r) sqrt((v/(a(h)))^2+((rpm*2*pi/60)*r/a(h))^2);
-Rmax=fsolve(@(r) 0.95-Mt(400,25e3,r),2,...
-    optimoptions('fsolve','display','off'));
+Rmax=fsolve(@(r) 0.85-Mt(366,25e3,r),2,optimoptions('fsolve','display','off'));
 b=sqrt(AR*S);
-Rmax=min(Rmax,b/(2*n));
+Rmax=min(Rmax,(b-9)/(2*n)); % 9 feet cabin diameter
 A=Rmax^2*pi;
 
 Padom=linspace(50,800,30)*550;
@@ -32,7 +31,7 @@ m_effect=@(m) 1-(-atan((m-1.2)*6)+atan(-6*1.2))/(2*atan(-6*1.2));
 alt_effect=@(h) 1.132*p(h)/p(0)-0.132; %http://www.dept.aoe.vt.edu/~lutze/AOE3104/thrustmodels.pdf
 % Using instead turbo charger function, from line C of graph on 
 % http://rwebs.net/avhistory/opsman/geturbo/geturbo.htm
-alt_effect=@(h) min([0.90;1.132*p(h)/p(15e3)-0.132]);
+alt_effect=@(h) min([0.90;1.132*p(h)/p(10e3)-0.132]);
 
 % final thrust equation
 T=@(V,h,P) pT(V,P)*...
