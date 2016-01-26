@@ -22,9 +22,9 @@ f_M=@(m) 1-0.08*m^1.45;
 Cf=@(v,h,l) (integral(@(x) Cfl(v,h,x),0,trans(v,h))+...
     integral(@(x) Cft(v,h,x),trans(v,h),l))/l;
 
-% Wetted Area and Wing Surface Area
-S_wet=4.5*S; % from Dr. Raj Lecture 4
-S_wet_f=S_wet-2*S; % minus both sides of the wings
+% % Wetted Area and Wing Surface Area
+% S_wet=4.5*S; % from Dr. Raj Lecture 4
+% S_wet_f=S_wet-2*S; % minus both sides of the wings
 
 CD0_fuse=@(v,h) Cf(v,h,80)*f_LD(80/5)*f_M(v/a(h))*(S_wet_f/S);
 

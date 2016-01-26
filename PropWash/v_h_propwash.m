@@ -23,7 +23,7 @@ equations_wash  % sets up lift and drag functions
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 50% power levels
 
-resol=40;
+resol=20;
 [m_msh,h_msh]=meshgrid(linspace(0.1,0.6,resol),linspace(0,45e3,resol));
 % started at 0.1 mach to not have to deal with wierd AoAs
 
@@ -36,8 +36,7 @@ gmma=@(v,P) v/SFC_eq(P/550)/5280;
 
 %% Figure Setup
 figure(2); cla; hold on
-% vals=plotchoice;
-vals={1;1;1;1;1};
+vals=plotchoice;
 
 pause(0.5)
 

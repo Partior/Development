@@ -1,7 +1,7 @@
 %% Drag Polar for Airfoil
 % Using xfoil for NACA 23015
 
-dta=importdata('naca_polar.txt',' ',12);
+dta=importdata(airfoil_polar_file,' ',12);
 
 alfa=dta.data(:,1);
 cl=dta.data(:,2);
@@ -12,3 +12,4 @@ Cd0=min(cd);
 
 Cla=griddedInterpolant(alfa(4:end),cl(4:end),'pchip','none');
 Cda=griddedInterpolant(alfa(4:end),cd(4:end),'pchip','none');
+Cl0=fzero(@(a) Cla(a),-1);

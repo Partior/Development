@@ -92,7 +92,7 @@ fprintf('\t\t%20s %10.2f m/lb \n','Max Fuel Eff',gml(25e3,mxgm))
 % Max Fuel Efficiency speed
 fprintf('\t\t%20s %10.2f mph \n','Max Fuel Eff Speed',mxgm*a(25e3)/1.4666)
 
-%%
+%% Record to Excel
 % 
 % xlswrite('testing.xlsx',...
 %     [scsc;

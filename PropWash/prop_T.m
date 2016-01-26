@@ -1,13 +1,8 @@
-Temp=@(h) 15.0-6.5*(h/3280.84)+273.15;  % input h of feet, output of Temp in kel
-a=@(h) sqrt(1.4*287.058*Temp(h))*3.28084;   % mach 1 in feet per second
-
 vdom=linspace(0,0.7,300)*a(0);
 
-rpm=2500; % max rpm rating
 Mt=@(v,h,r) sqrt((v/(a(h)))^2+((rpm*2*pi/60)*r/a(h))^2);
 Rmax=fsolve(@(r) 0.85-Mt(366,25e3,r),2,optimoptions('fsolve','display','off'));
-b=sqrt(AR*S);
-Rmax=min(Rmax,(b-9)/(2*n)); % 9 feet cabin diameter
+Rmax=min(Rmax,(b-cab_diam)/(2*n));
 A=Rmax^2*pi;
 
 Padom=linspace(50,800,30)*550;

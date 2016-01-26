@@ -22,7 +22,6 @@ muTire=0.35;    % Braking resistance, tires to grass
 VLOF=100*1.4666; % liftoff speed to which ground run goes to
 ne=n;   % all engines
 
-Pa=Pa*0.5;
 save('takeoff_const.mat')
 %% Ground Run
 nm=1; % Running with all engines
@@ -36,7 +35,7 @@ St=r(:,3);
 
 %% Stopping Distance
 % as Lift determines normal forces
-poolobj = gcp('nocreate'); % If no pool, do not create new one.
+poolobj = gcp('nocreate'); % If parpool, do not create new one.
 if isempty(poolobj)
     parpool('local')
 end
@@ -61,7 +60,7 @@ vtF=griddedInterpolant((ind-1:ind+1),Vt(ind-1:ind+1));
 stF=griddedInterpolant((ind-1:ind+1),St(ind-1:ind+1));
 wtF=griddedInterpolant((ind-1:ind+1),Wt(ind-1:ind+1));
 % higher resoultion executions for approximateion of decison point
-newres=20;
+newres=10;
 tdom=tF(linspace(ind-1,ind+1,newres));
 vtdom=vtF(linspace(ind-1,ind+1,newres));
 stdom=stF(linspace(ind-1,ind+1,newres));
@@ -82,25 +81,14 @@ end
 %% One Engine Inoperable
 % Worst Case Scenario, engine out at S_br
 nm=(n-1)/n; % running OEI
-% [t_oei,r_oei]=ode45(@groundrun_wash,[0 40],[wtdom(ind),vtdom(ind),stdom(ind)],...
-%     odeset('Events',@events_grnd_wash,'RelTol',1e-2),nm,ne);
-% t_oei=t_oei+tdom(ind);
 [t_oei,r_oei]=ode45(@groundrun_wash,[0 20],[Wt(1),Vt(1),St(1)],...
     odeset('Events',@events_grnd_wash,'RelTol',1e-2),nm,ne);
 
-% if isempty(r_oei)
-%     t_oei=t(ind);
-%     Wt_oei=wtdom(ind);
-%     Vt_oei=vtdom(ind);
-%     St_oei=stdom(ind);
-% else
-    Wt_oei=r_oei(:,1);
-    Vt_oei=r_oei(:,2);
-    St_oei=r_oei(:,3);
-% end
+Wt_oei=r_oei(:,1);
+Vt_oei=r_oei(:,2);
+St_oei=r_oei(:,3);
 
 %% Airborne Distance
-% Pa=Pa*2;
 V2=max(172,VLOF*1.1); % ft/s, Vmp for climbing
 Cdg=D(3,0,V2,ne)/(0.5*p(0)*V2^2*S);
 Sa=Wt(end)/(Pa/V2-0.5*p(0)*V2^2*S*Cdg)*((V2^2-VLOF^2)/(2*32.2)+35); % airborne distance
