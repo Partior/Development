@@ -9,42 +9,38 @@ Virginia Polytechnic Instituste and State Univeristy (Virginia Tech), Aerospace 
 
 Graham McLaughlin, Team Lead
 
-Alex Brown 
-Kiana Duff 
+Alex Brown, Propulsion
 
-Alex Granata
+Kiana Duff, Stability and Control
 
-Sean Hardy
+Alex Granata, Performance
 
-Jake Hrovat
+Sean Hardy, Aerodynamics
 
-Emily Konoza
+Jake Hrovat, Avonics and Power
 
+Emily Konoza, Structures, Asst Team Lead
+*****
 
 Point of Contact:
 
-  Alex Granata - granataa@vt.edu
+Alex Granata - granataa@vt.edu
 *****
 
-File folder /PropWash/ contains the most recent codes for developing a V-H diagram for an aircraft utilizing propwash over a majority of the wing span.
+File folder /CurrentWork/ contains the most recent codes for developing a V-H diagram for an aircraft utilizing propwash over a majority of the wing span.
 
-  As of Version 3.5, 30 NOV 2015, files within /PropWash/ are and have the following functions:
+  As of Version 3.6, 27 JAN 2016, files within /Current/ are and have the following functions:
 
-v_h_propwash.m
+V-H&Fuel_Eff/v_h_propwash.m
 
-  Main Script file for entire folder. All other scripts and functions are supporting to this script. 
+  Main Script file current analysis of aircraft
   Calculates and graphs a Velocity-Height Diagram of the aircraft defined by prop_const.m (Constants)
   Calculates and graphs a fuel-economy contour
   Calculates and graphs stall lines, AoA for level flight, max possible level N-Turn, as well as reference 250 and 300 mph lines
 
-**** 
-Scripts that stand independant of v_h_propwash.m:
+Takeoff/takeoff_wash.m
 
-trade_props.m -
-  Study on summed Power of props to number of props
-
-ld_wash_comp.m -
-  Comparision of Developed Cl/Cd [of propwash] to norm [i.e. parabolic Cd]
-
-compar_wash.m -
-  Compares various ariplane parameters to chosen cruise conditions, [for optimizing parameters
+  Main Script for takeoff analysis
+  Calculates takeoff distance
+  Calculates OEI takeoff distance
+  Determines descion for emergency braking point
