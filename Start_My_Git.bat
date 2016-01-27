@@ -1,3 +1,4 @@
+cd %HOMEPATH%
 cd Desktop
 mkdir Partior
 cd Partior
