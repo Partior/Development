@@ -4,7 +4,6 @@
 % that one adds and changes around
 
 %% INIT
-addpath('../')
 prop_const
 % Init Scripts
 prop_T
@@ -75,3 +74,5 @@ for itp=1:n
     Props(itp).FaceColor='r';
 end
 
+view(3)
+axis equal

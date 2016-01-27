@@ -1,4 +1,6 @@
 function mu=visc(h)
+% This function is purely to outpu the viscosity of the air at various
+% altitudes, used by the drag model for the fuselage
 
 Temp=@(h) 15.0-6.5*(h/3280.84)+273.15;  % input h of feet, output of Temp in kel
 

@@ -1,5 +1,6 @@
 %% Drag Polar for Airfoil
-% Using xfoil for NACA 23015
+% Using xfoil for NACA 23015, gather and develop the Lift curve, the Drag
+% curve, and Cd_0 and Zero-lift AoA
 
 dta=importdata(airfoil_polar_file,' ',12);
 

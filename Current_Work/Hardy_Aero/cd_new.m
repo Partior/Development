@@ -2,6 +2,8 @@
 % With the wing experiencing different velocity to the airplane, drag and
 % lift forces for each now become seperate and unique
 
+% Primarily, this is a drag model for the fueslage.
+
 %% Fuselage
 % http://faculty.dwc.edu/sadraey/Chapter%203.%20Drag%20Force%20and%20its%20Coefficient.pdf
 RE=@(v,h,x) p(h)*v*(x)/visc(h); % x is length, fuselage taken to be 60 ft
