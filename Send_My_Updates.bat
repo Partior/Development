@@ -1,4 +1,6 @@
-cd Desktop\Partior
 git add -A
-git commit -m "Update to Code for GitHub"
+cls
+set /p mm= Please provide a brief description of your changes:  
+
+git commit -m "%mm%"
 git push -q online
