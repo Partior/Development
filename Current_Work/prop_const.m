@@ -3,8 +3,20 @@
 % V-H and fuel useage diagrams
 
 %% ATMOSPHERE
-p=@(h) 2.3769e-3*exp(-3.2e-5*h);            % air density at altitude h(ft)
-Temp=@(h) 15.0-6.5*(h/3280.84)+273.15;      % input h of feet, output of Temp in kel
+% https://wahiduddin.net/calc/density_altitude.htm
+T0=288.15;          % K
+L=6.5;              % K/km
+Temp=@(H) T0-L*(H/3280.84);                 % Temperature
+
+P0=101325;          % Pa
+g=9.80665;          % gravitational constant
+R=8.31432;          % Gas constant, J/mol*degK
+M=28.9644;          % molecular weight of air, gm/mol
+Prs=@(H) P0*(1-L*(H/3280.84)/T0)^(g*M/(R*L));% Pressure
+
+p_SI=@(H) Prs(H)*M/(R*Temp(H)*1000);        % Density, kg/m^3
+p=@(H) p_SI(H)*0.00194032;                  % Densith, slugs/ft^3
+
 a=@(h) sqrt(1.4*287.058*Temp(h))*3.28084;   % mach 1 in feet per second
 
 %% WEIGHT
@@ -33,12 +45,7 @@ S_wet_f=S_wet-2*S;  % minus both sides of the wings
 cab_diam=9;         % cabin diamater, ft
 
 %% POWER
-%   Generator
-Pa=1000*550;
-SFC_eq=@(P) 0.345*P/3600; % lb_fuel/sec for a power setting % https://en.wikipedia.org/wiki/Brake_specific_fuel_consumption for junkeres jumo 204 engine
+power_const % Run for constants as defined by Hrovat
 
 %   Propellers
 n=8;        % number of propellers
-rpm=2500;   % max rpm rating
-% Radius of propellers currently set by script /prop_T.m
-
