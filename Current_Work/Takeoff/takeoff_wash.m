@@ -1,7 +1,9 @@
+
 %% Takeoff estimation with PropWash effects
 clear; clc
 
 addpath('../')
+add_Paths
 
 %% INIT
 prop_const
@@ -60,7 +62,7 @@ vtF=griddedInterpolant((ind-1:ind+1),Vt(ind-1:ind+1));
 stF=griddedInterpolant((ind-1:ind+1),St(ind-1:ind+1));
 wtF=griddedInterpolant((ind-1:ind+1),Wt(ind-1:ind+1));
 % higher resoultion executions for approximateion of decison point
-newres=10;
+newres=11;
 tdom=tF(linspace(ind-1,ind+1,newres));
 vtdom=vtF(linspace(ind-1,ind+1,newres));
 stdom=stF(linspace(ind-1,ind+1,newres));
