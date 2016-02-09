@@ -29,7 +29,9 @@ fprintf('\n\tABSOLUTES: \n')
 pclmb=100/60;
 plvlclmb=(Pa/W0(19)-pclmb)/(Pa/W0(19));
 [plc]=contourc(linspace(0.1,0.6,resol),linspace(0,45e3,resol)/1e3,pl,[plvlclmb,1]);
-plc=plc(:,[2:plc(2,1)+1]);
+plc_int=find(plc(1,:)==1,1,'first'); %find the first labeling of the contour level 1
+plc=plc(:,2:plc_int);
+plc_int2=find(plc(1,:)==plvlclmb); % get rid of the excess lables, in case contour is split up between multiple lines
 ntn=hnp.ContourMatrix;
 ind=find(ntn(1,:)==1);
 ind2=find(ntn(1,:)==2);
