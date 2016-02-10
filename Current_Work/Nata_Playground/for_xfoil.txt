@@ -1,0 +1,21 @@
+NACA 23015 
+OPER
+mach 0.361
+visc 4804000
+pacc 1
+"C:\Users\granataa\Desktop\Classes\15 Fall\Design\MATLAB\Current_Work\Hardy_Aero\naca_polar.txt"
+"C:\Users\granataa\Desktop\Classes\15 Fall\Design\MATLAB\Current_Work\Hardy_Aero\naca_dump.txt"
+pacc 1
+iter 100
+init
+aseq -15 1 -5
+aseq -4.5 0.5 -0.5
+aseq -0.25 0.25 4.75
+aseq 5 0.5 9.5
+aseq 10 1 15
+psor 1
+pwrt 1
+
+y
+
+quit
