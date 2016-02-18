@@ -41,3 +41,32 @@ for nitr=1:length(numopts)
     xlabel('Mach')
     ylabel('Altitude, 1,000 ft')
 end
+
+%% Direct comparison
+
+figure(2); clf
+hold on
+clr=['b',0,0,'r'];
+for nitr=[1,length(numopts)]
+    [~,c]=contour(mmat,hmat/1e3,Tmat(:,:,nitr),[1000:1000:6000]);
+    set(c,'ShowText','on','LabelSpacing',1000,'LineColor',clr(nitr),'LineWidth',0.5);
+end
+title('Direct Comparison of Thrust, \color{red}Takeoff \color{black}vs \color{blue}Cruise')
+xlabel('Mach')
+ylabel('Altitude, 1,000 ft')
+
+%% Difference by altitude
+figure(3); clf
+hold on
+alt=[0:1e4:4e4];
+for itr=1:length(alt)
+    in(itr)=find(hmat(:,1)<=alt(itr),1,'last');
+    plot(mmat(in(itr),:),Tmat(in(itr),:,end)-Tmat(in(itr),:,1))
+end
+for itr=1:length(alt)
+    ldng{itr}=sprintf('%.0f ft',hmat(in(itr),1));
+end
+legend({ldng{1},ldng{2},ldng{3},ldng{4},ldng{5}})
+title('Takeoff Minus Cruise Thrust')
+xlabel('Mach')
+ylabel('Thrust Difference')
