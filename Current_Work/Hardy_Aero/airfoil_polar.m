@@ -14,3 +14,5 @@ Cd0=min(CD);
 Cla=griddedInterpolant(alfa(4:end),cl(4:end),'pchip','none');
 Cda=griddedInterpolant(alfa(4:end),CD(4:end),'pchip','none');
 Cl0=fzero(@(a) Cla(a),-1);
+
+Cma=griddedInterpolant(alfa(4:end),cm(4:end),'pchip','none');
