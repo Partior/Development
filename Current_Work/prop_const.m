@@ -21,8 +21,12 @@ a=@(h) sqrt(1.4*287.058*Temp(h))*3.28084;   % mach 1 in feet per second
 
 %% WEIGHT
 Wfix=@(px) 225*(3+px);      % Payload weight, as function of # passengers
-We=9064.1;                  % Empty (or Structure) weight
-Wf=1307.5;                  % Fuel weight, takes up approx 200 gallons of volume
+% Empty Weight - 
+%   Fairchild Metro III empty weight - weight for propulsion system, then
+%   plus our estamates for the propulsion system
+% We=9064.1;                  % Empty (or Structure) weight
+We=8737-(336*2)+[2,6]*[97.14;18.1];
+Wf=1100;                  % Fuel weight, takes up approx 183 gallons of volume at 6.01 lb/US gal
 W0=@(pw) Wfix(pw)+We+Wf;    % Total
 
 %% MAIN WING
