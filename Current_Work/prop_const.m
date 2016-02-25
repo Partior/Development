@@ -40,7 +40,7 @@ K=1/(AR*e*pi);
 
 %   Airfoil
 incd=6;     % incidence angle of wing strucutre
-airfoil_polar_file='naca_polar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
+airfoil_polar_file='roncz_polar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
 
 %% FUSELAGE
 %   Wetted Area and Fuselage Wetted Area
