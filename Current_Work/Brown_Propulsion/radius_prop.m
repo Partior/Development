@@ -7,3 +7,10 @@ Rmax=min(Rmax,(b-cab_diam)/(2*n));  % Radius
 
 Rmax=[Rmax;Rmax*0.75];
 A=Rmax.^2*pi;
+
+%% After 26 FEB
+% Data from Brown with the following information:
+
+% 5 bladed propeller, 11.64 foot pitch
+Rmax=[3.91805565;Rmax(2)];
+A=Rmax.^2*pi;

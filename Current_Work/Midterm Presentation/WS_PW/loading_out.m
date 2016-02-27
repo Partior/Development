@@ -5,7 +5,7 @@ data
 %% Loading
 ff=figure;
 clf
-sz=[8.5 4];    % size of actual picture, inches (axis not figure)
+sz=[8 3.5];    % size of actual picture, inches (axis not figure)
 ssz=sz*diag(1./[0.7750 0.8150]);    % needed size of external figure
 set(ff,'Units','inches','Position',[0.5 0.5 ssz]);  %size of axis will be the proper size for powerpoint
 aa=axes;
@@ -31,8 +31,6 @@ ylim([0.05 0.11])
 %% Range/Mass
 ff2=figure;
 clf
-sz=[8.5 4];    % size of actual picture, inches (axis not figure)
-ssz=sz*diag(1./[0.7750 0.8150]);    % needed size of external figure
 set(ff2,'Units','inches','Position',[0.5 5.5 ssz]);  %size of axis will be the proper size for powerpoint
 aa=axes;
 hold on
