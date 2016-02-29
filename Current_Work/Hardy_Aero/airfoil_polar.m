@@ -2,12 +2,12 @@
 % Using xfoil for NACA 23015, gather and develop the Lift curve, the Drag
 % curve, and Cd_0 and Zero-lift AoA
 
-dta=importdata(airfoil_polar_file,' ',12);
+[dta,~,~]=importdata(airfoil_polar_file);
 
 alfa=dta.data(:,1);
 cl=dta.data(:,2);
 CD=dta.data(:,3);
-cm=dta.data(:,5);
+cm=dta.data(:,4);
 
 Cd0=min(CD);
 
