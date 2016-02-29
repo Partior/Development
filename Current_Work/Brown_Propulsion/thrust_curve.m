@@ -17,5 +17,3 @@ for type_p=1:2
     pT{type_p}=griddedInterpolant({vdom,Padom},T_r(:,:,type_p),'linear','none');
 end
 
-%% Veresion two:
-% Information for the cruise propellor from Brown:

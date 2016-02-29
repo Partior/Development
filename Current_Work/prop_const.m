@@ -21,12 +21,16 @@ a=@(h) sqrt(1.4*287.058*Temp(h))*3.28084;   % mach 1 in feet per second
 
 %% WEIGHT
 Wfix=@(px) 225*(3+px);      % Payload weight, as function of # passengers
+
 % Empty Weight - 
 %   Fairchild Metro III empty weight - weight for propulsion system, then
 %   plus our estamates for the propulsion system
 % We=9064.1;                  % Empty (or Structure) weight
-We=8737-(336*2)+[2,6]*[97.14;18.1];
-Wf=1100;                  % Fuel weight, takes up approx 183 gallons of volume at 6.01 lb/US gal
+Wprops=[100;50];   % cruise; takeoff
+Wapus=500;  % APUs, each
+We=8737-(336*2-100*2)+([2,6]*[97.14;18.1]+[2,6]*Wprops+2*Wapus);
+
+Wf=575;                  % Fuel weight, takes up approx 183 gallons of volume at 6.01 lb/US gal
 W0=@(pw) Wfix(pw)+We+Wf;    % Total
 
 %% MAIN WING
@@ -39,7 +43,7 @@ e=1.78*(1-0.045*AR^0.68)-0.64; %eq 10b - http://faculty.dwc.edu/sadraey/Chapter%
 K=1/(AR*e*pi);
 
 %   Airfoil
-incd=6;     % incidence angle of wing strucutre
+incd=4.3;     % incidence angle of wing strucutre
 airfoil_polar_file='roncz_polar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
 
 %% FUSELAGE

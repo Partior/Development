@@ -8,8 +8,9 @@ clear;
 prop_const
 
 %% Init Scripts
+prop_const
 prop_T
-v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
+v2=@(v,t,h,pt) sqrt(t/(1/2*p(h)*A(pt))+v.^2);   % velocity ratio, velocity, thrust, h
 
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
@@ -23,13 +24,13 @@ equations_wash  % sets up lift and drag functions
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 50% power levels
 
-resol=20;
+resol=50;
 [m_msh,h_msh]=meshgrid(linspace(0.1,0.6,resol),linspace(0,45e3,resol));
 % started at 0.1 mach to not have to deal with wierd AoAs
 
 % First, power required equation:
 plvl=@(aoa,h,v,on) ...
-    D(aoa,h,v,on)/(T(v,h,Pa/n)*on);
+    D(aoa,h,v,on)/(T(v,h,Pa,on));
 
 % Fuel Efficiency
 gmma=@(v,P) v/SFC_eq(P/550)/5280;
@@ -45,7 +46,7 @@ if isempty(pll)
     parpool('local')
 end
 %% Execution
-ne=n;
+ne=2;
 
 taoa=NaN(resol);
 pl=NaN(resol);
@@ -75,11 +76,12 @@ if ~vals{2}
 end
 
 % Fuel Efficiency
-[~,hg]=contour(m_msh,h_msh/1e3,gm,[0.5 1 1.5]);
+[~,hg]=contour(m_msh,h_msh/1e3,gm,[1 1.5 2]);
 set(hg,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
     'LineColor','r','LineStyle','-','LineWidth',1.5,...
     'ShowText','on','LabelSpacing',400);
-[~,hgs]=contour(m_msh,h_msh/1e3,gm,[0.6:0.1:0.9 1.1:0.1:1.4]);
+% [1.1:0.1:1.4 1.6:0.1:1.9]
+[~,hgs]=contour(m_msh,h_msh/1e3,gm,[1.25 1.75]);
 set(hgs,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
     'LineColor','r','LineStyle',':','LineWidth',0.1);
 if ~vals{3}
@@ -116,7 +118,7 @@ for ita=1:resol
         if pl(ita,itb)>1;
             continue
         end
-        gm(ita,itb)=gmma(vi,pl(ita,itb)*Pa*ne/n);
+        gm(ita,itb)=gmma(vi,pl(ita,itb)*Pa);
     end
     refreshdata
     drawnow
@@ -131,7 +133,7 @@ ttl{1}=' Power Required ';
 ttl{2}='\color{blue} Attack Angle ';
 ttl{3}='\color{red} Fuel Efficiency ';
 ttl{4}='\color{green} N-Manuevers ';
-ttl{5}='\color{magenta} 250mph Cruise ';
+ttl{5}='\color{magenta} 250mph and 300mph ref lines ';
 ttlt=[];
 for ita=1:5
     if vals{ita}

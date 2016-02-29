@@ -28,7 +28,7 @@ f5='range'; v5={578
 dd=struct(f1,v1,f2,v2,f3,v3,f4,v4,f5,v5);
 
 dd(end+1).name='Partior';
-dd(end).P_W=0.06935832;
-dd(end).W_S=60.0745;
-dd(end).weight=1.4418e+04;
-dd(end).range=1221.3;
+dd(end).P_W=Pa/550/W0(19);
+dd(end).W_S=W0(19)/S;
+dd(end).weight=W0(19);
+dd(end).range=ode_range;

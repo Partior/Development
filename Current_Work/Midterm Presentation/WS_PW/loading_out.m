@@ -1,5 +1,6 @@
 %% Graphical Output
 clear; close all; clc
+prop_const
 data
 
 %% Loading
