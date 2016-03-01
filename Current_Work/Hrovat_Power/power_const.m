@@ -3,7 +3,8 @@
 
 %   Generator
 % Avalibe power for the propellors
-Pa=900*737.562149;    % conversion from kW to lbf ft/s
+Pa=900*737.562149-....% conversion from kW to lbf ft/s
+    150*737.562149;     % assuming it takes 60 kW to produce power for avionics
 % Specific Fuel Consumption, lb_fuel/sec
 SFC_eq=@(P) 0.345*P/3600; % https://en.wikipedia.org/wiki/Brake_specific_fuel_consumption for junkeres jumo 204 engine
 

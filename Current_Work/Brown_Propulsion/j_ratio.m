@@ -9,4 +9,4 @@ function J=j_ratio(V,n,r)
 rps=n/60;   %rpm to rps
 D=r*2;  %radius to diamater
 
-J=V/(rps*D);
+J=V./(rps*D);

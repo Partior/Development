@@ -4,10 +4,10 @@
 
 [dta,~,~]=importdata(airfoil_polar_file);
 
-alfa=dta.data(:,1);
-cl=dta.data(:,2);
-CD=dta.data(:,3);
-cm=dta.data(:,4);
+alfa=dta.data(:,clms(1));
+cl=dta.data(:,clms(2));
+CD=dta.data(:,clms(3));
+cm=dta.data(:,clms(4));
 
 Cd0=min(CD);
 

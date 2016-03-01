@@ -37,14 +37,17 @@ W0=@(pw) Wfix(pw)+We+Wf;    % Total
 %   Planeform
 S=240;
 AR=15;
-b=sqrt(AR*S);   % or 60.0 ft
+b=60;   % or 60.0 ft
 chrd=S/b;       % or 4.00 ft
+r_chrd=6;
+t_chrd=2;
 e=1.78*(1-0.045*AR^0.68)-0.64; %eq 10b - http://faculty.dwc.edu/sadraey/Chapter%203.%20Drag%20Force%20and%20its%20Coefficient.pdf
 K=1/(AR*e*pi);
 
 %   Airfoil
 incd=4.3;     % incidence angle of wing strucutre
-airfoil_polar_file='roncz_polar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
+airfoil_polar_file='Q1wingpolar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
+clms=[1,3,6,9]; %colums for alpha, Cl, Cd, Cm
 
 %% FUSELAGE
 %   Wetted Area and Fuselage Wetted Area

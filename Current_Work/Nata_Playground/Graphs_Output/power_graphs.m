@@ -33,13 +33,13 @@ title('Power Req and Avail')
 %   at various mach and altitudes
 numopts=[0,6];
 h=0;    % deal with sea-level for now
-solopts=optimoptions('fsolve','display','none');
+solopts=optimoptions('fsolve','display','none','TolFun',1e-4);
 parfor nitr=1:length(numopts)
-    min_m=fsolve(@(m) L(15-incd,h,a(h)*m,numopts(nitr)+2)-W0(19),0.15,solopts);
+    min_m=fsolve(@(m) L(12-incd,h,a(h)*m,numopts(nitr)+2)-W0(19),0.15,solopts);
     [xpp{nitr},ypp{nitr}]=fplot(@(m)...
         D(fsolve(@(aa) L(aa,h,a(h)*m,numopts(nitr)+2)-W0(19),3,solopts),...
         h,a(h)*m,numopts(nitr)+2)*...
-        a(h)*m,[min_m 0.4]);
+        a(h)*m,[min_m 0.4],5e-3);
 end
 
 clr=['r','k'];
@@ -54,9 +54,8 @@ end
 %% Power Available
 
 parfor nitr=1:length(numopts)
-    min_m=fsolve(@(m) L(15-incd,h,a(h)*m,numopts(nitr)+2)-W0(19),0.15,solopts);
     [xa{nitr},ya{nitr}]=fplot(@(m)...
-        T(a(h)*m,h,Pa,numopts(nitr)+2)*a(h)*m,[0 0.4]);
+        P_Prop(a(h)*m,h,Pa,numopts(nitr)+2),[0 0.4]);
 end
 
 for nitr=1:length(numopts)
@@ -101,9 +100,9 @@ ylabel('Power')
 title('Excess Power At Speed')
 
 parfor nitr=1:length(numopts)
-    min_m=fsolve(@(m) L(15-incd,h,a(h)*m,numopts(nitr)+2)-W0(19),0.15,solopts);
+    min_m=fsolve(@(m) L(12-incd,h,a(h)*m,numopts(nitr)+2)-W0(19),0.15,solopts);
     [xpp{nitr},ypp{nitr}]=fplot(@(m)...
-        T(a(h)*m,h,Pa,numopts(nitr)+2)*a(h)*m-...
+        P_Prop(a(h)*m,h,Pa,numopts(nitr)+2)-...
         D(fsolve(@(aa) L(aa,h,a(h)*m,numopts(nitr)+2)-W0(19),3,solopts),...
         h,a(h)*m,numopts(nitr)+2)*a(h)*m,[min_m 0.4]);
 end
