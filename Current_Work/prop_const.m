@@ -30,7 +30,7 @@ Wprops=[100;50];   % cruise; takeoff
 Wapus=500;  % APUs, each
 We=8737-(336*2-100*2)+([2,6]*[97.14;18.1]+[2,6]*Wprops+2*Wapus);
 
-Wf=575;                  % Fuel weight, takes up approx 183 gallons of volume at 6.01 lb/US gal
+Wf=1100;                  % Fuel weight, takes up approx 183 gallons of volume at 6.01 lb/US gal
 W0=@(pw) Wfix(pw)+We+Wf;    % Total
 
 %% MAIN WING
@@ -45,7 +45,7 @@ e=1.78*(1-0.045*AR^0.68)-0.64; %eq 10b - http://faculty.dwc.edu/sadraey/Chapter%
 K=1/(AR*e*pi);
 
 %   Airfoil
-incd=4.3;     % incidence angle of wing strucutre
+incd=6;     % incidence angle of wing strucutre
 airfoil_polar_file='Q1wingpolar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
 clms=[1,3,6,9]; %colums for alpha, Cl, Cd, Cm
 

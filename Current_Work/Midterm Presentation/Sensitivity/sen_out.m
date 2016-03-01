@@ -25,7 +25,7 @@ ne=2; % Just Cruise engines
 % Initial values before chagnge-
 taoa0=fsolve(@(rr) L(rr,h,v,ne)-W0(19),0,optimoptions('fsolve','display','off'));
 D_cr0=D(taoa0,h,v,ne);
-P_cr0=fsolve(@(pp) T(v,h,pp,2)-D_cr0,600*550,optimoptions('fsolve','display','off'))/550;
+P_cr0=fsolve(@(pp) T(v,h,0,2)*pp-D_cr0,0.5,optimoptions('fsolve','display','off'))*340*2;
 gm0=gmma(v,P_cr0);
 
 %% Change in Weight

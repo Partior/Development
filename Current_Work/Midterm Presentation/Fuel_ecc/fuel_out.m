@@ -10,9 +10,9 @@ set(ff,'Units','inches','Position',[0.5 0.5 ssz]);  %size of axis will be the pr
 aa=axes;
 hold on
 
-
-rrr=ode_range/1.151;
-p_gm=1.92*6.01*19; %partior's mpg per seat
+ode_range; % call, variable r is output range
+rrr=r/1.151;
+p_gm=r/Wf*6.01*19; %partior's mpg per seat
 
 plot(data_turbo(:,1),data_turbo(:,3),'c.','MarkerSize',10)
 text(mean(data_turbo(:,1)),mean(data_turbo(:,3)),'Turboprop',...
@@ -42,5 +42,4 @@ aa.FontSize=12;
 ylabel('Fuel Economy: mil/gal per seat')
 aa.YLabel.FontSize=14;
 xlim([0 1200])
-ylim([60 250])
 grid on

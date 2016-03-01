@@ -1,6 +1,7 @@
 %% Graphical Output
 clear; close all; clc
 prop_const
+prop_T
 data
 
 %% Loading
@@ -11,12 +12,12 @@ ssz=sz*diag(1./[0.7750 0.8150]);    % needed size of external figure
 set(ff,'Units','inches','Position',[0.5 0.5 ssz]);  %size of axis will be the proper size for powerpoint
 aa=axes;
 hold on
-plot(cell2mat({dd.W_S})',cell2mat({dd.P_W})','k.','MarkerSize',20)
-plot(dd(end).W_S,dd(end).P_W,'b.','MarkerSize',20)
-text(cell2mat({dd.W_S})',cell2mat({dd.P_W})',{dd.name},...
+plot(cell2mat({data_ws_pw.W_S})',cell2mat({data_ws_pw.P_W})','k.','MarkerSize',20)
+plot(data_ws_pw(end).W_S,data_ws_pw(end).P_W,'b.','MarkerSize',20)
+text(cell2mat({data_ws_pw.W_S})',cell2mat({data_ws_pw.P_W})',{data_ws_pw.name},...
     'HorizontalAlignment','center','VerticalAlignment','top',...
     'FontSize',12)
-pp=polyfit(cell2mat({dd.W_S})',cell2mat({dd.P_W})',1);
+pp=polyfit(cell2mat({data_ws_pw.W_S})',cell2mat({data_ws_pw.P_W})',1);
 fplot(@(x) polyval(pp,x),[30,65],'k:')   % Trend Line
 
 title('Comparitor Aircraft Loading')
@@ -35,12 +36,12 @@ clf
 set(ff2,'Units','inches','Position',[0.5 5.5 ssz]);  %size of axis will be the proper size for powerpoint
 aa=axes;
 hold on
-plot(cell2mat({dd.weight})'/1000,cell2mat({dd.range})','k.','MarkerSize',20)
-plot(dd(end).weight/1000,dd(end).range,'b.','MarkerSize',20)
-text(cell2mat({dd.weight})'/1000,cell2mat({dd.range})',{dd.name},...
+plot(cell2mat({data_ws_pw.weight})'/1000,cell2mat({data_ws_pw.range})','k.','MarkerSize',20)
+plot(data_ws_pw(end).weight/1000,data_ws_pw(end).range,'b.','MarkerSize',20)
+text(cell2mat({data_ws_pw.weight})'/1000,cell2mat({data_ws_pw.range})',{data_ws_pw.name},...
     'HorizontalAlignment','center','VerticalAlignment','top',...
     'FontSize',12)
-pp=polyfit(cell2mat({dd.weight})'/1000,cell2mat({dd.range})',1);
+pp=polyfit(cell2mat({data_ws_pw.weight})'/1000,cell2mat({data_ws_pw.range})',1);
 fplot(@(x) polyval(pp,x),[12,18],'k:')   % Trend Line
 
 title('Comparator Weight and Range')

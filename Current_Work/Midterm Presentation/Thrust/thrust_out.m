@@ -42,7 +42,7 @@ for itr=1:length(alt)
     inn=find(hmat(:,1)<=alt(itr),1,'last');
     plot(mmat(inn,:),Tmat(inn,:,end),[colorr{itr},'-'])
     plot(mmat(inn,:),Tmat(inn,:,1),[colorr{itr},'-.'])
-    text(mmat(inn,60),Tmat(inn,60,end),...
+    text(mmat(inn,15),Tmat(inn,15,end),...
         sprintf('%gft',alt(itr)),'HorizontalAlignment','center','FontSize',12)
 end
 title('DEP and Traditional Thrust','FontSize',14)

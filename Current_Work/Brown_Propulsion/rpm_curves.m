@@ -31,4 +31,4 @@ min_j=@(Pr) [fzero(@(j) Pr/(n_Pc(j)/100)-Pa,[0.05 dmat.C_P(inc,1)],optopts);
 maxlitt_j=[dmat.C_T(find(dmat.C_T(1:end-1,2)>pk_ctc(1),1,'last'),1);
     emat.C_T(find(emat.C_T(1:end-1,2)>pk_ctt(1),1,'last'),1)];
 
-package={pk_jc;pk_jt;Rmax;Cr_T;Tk_T};
+package={pk_jc;pk_jt;Rmax;Cr_T;Tk_T;Cr_P;Tk_P;n_Pc;n_Pt};

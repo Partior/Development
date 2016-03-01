@@ -1,4 +1,5 @@
 function [or]=opmt_rpm(V,pck,nn)
+% Optimized for thrust production
 
 % package
 pk_jc=pck{1};
@@ -9,11 +10,12 @@ Tk_T=pck{5};
 
 min_rpm=1000;
 opt_rpm=2000;
-max_rpm=2500;
+max_rpm=2200;
 
 opts=optimset('Display','none','TolX',1e-9);
 rpm_dom=min_rpm:0.5:opt_rpm;
-% if nn==1
+
+if nn==1
     % cruise
     if V<pk_jc*opt_rpm/60*2*Rmax(1)
         [~,in]=min(-Cr_T(V,0,rpm_dom));
@@ -21,6 +23,15 @@ rpm_dom=min_rpm:0.5:opt_rpm;
     else
         or=min(V/(Rmax(1)*2)/pk_jc*60,max_rpm);
     end
+else
+    % takeoff
+    if V<pk_jt(1)*opt_rpm/60*2*Rmax(2)
+        [~,in]=min(-Tk_T(V,0,rpm_dom));
+        or=rpm_dom(in);
+    else
+        or=min(V/(Rmax(2)*2)/pk_jt(1)*60,max_rpm);
+    end
+end
 % else
 %     % takeoff
 %     if j_ratio(V,opt_rpm,Rmax(2))<pk_jt

@@ -5,7 +5,6 @@
 %% Init
 % run scripts to initalize variables
 clear;
-prop_const
 
 %% Init Scripts
 prop_const
@@ -24,8 +23,8 @@ equations_wash  % sets up lift and drag functions
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 50% power levels
 
-resol=50;
-[m_msh,h_msh]=meshgrid(linspace(0.1,0.6,resol),linspace(0,45e3,resol));
+resol=100;
+[m_msh,h_msh]=meshgrid(linspace(0.1,0.5,resol),linspace(0,50e3,resol));
 % started at 0.1 mach to not have to deal with wierd AoAs
 
 % First, power required equation:
@@ -33,7 +32,7 @@ plvl=@(aoa,h,v,on) ...
     D(aoa,h,v,on)/(T(v,h,Pa,on));
 
 % Fuel Efficiency
-gmma=@(v,P) v/SFC_eq(P/550)/5280;
+gmma=@(v,P) v/SFC_eq(P)/5280;
 
 %% Figure Setup
 figure(2); cla; hold on
@@ -105,11 +104,12 @@ if ~vals{5}
     set([hs],'Visible','off')
 end
 
+%% Calculate
 for ita=1:resol
     parfor itb=1:resol
         hi=h_msh(ita,itb);
         vi=m_msh(ita,itb)*a(h_msh(ita,itb));
-        n_t(ita,itb)=L(15-incd,hi,vi,ne)/W0(19);
+        n_t(ita,itb)=L(12-incd,hi,vi,ne)/W0(19);
         if n_t(ita,itb)<0.9;
             continue
         end
@@ -118,11 +118,13 @@ for ita=1:resol
         if pl(ita,itb)>1;
             continue
         end
-        gm(ita,itb)=gmma(vi,pl(ita,itb)*Pa);
+        gm(ita,itb)=gmma(vi,pl(ita,itb)*340*2);
     end
     refreshdata
     drawnow
 end
+
+%% Pretty
 
 grid on
 
@@ -150,4 +152,17 @@ set(t_cruise,...
     'FontSize',12,...
     'BackgroundColor',0.9*[1 1 1]);
 
+%% Prettier
 perfor_out
+
+p2t=nextpow2(100/resol);
+m_msh2=interp2(m_msh,p2t);
+h_msh2=interp2(h_msh,p2t);
+n_t=interp2(m_msh,h_msh,n_t,m_msh2,h_msh2,'linear');
+taoa=interp2(m_msh,h_msh,taoa,m_msh2,h_msh2,'linear');
+pl=interp2(m_msh,h_msh,pl,m_msh2,h_msh2,'linear');
+gm=interp2(m_msh,h_msh,gm,m_msh2,h_msh2,'linear');
+
+m_msh=m_msh2; h_msh=h_msh2;
+refreshdata
+drawnow

@@ -25,10 +25,12 @@ f5='range'; v5={578
 100
 378};
 
-dd=struct(f1,v1,f2,v2,f3,v3,f4,v4,f5,v5);
+clear dd
+data_ws_pw=struct(f1,v1,f2,v2,f3,v3,f4,v4,f5,v5);
 
-dd(end+1).name='Partior';
-dd(end).P_W=Pa/550/W0(19);
-dd(end).W_S=W0(19)/S;
-dd(end).weight=W0(19);
-dd(end).range=ode_range;
+data_ws_pw(end+1).name='Partior';
+data_ws_pw(end).P_W=Pa/550/W0(19);
+data_ws_pw(end).W_S=W0(19)/S;
+data_ws_pw(end).weight=W0(19);
+ode_range;
+data_ws_pw(end).range=r;

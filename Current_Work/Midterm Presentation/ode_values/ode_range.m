@@ -1,4 +1,3 @@
-function [r]=ode_range()
 %% Iterate through Ode's to determine true Range of Aircraft useing all stores of fuel
 % no inputs
 % outputs true range
@@ -17,4 +16,3 @@ r=t(end)*250*1.4666/5280;
 
 fprintf('\n\n\t After %.2f hours, we traveled: \n\t %.0f miles \n\n\t with %.1f lbs of leftover fuel\n',...
     t(end)/3600,r,fl(end))
-end
