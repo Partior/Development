@@ -22,7 +22,7 @@ equations_wash  % sets up lift and drag functions
 mu=0.05;    % rolling resistance
 muTire=0.35;    % Braking resistance, tires to grass
 VLOF=100*1.4666; % liftoff speed to which ground run goes to
-ne=n;   % all engines
+ne=2;   % all engines
 
 save('takeoff_const.mat')
 %% Ground Run

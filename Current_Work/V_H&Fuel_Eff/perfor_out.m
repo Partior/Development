@@ -28,19 +28,22 @@ fprintf('\n\tABSOLUTES: \n')
 % Service Ceiling
 pclmb=100/60;
 plvlclmb=(Pa/W0(19)-pclmb)/(Pa/W0(19));
-[plc]=contourc(linspace(0.1,0.6,resol),linspace(0,45e3,resol)/1e3,pl,[plvlclmb,1]);
+[plc]=contourc(mdom,hdom/1e3,pl,[plvlclmb,1]);
 plc_int=find(plc(1,:)==1,1,'first'); %find the first labeling of the contour level 1
 plc=plc(:,2:plc_int);
 plc_int2=find(plc(1,:)==plvlclmb); % get rid of the excess lables, in case contour is split up between multiple lines
 ntn=hnp.ContourMatrix;
 ind=find(ntn(1,:)==1);
 ind2=find(ntn(1,:)==2);
+if isempty(ind2)
+    ind2=length(ntn);
+end
 nturn=ntn(:,ind+1:ind2-1);
 ntnl=pchip(nturn(1,:),nturn(2,:));
 [~,inm]=max(plc(2,:));
 pl2=pl;
 pl2(isnan(pl2))=0;
-ppl=griddedInterpolant({linspace(0,45e3,resol),linspace(0.1,0.6,resol)},pl2);
+ppl=griddedInterpolant({hdom,mdom},pl2);
 for itr=1:length(plc)
     if plc(2,itr)>ppval(ntnl,plc(1,itr))
         plc(2,itr)=0;
@@ -50,13 +53,14 @@ scsc=max(plc(2,:))*1e3;
 fprintf('\t\t%20s %7.0f    ft \n','Service Ceiling',scsc)
 % Max Mach
 pll=h_m.ContourMatrix;
-ind=find(pll(1,:)==100);
+ind=find(pll(1,:)==100,1,'first');
 mxp=pll(:,ind+1:end);
-[mx_mc,ind]=max(mxp(1,:));
+tmp=mxp(1,:)<1;
+[mx_mc,ind]=max(mxp(1,:).*tmp);
 fprintf('\t\t%20s %10.2f Mach \n','Max Mach',mx_mc)
 fprintf('\t\t%20s %7.0f    ft \n','Max Mach Alt',mxp(2,ind)*1e3)
 % Max Speed
-[mx_sp,ind]=max(mxp(1,:).*a(mxp(2,:)*1e3));
+[mx_sp,ind]=max(mxp(1,:).*a(mxp(2,:)*1e3).*tmp);
 fprintf('\t\t%20s %10.2f mph \n','Max Speed',mx_sp/1.4666)
 fprintf('\t\t%20s %7.0f    ft \n','Max Speed Alt',mxp(2,ind)*1e3)
 % Max N Turn
@@ -73,10 +77,10 @@ fprintf('\t 250 mph, 25e3 ft \n')
 % Power Level
 fprintf('\t\t%20s %10.2f %% \n','Cruise Power',ppl(25e3,366/a(25e3))*100)
 % Fuel Efficiency
-gml=griddedInterpolant({linspace(0,45e3,resol),linspace(0.1,0.6,resol)},gm);
+gml=griddedInterpolant({hdom,mdom},gm);
 fprintf('\t\t%20s %10.2f m/lb \n','Fuel Efficiency',gml(25e3,366/a(25e3)))
 % AoA
-taa=griddedInterpolant({linspace(0,45e3,resol),linspace(0.1,0.6,resol)},taoa);
+taa=griddedInterpolant({hdom,mdom},taoa);
 fprintf('\t\t%20s %10.2f deg \n','Cruise AoA',taa(25e3,366/a(25e3)))
 
 %% Cruise Altitude

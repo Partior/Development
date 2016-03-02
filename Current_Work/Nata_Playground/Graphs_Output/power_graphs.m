@@ -35,24 +35,25 @@ numopts=[0,6];
 h=0;    % deal with sea-level for now
 h_opts=[0 25e3];
 solopts=optimoptions('fsolve','display','none','TolFun',1e-4);
-parfor nitr=1:2
-    min_m=fsolve(@(m) L(12-incd,h_opts(nitr),a(h_opts(nitr))*m,2)-W0(19),0.15,solopts);
+parfor nitr=1
+    min_m=fsolve(@(m) L(max(cell2mat(Cla.GridVectors))-incd,h_opts(nitr),a(h_opts(nitr))*m,2)-W0(19),0.15,solopts);
     [xpp{nitr},ypp{nitr}]=fplot(@(m)...
-        D(fsolve(@(aa) L(aa,h_opts(nitr),a(h_opts(nitr))*m,2)-W0(19),3,solopts),...
-        h_opts(nitr),a(h_opts(nitr))*m,numopts(nitr)+2)*...
-        a(h_opts(nitr))*m,[min_m 0.4],5e-3);
+        D(fsolve(@(aa) L(aa,0,a(0)*m,2)-W0(19),3,solopts),...
+        0,a(0)*m,2)*...
+        a(0)*m,[min_m 0.3],5e-3);
 end
 
 clr=['r','k'];
-stly={'--','-.'};
-for nitr=1:2
+stly={'-','-.'};
+for nitr=1
     hold on
-    chld{nitr}=plot(xpp{nitr},ypp{nitr}/550);
+    chld{nitr}=plot(xpp{nitr},680-ypp{nitr}/550);
     chld{nitr}.LineStyle=stly{nitr};
     chld{nitr}.Marker='none';
-    chld{nitr}.Color='r';
+    chld{nitr}.Color='b';
 end
 
+grid on
 %% Power Available
 
 parfor nitr=1:length(numopts)

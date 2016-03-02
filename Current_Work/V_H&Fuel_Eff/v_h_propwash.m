@@ -24,7 +24,9 @@ equations_wash  % sets up lift and drag functions
 % Plot various number of engines at 100 and 50% power levels
 
 resol=100;
-[m_msh,h_msh]=meshgrid(linspace(0.1,0.5,resol),linspace(0,50e3,resol));
+mdom=linspace(0.1,0.5,resol);
+hdom=linspace(0,50e3,resol);
+[m_msh,h_msh]=meshgrid(mdom,hdom);
 % started at 0.1 mach to not have to deal with wierd AoAs
 
 % First, power required equation:
@@ -45,7 +47,7 @@ if isempty(pll)
     parpool('local')
 end
 %% Execution
-ne=2;
+ne=8;
 
 taoa=NaN(resol);
 pl=NaN(resol);
@@ -75,12 +77,11 @@ if ~vals{2}
 end
 
 % Fuel Efficiency
-[~,hg]=contour(m_msh,h_msh/1e3,gm,[1 1.5 2]);
+[~,hg]=contour(m_msh,h_msh/1e3,gm,[1 2]);
 set(hg,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
     'LineColor','r','LineStyle','-','LineWidth',1.5,...
     'ShowText','on','LabelSpacing',400);
-% [1.1:0.1:1.4 1.6:0.1:1.9]
-[~,hgs]=contour(m_msh,h_msh/1e3,gm,[1.25 1.75]);
+[~,hgs]=contour(m_msh,h_msh/1e3,gm,[1.2:0.2:1.9]);
 set(hgs,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
     'LineColor','r','LineStyle',':','LineWidth',0.1);
 if ~vals{3}
@@ -115,9 +116,6 @@ for ita=1:resol
         end
         taoa(ita,itb)=fsolve(@(rr) L(rr,hi,vi,ne)-W0(19),0,optimoptions('fsolve','display','off'));
         pl(ita,itb)=plvl(taoa(ita,itb),hi,vi,ne);
-        if pl(ita,itb)>1;
-            continue
-        end
         gm(ita,itb)=gmma(vi,pl(ita,itb)*340*2);
     end
     refreshdata
@@ -134,7 +132,7 @@ t0=['V-H diagram: ',sprintf('%g Engines ',ne)];
 ttl{1}=' Power Required ';
 ttl{2}='\color{blue} Attack Angle ';
 ttl{3}='\color{red} Fuel Efficiency ';
-ttl{4}='\color{green} N-Manuevers ';
+ttl{4}='\color{green} Stall ';
 ttl{5}='\color{magenta} 250mph and 300mph ref lines ';
 ttlt=[];
 for ita=1:5
@@ -152,17 +150,5 @@ set(t_cruise,...
     'FontSize',12,...
     'BackgroundColor',0.9*[1 1 1]);
 
-%% Prettier
 perfor_out
 
-p2t=nextpow2(100/resol);
-m_msh2=interp2(m_msh,p2t);
-h_msh2=interp2(h_msh,p2t);
-n_t=interp2(m_msh,h_msh,n_t,m_msh2,h_msh2,'linear');
-taoa=interp2(m_msh,h_msh,taoa,m_msh2,h_msh2,'linear');
-pl=interp2(m_msh,h_msh,pl,m_msh2,h_msh2,'linear');
-gm=interp2(m_msh,h_msh,gm,m_msh2,h_msh2,'linear');
-
-m_msh=m_msh2; h_msh=h_msh2;
-refreshdata
-drawnow

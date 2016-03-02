@@ -12,7 +12,7 @@ hold on
 
 ode_range; % call, variable r is output range
 rrr=r/1.151;
-p_gm=r/Wf*6.01*19; %partior's mpg per seat
+p_gm=r/(0.9*Wf)*6.01*19; %partior's mpg per seat
 
 plot(data_turbo(:,1),data_turbo(:,3),'c.','MarkerSize',10)
 text(mean(data_turbo(:,1)),mean(data_turbo(:,3)),'Turboprop',...

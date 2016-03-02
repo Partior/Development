@@ -45,9 +45,10 @@ e=1.78*(1-0.045*AR^0.68)-0.64; %eq 10b - http://faculty.dwc.edu/sadraey/Chapter%
 K=1/(AR*e*pi);
 
 %   Airfoil
-incd=6;     % incidence angle of wing strucutre
-airfoil_polar_file='Q1wingpolar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
-clms=[1,3,6,9]; %colums for alpha, Cl, Cd, Cm
+incd=3.16;     % incidence angle of wing strucutre
+airfoil_polar_file='roncz_polar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
+% clms=[1,3,6,9]; %colums for alpha, Cl, Cd, Cm
+clms=[1,2,3,4];
 
 %% FUSELAGE
 %   Wetted Area and Fuselage Wetted Area

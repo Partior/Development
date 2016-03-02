@@ -23,9 +23,9 @@ gmm=@(v,P) v/SFC_eq(P)/5280;
 
 %% Domain
 var=    'incd'  ;
-resol=  21      ;
-dstart= 4     ;
-dend=   8       ;
+resol=  20      ;
+dstart= 2     ;
+dend=   4       ;
 
 varince=linspace(dstart,dend,resol);
 
@@ -36,10 +36,10 @@ for itr=1:resol
  
 %     % Prop Specific
 %     prop_T
-%     v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
-%     % Airfoil_specific
-%     airfoil_polar   % sets up fuselage drag
-%     cd_new      % sets up airfoil and fueslage drag polar
+    v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
+    % Airfoil_specific
+    airfoil_polar   % sets up fuselage drag
+    cd_new      % sets up airfoil and fueslage drag polar
 
     % Force Specific
     equations_wash  % sets up lift and drag functions
@@ -47,7 +47,7 @@ for itr=1:resol
     AA=fsolve(@(rr) L(rr,h,v,2)-W0(19),0,optimoptions('fsolve','display','off'));
 
     % Assign Value
-    plvl(itr)=D(AA,h,v,2)/(T(v,h,Pa/n,2));
+    plvl(itr)=D(AA,h,v,2)/(T(v,h,0,2));
     gmma(itr)=gmm(v,plvl(itr)*340*2);
 end
 
@@ -68,6 +68,8 @@ plot(varince(nn),gmma(nn)./plvl(nn),'b*')
 [~,np]=min(plvl);
 plot(varince(np),gmma(np)./plvl(np),'r*')
 [~,nt]=max(gmma./plvl);
-plot(varince(nt),gmma(nt)./plvl(nt),'g*')
+plot(varince(nt),gmma(nt)./plvl(nt),'k*')
 xlabel(var)
 ylabel('Fuel Per Power')
+
+fprintf('Optimum at: %s = %g \n',var,varince(nt))
