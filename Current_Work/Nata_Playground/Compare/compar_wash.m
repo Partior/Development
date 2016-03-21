@@ -24,8 +24,8 @@ gmm=@(v,P) v/SFC_eq(P)/5280;
 %% Domain
 var=    'incd'  ;
 resol=  20      ;
-dstart= 2     ;
-dend=   4       ;
+dstart= 5    ;
+dend=   6       ;
 
 varince=linspace(dstart,dend,resol);
 
@@ -47,8 +47,14 @@ for itr=1:resol
     AA=fsolve(@(rr) L(rr,h,v,2)-W0(19),0,optimoptions('fsolve','display','off'));
 
     % Assign Value
-    plvl(itr)=D(AA,h,v,2)/(T(v,h,0,2));
-    gmma(itr)=gmm(v,plvl(itr)*340*2);
+%     plvl(itr)=D(AA,h,v,2)/(T(v,h,0,2));
+%     gmma(itr)=gmm(v,plvl(itr)*340*2);
+    clear functions
+    [t,fl]=ode45(@iterr,[0 2.5e4],Wf,...
+    odeset('Events',@events_empty_fuel,'RelTol',1e-6),...
+    {L,T,D,SFC_eq,W0,Wf});
+    
+    r(itr)=t(end)*250*1.4666/5280;
 end
 
 %% Plotting

@@ -5,7 +5,7 @@ function s_a=sur(e_n,Rmax)
 prop_const
 tap_ang=(r_chrd-t_chrd)/(b/2); %root chrd- tip chrd/ half of span don't bother taking 
 
-x1=1*e_n;
+x1=1*e_n+4;
 for itr=2:e_n
     x1=x1+Rmax(min(itr-1,2))*2;
 end

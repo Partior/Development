@@ -1,7 +1,8 @@
 function [dval]=iterr(t,d,fv)
 
+cl=who;
 persistent v h ne L D T SFC_eq W0 Wf
-if t==0
+if length(cl)<4
     v=250*1.4666;
     h=25e3;
     ne=2;
@@ -18,5 +19,5 @@ dval=zeros(size(d));
 WC=d(1)+W0(19)-Wf;
 taoa=fsolve(@(rr) L(rr,h,v,ne)-WC,0,optimoptions('fsolve','display','off'));
 D_cr=D(taoa,h,v,ne);
-P_cr=fsolve(@(pp) T(v,h,pp,2)-D_cr,600*550,optimoptions('fsolve','display','off'))/550;
-dval(1)=-SFC_eq(P_cr);
+P_cr=fsolve(@(pp) T(v,h,1,2)*pp-D_cr,0.8,optimoptions('fsolve','display','off'));
+dval(1)=-SFC_eq(P_cr*340*2);

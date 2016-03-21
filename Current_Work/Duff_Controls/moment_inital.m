@@ -15,8 +15,8 @@ equations_wash
 % To be changed as Cg is nailed down
 
 Cg=[19;0;0]; % x,y,z, location of C_g relative to nose of aircraft
-AC=[19;0;-4]; %x,y,z location of the Aerodynamic center
-C_Thrust=[18;0;-2]; %x,y,z average location of thrust centers
+AC=[20;0;-4]; %x,y,z location of the Aerodynamic center
+C_Thrust=[18;0;-4]; %x,y,z average location of thrust centers
 
 %% Calculations
 

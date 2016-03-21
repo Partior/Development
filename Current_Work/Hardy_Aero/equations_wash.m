@@ -31,10 +31,10 @@ ang=@(v,h,pt) v/v2(v,fT{pt}(v,h,0,0),h,pt)*0.5;
 %  under the prop wash of one of that specific engine
 
 % after running sur:
-s_a=[41.8782
-   27.4678
-   21.0607
-   14.6535];
+s_a=[37.6990
+   24.0278
+   17.6206
+   11.2134];
 
 %% Lift Forces
 % First, determine lift from airfoil and velcoty ratios
