@@ -17,7 +17,7 @@ equations_wash
 Cg=[20-(4*(0.35-0.25));0;1]; % x,y,z, location of C_g relative to nose of aircraft
 AC=[20;0;-4]; %x,y,z location of the Aerodynamic center
 C_Thrust=[18;0;-4]; %x,y,z average location of thrust centers
-L_gear=[42;0;8.5];
+L_gear=[42;0;(4.5+3)];
 
 %% Calculations
 
@@ -31,10 +31,10 @@ resol=30;
 [hmat,mmat]=meshgrid(linspace(0,40e3,30),linspace(0.15,0.5,30));
 
 %% Text Output...
-v=225;
-h=0;
+v=366;
+h=25e3;
 ne=2;
-loc=2;  %1=about cg, 2 = about landing gear
+loc=1;  %1=about cg, 2 = about landing gear
 opts=optimoptions('fsolve','display','off');
 taoa=fsolve(@(aa) L(aa,h,v,ne)-W0(19),1,opts);
 CM=Mw(taoa,25e3,250*1.4666,2);
