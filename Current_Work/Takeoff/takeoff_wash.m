@@ -1,6 +1,5 @@
-
 %% Takeoff estimation with PropWash effects
-clear; clc
+clear all; clc
 
 addpath('../')
 add_Paths
@@ -13,23 +12,26 @@ v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
 
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
-
 equations_wash  % sets up lift and drag functions
 
 % Lift for the entire airplane will be approximated as the lift for the
 % airfoil alone with imperical factor
 
-mu=0.05;    % rolling resistance
-muTire=0.35;    % Braking resistance, tires to grass
-VLOF=100*1.4666; % liftoff speed to which ground run goes to
-ne=2;   % all engines
+mu=0.02;    % rolling resistance
+muTire=0.7;    % Braking resistance,
+VLOF=fsolve(@(v) L(max(cell2mat(Cla.GridVectors))-incd,0,v,8)-W0(19),150,...
+    optimoptions('fsolve','display','none')); % liftoff speed to which ground run goes to
+VLOF=190; % While we work out the completed Lift Polar, using C_l=1.7;
+ne=8;   % all engines
 
 save('takeoff_const.mat')
 %% Ground Run
+global Tmat Drmat Dgmat tmat itrcyc
+Tmat=0; Drmat=0; Dgmat=0; tmat=0;
+itrcyc=0;
 nm=1; % Running with all engines
-[t,r]=ode45(@groundrun_wash,[0 20],[W0(19),0.1,0],...
-    odeset('Events',@events_grnd_wash,'RelTol',1e-2),...
-    nm,ne);
+opts=odeset('OutputFcn',@outfun,'Events',@events_grnd_wash,'RelTol',1e-5);
+[t,r]=ode45(@groundrun_wash,[0 360],[W0(19),0.1,0],opts,nm,ne);
 
 Wt=r(:,1);
 Vt=r(:,2);
@@ -45,8 +47,8 @@ end
 itr1=find(Vt>5,1,'first');
 % determine stopping distances for every instance from the ground run
 parfor itr=itr1:length(t)
-    [tSss,Sss]=ode45(@sbrake_wash,[0 10],[Wt(itr),Vt(itr),St(itr)],...
-        odeset('Events',@events_sbrk_wash,'RelTol',1e-3),ne);
+    [tSss,Sss]=ode45(@sbrake_wash,[0 45],[Wt(itr),Vt(itr),St(itr)],...
+        odeset('Events',@events_sbrk_wash,'RelTol',1e-4),ne);
     S_b(itr,1)=Sss(end,3);
     t_b(itr,1)=tSss(end);
 end
@@ -70,20 +72,21 @@ wtdom=wtF(linspace(ind-1,ind+1,newres));
 
 % rerun decision point at newer resoltuion
 parfor itr=1:newres
-    [tSss,Sss]=ode45(@sbrake_wash,[0 40],[wtdom(itr),vtdom(itr),stdom(itr)],...
+    [tSss,Sss]=ode45(@sbrake_wash,[0 45],[wtdom(itr),vtdom(itr),stdom(itr)],...
         odeset('Events',@events_sbrk_wash,'RelTol',1e-3),ne);
     S_b2(itr,1)=Sss(end,3);
     t_b2(itr,1)=tSss(end);
 end
 
+ % for graphout
 [~,ind]=min(abs(3000-S_b2));    % determine more presicion decision point
-[tbr_disp,Sbr_disp]=ode45(@sbrake_wash,[0 40],[wtdom(ind),vtdom(ind),stdom(ind)],...
-    odeset('Events',@events_sbrk_wash,'RelTol',1e-6),ne); % for graphout
+[tbr_disp,Sbr_disp]=ode45(@sbrake_wash,[0 45],[wtdom(ind),vtdom(ind),stdom(ind)],...
+    odeset('Events',@events_sbrk_wash,'RelTol',1e-6),ne);
 
 %% One Engine Inoperable
 % Worst Case Scenario, engine out at S_br
 nm=(n-1)/n; % running OEI
-[t_oei,r_oei]=ode45(@groundrun_wash,[0 20],[Wt(1),Vt(1),St(1)],...
+[t_oei,r_oei]=ode45(@groundrun_wash,[0 360],[Wt(1),Vt(1),St(1)],...
     odeset('Events',@events_grnd_wash,'RelTol',1e-2),nm,ne);
 
 Wt_oei=r_oei(:,1);

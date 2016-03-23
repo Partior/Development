@@ -19,7 +19,7 @@ cda=@(a) Cda(0)+Cla(a)^2/(pi*0.7*10);
 
 for itr=1:3
     cond=[ddd(itr);p(all(itr));vint(itr)];
-    [x(:,itr),fval(itr),~,ot(itr)]=fmincon(@(x) func(x,CDA,cond),[0,40,0],[],[],[],[],...
+    [x(:,itr),fval(itr)]=fmincon(@(x) func(x,CDA,cond),[0,40,0],[],[],[],[],...
         [-1,0,0],[1,100,10],@(x) funccon(x,CLA,cond),optimoptions('fmincon','display','none'));
 end
 

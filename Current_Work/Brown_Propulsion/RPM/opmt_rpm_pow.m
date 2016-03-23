@@ -23,9 +23,7 @@ if nn==1
     % cruise
     %     or=fsolve(@(rr) Cr_P(V,0,rr)/550-340,1000,optsopts);
     in1=find(abs(Cr_P(V,h,rpm_dom)/550-340)<2);
-    [~,in2]=max(n_Pc(j_ratio(V,...
-        rpm_dom(in1),...
-        Rmax(1))));
+    [~,in2]=max(n_Pc(j_ratio(V,rpm_dom(in1),Rmax(1))));
     or=rpm_dom(in1(in2));
     if isempty(or)
         or=max_rpm;

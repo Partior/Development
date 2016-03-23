@@ -1,11 +1,11 @@
 function dval=groundrun_wash(~,val,nm,ne)
 
-load('takeoff_const.mat')
+persistent mu SFC_eq Pa L T D %#ok<PSET>
+if isempty(mu)
+    load('takeoff_const.mat')
+end
 
 dval=zeros(size(val));
-if val(2)>VLOF   %reached takeoff speed
-    return
-end
 
 Wt=val(1);
 Vt=val(2);

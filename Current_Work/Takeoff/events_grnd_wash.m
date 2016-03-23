@@ -1,5 +1,8 @@
-function [value,isterminal,direction]=events_grnd_wash(~,y,~,~)
+function [value,isterminal,direction]=events_grnd_wash(~,val,~,ne)
 
-value=double(y(2)<90*1.4666);
+load('takeoff_const.mat')
+Vt=val(2);
+
+value=double(VLOF<Vt);
 isterminal=1;
 direction=0;
