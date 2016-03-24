@@ -12,16 +12,18 @@ v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
 
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
+
+Cda=@(a) Cda(a)-0.0016; % equation 20 from http://www.dept.aoe.vt.edu/~lutze/AOE3104/takeoff&landing.pdf
 equations_wash  % sets up lift and drag functions
 
 % Lift for the entire airplane will be approximated as the lift for the
 % airfoil alone with imperical factor
 
 mu=0.02;    % rolling resistance
-muTire=0.7;    % Braking resistance,
+muTire=0.55;    % Braking resistance,
 VLOF=fsolve(@(v) L(max(cell2mat(Cla.GridVectors))-incd,0,v,8)-W0(19),150,...
     optimoptions('fsolve','display','none')); % liftoff speed to which ground run goes to
-VLOF=190; % While we work out the completed Lift Polar, using C_l=1.7;
+VLOF=162; % While we work out the completed Lift Polar, using C_l=1.7;
 ne=8;   % all engines
 
 save('takeoff_const.mat')
@@ -30,7 +32,7 @@ global Tmat Drmat Dgmat tmat itrcyc
 Tmat=0; Drmat=0; Dgmat=0; tmat=0;
 itrcyc=0;
 nm=1; % Running with all engines
-opts=odeset('OutputFcn',@outfun,'Events',@events_grnd_wash,'RelTol',1e-5);
+opts=odeset('OutputFcn',@outfun,'Events',@events_grnd_wash,'RelTol',1e-3);
 [t,r]=ode45(@groundrun_wash,[0 360],[W0(19),0.1,0],opts,nm,ne);
 
 Wt=r(:,1);
@@ -81,23 +83,24 @@ end
  % for graphout
 [~,ind]=min(abs(3000-S_b2));    % determine more presicion decision point
 [tbr_disp,Sbr_disp]=ode45(@sbrake_wash,[0 45],[wtdom(ind),vtdom(ind),stdom(ind)],...
-    odeset('Events',@events_sbrk_wash,'RelTol',1e-6),ne);
+    odeset('Events',@events_sbrk_wash,'RelTol',1e-4),ne);
 
 %% One Engine Inoperable
 % Worst Case Scenario, engine out at S_br
 nm=(n-1)/n; % running OEI
 [t_oei,r_oei]=ode45(@groundrun_wash,[0 360],[Wt(1),Vt(1),St(1)],...
-    odeset('Events',@events_grnd_wash,'RelTol',1e-2),nm,ne);
+    odeset('Events',@events_grnd_wash,'RelTol',1e-3),nm,ne);
 
 Wt_oei=r_oei(:,1);
 Vt_oei=r_oei(:,2);
 St_oei=r_oei(:,3);
 
 %% Airborne Distance
-V2=max(172,VLOF*1.1); % ft/s, Vmp for climbing
-Cdg=D(3,0,V2,ne)/(0.5*p(0)*V2^2*S);
-Sa=Wt(end)/(Pa/V2-0.5*p(0)*V2^2*S*Cdg)*((V2^2-VLOF^2)/(2*32.2)+35); % airborne distance
-Sa_oei=Wt_oei(end)/(nm*Pa/V2-0.5*p(0)*V2^2*S*Cdg)*((V2^2-VLOF^2)/(2*32.2)+35); % airborne with oei
+global gmmat tmat_a
+gmmat=0; tmat_a=0; itrcyc=0;
+nm=1;
+opts_a=odeset('OutputFcn',@outfun_a,'Events',@events_airborne_wash,'RelTol',1e-3);
+[t_a,r_a]=ode45(@airborne_wash,[0 50],[r(end,:),0,0],opts_a,nm,ne);
 
 %% Graphs
 
@@ -129,3 +132,5 @@ plot(St,Vt/1.4666,'b')
 xlabel('Dist, ft'); ylabel('Vel, mph')
 legend({'Braking','Takeoff'},'location','south')
 grid on
+
+beep

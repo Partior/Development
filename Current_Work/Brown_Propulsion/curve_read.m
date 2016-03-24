@@ -5,9 +5,6 @@ fmat={'SHAFT_POWER_COEFFICIENT';...
     'PROPELLER_EFFICIENCY_COMPARISON'};
 f2={'C_P';'C_T';'n_P'};
 
-clear dmat
-dmat=struct;
-
 % iterativly import data
 for itr=1:length(fmat);
     flnm=['Prop_output/Cruise/GNUPLOT_',fmat{itr},'.dat'];
@@ -15,14 +12,12 @@ for itr=1:length(fmat);
     d_in=find(dd(:,1)==0);
     eval(['dmat.',f2{itr},'=dd(d_in(4):d_in(5),:);']);
 end
-
 mstep1=mean(diff(dmat.C_P(1:10,1)));
 
 for itr=1:length(fmat);
     flnm=['Prop_output/Takeoff/GNUPLOT_',fmat{itr},'.dat'];
     dd=importdata(flnm);
-    d_in=find(dd(:,1)==0);
-    eval(['emat.',f2{itr},'=dd(d_in(4):end,:);']);
+    eval(['emat.',f2{itr},'=dd(1:end,:);']);
 end
 mstep2=mean(diff(emat.C_P(1:10,1)));
 

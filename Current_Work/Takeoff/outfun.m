@@ -1,7 +1,7 @@
 function status=outfun(tm,y,flag,varargin)
 
 persistent mu L T D %#ok<PSET>
-global Tmat Drmat Dgmat tmat itrcyc
+global gmmat tmat itrcyc
 if strcmp(flag,'init')
     load('takeoff_const.mat')
     tm=0;
