@@ -12,7 +12,7 @@ Vt=val(2);
 
 % formulation of dV/dt
 Lg=L(12-incd,0,Vt,ne)*1.8/1.3;
-Tt=T(Vt,0,0,ne);
+Tt=T(Vt,0,ne);
 Dg=Df(0,0,Vt)+Dw(0,0,Vt,ne)*0.4; % air drag resistance
 % using eq 19A from  http://www.dept.aoe.vt.edu/~lutze/AOE3104/takeoff&landing.pdf
 

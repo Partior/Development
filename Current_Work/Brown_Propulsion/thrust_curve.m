@@ -14,41 +14,49 @@ Tk_P=@(V,h,n,pt) C_Pt(j_ratio(V,n,Rmax(2)),pt)*p(h).*(n/60).^3*(2*Rmax(2))^5;
 SHP_C=@(V,h,n) n_motor*n_Pc(j_ratio(V,n,Rmax(1)))/100;
 SHP_T=@(V,h,n) n_motor*n_Pt(j_ratio(V,n,Rmax(2)))/100;
 
-%% Optimizing RPM
 package={Cr_T;Tk_T;Cr_P;Tk_P};
-
+%% Test to see if we have already determined optimum rpm
+if exist('Brown_Propulsion\RPM\rpm_curves.mat','file')
+    load('Brown_Propulsion\RPM\rpm_curves.mat')
+    return
+end
+%% Optimizing RPM
 % setup numeric curve for max thrust by takeoff props. We don't want to
 % have to optimize every single call.
-[vel,hel]=meshgrid(linspace(0,300,20),linspace(0,45e3,2));
-op_rpm_tk=zeros(2,20,2);
+veldom=0:5:450;
+hdom=0:5e3:45e3;
+
+pow_ava=[150,70];
+
+opit=1.55*ones(length(hdom),length(veldom));
+orpm=zeros(length(hdom),length(veldom));
 wb=waitbar(0,'Processing Takeoff Props');
-for ia=1:2
-    waitbar((ia-1)/2,wb)
-    parfor ib=1:20
-        tmp=opmt_rpm_pow_2(vel(ia,ib),hel(ia,ib),package,2,75);
-        op_rpm_tk(ia,ib,:)=tmp(1:2);
+for ita=1:length(hdom)
+    waitbar((ita-1)/length(hdom),wb)
+    h=hdom(ita);
+    for itr=1:length(veldom)
+        orpm(ita,itr)=fzero(@(r) Tk_P(veldom(itr),h,r,1.55)/550-pow_ava(1),2000,optimset('display','off','TolX',1e-4));
+        if orpm(ita,itr)>2500;
+            orpm(ita,itr)=2500;
+            opit(ita,itr)=fzero(@(p) Tk_P(veldom(itr),h,2500,p)/550-pow_ava(1),2,optimset('display','off','TolX',1e-4));
+            if isnan(opit(ita,itr))
+                opit(ita,itr)=1.55;
+            end
+        end
     end
-%     for id=1:1
-%         [~,in]=findpeaks(op_rpm_tk(ia,:,1));
-%         for ic=1:length(in)
-%             ind=max(in(ic)+([-2-1,1,2]),1);
-%             ind=min(ind,150);
-%             op_rpm_tk(ia,in(ic),1)=mean(op_rpm_tk(ia,ind,1));
-%             op_rpm_tk(ia,in(ic),2)=mean(op_rpm_tk(ia,ind,2));
-%         end
-%     end
 end
-oprpm_TK=griddedInterpolant(vel',hel',op_rpm_tk(:,:,1)','linear','nearest');
-oppit_TK=griddedInterpolant(vel',hel',op_rpm_tk(:,:,2)','linear','nearest');
+oprpm_TK=griddedInterpolant({veldom,hdom},orpm','linear','nearest');
+oppit_TK=griddedInterpolant({veldom,hdom},opit','linear','nearest');
 
 waitbar(0,wb,'Processing Cruise Props')
-[vel,hel]=meshgrid(linspace(0,500,100),linspace(0,45e3,10));
 % Setup numeric curve for max thrust by cruise props
-for ia=1:10
-    waitbar((ia-1)/10,wb)
-    parfor ib=1:100
-        op_rpm_cr(ia,ib)=opmt_rpm_pow(vel(ia,ib),hel(ia,ib),package,1,300);
+for ia=1:length(hdom)
+    waitbar((ia-1)/length(hdom),wb)
+    parfor ib=1:length(veldom)
+        op_rpm_cr(ia,ib)=opmt_rpm_pow(veldom(ib),hdom(ia),package,1,pow_ava(2));
     end
 end
 close(wb)
-oprpm_CR=griddedInterpolant(vel',hel',op_rpm_cr','linear','nearest');
+oprpm_CR=griddedInterpolant({veldom,hdom},op_rpm_cr','linear','nearest');
+
+save('Brown_Propulsion\RPM\rpm_curves.mat','oprpm_TK','oppit_TK','oprpm_CR');

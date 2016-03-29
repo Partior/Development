@@ -13,7 +13,7 @@ Vt=val(2);
 % formulation of dV/dt
 Lg=L(0,0,Vt,n);
 Dr=max(0,mu*(Wt-Lg)); % rolling resistance
-Tt=T(Vt,0,0,n);
+Tt=T(Vt,0,n);
 Dg=Df(0,0,Vt)+Dw(0,0,Vt,n)*0.2880; % air drag resistance
 % using eq 19A from  http://www.dept.aoe.vt.edu/~lutze/AOE3104/takeoff&landing.pdf
 

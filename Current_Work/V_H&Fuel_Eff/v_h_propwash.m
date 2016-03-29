@@ -4,7 +4,7 @@
 
 %% Init
 % run scripts to initalize variables
-clear;
+clear all; clc
 
 %% Init Scripts
 prop_const
@@ -31,7 +31,7 @@ hdom=linspace(0,4e3,resol);
 
 % First, power required equation:
 plvl=@(aoa,h,v,on) ...
-    D(aoa,h,v,on)/(T(v,h,Pa,on));
+    D(aoa,h,v,on)/(Tc(v,h));
 
 % Fuel Efficiency
 gmma=@(v,P) v/SFC_eq(P)/5280;

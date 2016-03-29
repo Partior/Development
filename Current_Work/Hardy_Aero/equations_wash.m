@@ -15,14 +15,14 @@ beta=@(m) sqrt(1-m.^2);
 v2=@(v,t,h,pt) sqrt(t/(1/2*p(h)*A(pt))+v.^2);
 
 % Cruise individual prop thrust
-CT=@(V,h,~,~) T(V,h,0,2)/2;
+CT=@(V,h,on) [on<3,on>3]*[Cr_T(V,h,opmt_rpm_pow(V,h,package,1,340));Cr_T(V,h,oprpm_CR(V,h))];
 % takeoff individual prop thrust
-TT=@(V,h,~,~) (T(V,h,0,8)-T(V,h,0,2))/6;
+TT=@(V,h,on) Cr_T(V,h,oprpm_CR(V,h));
 
 fT={CT;TT};
 % How much of free stream wind is the AoA versus zero degress from prop?
 % impercial formula made up
-ang=@(v,h,pt) v/v2(v,fT{pt}(v,h,0,0),h,pt)*0.5;
+ang=@(v,h,pt,on) v/v2(v,fT{pt}(v,h,on),h,pt)*0.5;
 
 %% Spanwise Distrubution
 % Based on taper of the leading edge, determine surface area in prop wash
@@ -42,8 +42,8 @@ Lf=@(aoa,h,v) 1/2*p(h)*v.^2*Cla(aoa+Cl0)*(S)*0.2; % Approximation for Fuselage l
 Lw=@(aoa,h,v,on) ...
     1/2*p(h)*v.^2*Cla(aoa+incd)*...
     (S-2*((on-2)/2>=[0,1,2,3])*s_a)+...free stream wing lift
-    1/2*p(h)*v2(v,CT(v,h,0,0),h,1).^2*Cla(ang(v,h,1)*aoa+incd)*(2*s_a(1))+... prop wash lift, cruise props
-    1/2*p(h)*v2(v,TT(v,h,0,0),h,2).^2*Cla(ang(v,h,2)*aoa+incd)*...
+    1/2*p(h)*v2(v,CT(v,h,on),h,1).^2*Cla(ang(v,h,1,on)*aoa+incd)*(2*s_a(1))+... prop wash lift, cruise props
+    1/2*p(h)*v2(v,TT(v,h,on),h,2).^2*Cla(ang(v,h,2,on)*aoa+incd)*...
     (2*((on-2)/2>=[1,2,3])*s_a(2:4));  %prop wash lift, takeoff props
 L=@(aoa,h,v,on) Lf(aoa,h,v)+Lw(aoa,h,v,on);
     
@@ -54,8 +54,8 @@ Df=@(aoa,h,v) 1/2*p(h)*v.^2*(Cda(aoa+Cl0)+(K*Cla(aoa+Cl0).^2))*S*4; % 80*5 is le
 Dw=@(aoa,h,v,on) ...
     1/2*p(h)*v.^2*Cda(aoa+incd)*...
     (S-2*((on-2)/2>=[0,1,2,3])*s_a)+...free stream wing drag
-    1/2*p(h)*v2(v,CT(v,h,Pa,on),h,1).^2*Cda(ang(v,h,1)*aoa+incd)*(2*s_a(1))+... % prop wash drag, cruise props
-    1/2*p(h)*v2(v,TT(v,h,Pa,on),h,2).^2*Cda(ang(v,h,2)*aoa+incd)*...
+    1/2*p(h)*v2(v,CT(v,h,on),h,1).^2*Cda(ang(v,h,1,on)*aoa+incd)*(2*s_a(1))+... % prop wash drag, cruise props
+    1/2*p(h)*v2(v,TT(v,h,on),h,2).^2*Cda(ang(v,h,2,on)*aoa+incd)*...
     (2*((on-2)/2>=[1,2,3])*s_a(2:4)); % prop wash drag, takeoff props
 % Total Drag
 D=@(aoa,h,v,on) Df(aoa,h,v)+Dw(aoa,h,v,on);
