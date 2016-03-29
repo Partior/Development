@@ -12,15 +12,14 @@ end
 Wt=y(1,end);
 Vt=y(2,end);
 
-nm=varargin{1};
-ne=varargin{2};
+ne=varargin{1};
 
 itrcyc=itrcyc+1;
 tmat(itrcyc)=tm(end);
 % formulation of dV/dt
 Lmat=L(0,0,Vt,ne);
 Drmat(itrcyc)=max(0,mu*(Wt-Lmat)); % rolling resistance
-Tmat(itrcyc)=T(Vt,0,0,nm*ne);
+Tmat(itrcyc)=T(Vt,0,0,ne);
 Dgmat(itrcyc)=D(0,0,Vt,ne); % air drag resistance
 
 status=0;

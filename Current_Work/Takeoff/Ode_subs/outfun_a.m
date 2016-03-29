@@ -12,11 +12,10 @@ end
 Wt=val(1);
 Vt=val(2);
 
-nm=varargin{1};
-ne=varargin{2};
+ne=varargin{1};
 
 % formulation of dV/dt
-Lg=L(12-incd,0,Vt,nm*ne)*2/1.45;
+Lg=L(12-incd,0,Vt,ne)*2/1.45;
 
 %rectangular, find flight path angle
 rdh=32.2*(Lg/Wt-1);
