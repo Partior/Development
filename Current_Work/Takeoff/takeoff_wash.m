@@ -10,6 +10,7 @@ prop_const
 prop_T
 v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
 
+airfoil_polar_file='Q1TOpolar.txt';
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
 
@@ -22,7 +23,7 @@ lift_modder
 
 mu=0.02;    % rolling resistance
 muTire=0.55;    % Braking resistance,
-VLOF=fsolve(@(v) L(max(cell2mat(Cla.GridVectors))-incd,0,v,8)-W0(19),200,...
+VLOF=fsolve(@(v) L(Clmax-incd,0,v,8)-W0(19),200,...
     optimoptions('fsolve','display','none')) % liftoff speed to which ground run goes to
 save('takeoff_const.mat')
 %% Ground Run

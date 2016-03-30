@@ -23,15 +23,11 @@ equations_wash  % sets up lift and drag functions
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 50% power levels
 
-resol=40;
-mdom=linspace(0,0.45,resol);
-hdom=linspace(0,4e3,resol);
+resol=60;
+mdom=linspace(0.15,0.5,resol);
+hdom=linspace(0,35e3,resol);
 [m_msh,h_msh]=meshgrid(mdom,hdom);
 % started at 0.1 mach to not have to deal with wierd AoAs
-
-% First, power required equation:
-plvl=@(aoa,h,v,on) ...
-    D(aoa,h,v,on)/(Tc(v,h));
 
 % Fuel Efficiency
 gmma=@(v,P) v/SFC_eq(P)/5280;
@@ -47,7 +43,7 @@ if isempty(pll)
     parpool('local')
 end
 %% Execution
-ne=8;
+ne=2;
 
 taoa=NaN(resol);
 pl=NaN(resol);
@@ -77,11 +73,11 @@ if ~vals{2}
 end
 
 % Fuel Efficiency
-[~,hg]=contour(m_msh,h_msh/1e3,gm,[1 2]);
+[~,hg]=contour(m_msh,h_msh/1e3,gm,[1 1]);
 set(hg,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
     'LineColor','r','LineStyle','-','LineWidth',1.5,...
     'ShowText','on','LabelSpacing',400);
-[~,hgs]=contour(m_msh,h_msh/1e3,gm,[1.2:0.2:1.9]);
+[~,hgs]=contour(m_msh,h_msh/1e3,gm,[0.5:0.25:0.9]);
 set(hgs,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
     'LineColor','r','LineStyle',':','LineWidth',0.1);
 if ~vals{3}
@@ -110,20 +106,19 @@ for ita=1:resol
     parfor itb=1:resol
         hi=h_msh(ita,itb);
         vi=m_msh(ita,itb)*a(h_msh(ita,itb));
-        n_t(ita,itb)=L(12-incd,hi,vi,ne)/W0(19);
-        if n_t(ita,itb)<0.9;
-            continue
+        n_t(ita,itb)=L(Clmax-incd,hi,vi,ne)/W0(19);
+        if n_t(ita,itb)>1;
+            tt=fzero(@(rr) L(rr,hi,vi,ne)-W0(19),[Cl0-incd Clmax-incd],optimoptions('fsolve','display','off'));
+            taoa(ita,itb)=tt;
+            pl(ita,itb)=D(tt,hi,vi,ne)/Tc(vi,hi);
+            gm(ita,itb)=gmma(vi,pl(ita,itb)*680+100);
         end
-        taoa(ita,itb)=fsolve(@(rr) L(rr,hi,vi,ne)-W0(19),0,optimoptions('fsolve','display','off'));
-        pl(ita,itb)=plvl(taoa(ita,itb),hi,vi,ne);
-        gm(ita,itb)=gmma(vi,pl(ita,itb)*340*2);
     end
     refreshdata
     drawnow
 end
 
 %% Pretty
-
 grid on
 
 xlabel('Mach')

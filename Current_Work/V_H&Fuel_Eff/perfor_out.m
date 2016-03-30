@@ -49,7 +49,7 @@ for itr=1:length(plc)
         plc(2,itr)=0;
     end
 end
-scsc=max(plc(2,:))*1e3;
+scsc=max(plc(2,1:end-1))*1e3;
 fprintf('\t\t%20s %7.0f    ft \n','Service Ceiling',scsc)
 % Max Mach
 pll=h_m.ContourMatrix;
@@ -89,7 +89,7 @@ fprintf('\n\tCRUISE ALTITUDE: \n')
 ntnl2=pchip(nturn(2,:),nturn(1,:));
 fprintf('\t\t%20s %10.2f mph \n','Stall Speed',ppval(ntnl2,25)*a(25e3)/1.46666)
 % Max Speed
-[~,in,~]=unique(mxp(2,:));
+[~,in,~]=unique(mxp(2,:),'stable');
 mxpin=pchip(mxp(2,in),mxp(1,in));
 fprintf('\t\t%20s %10.2f mph \n','Max Cruise',ppval(mxpin,25)*a(25e3)/1.46666)
 % Max Fuel Efficiency
@@ -98,24 +98,20 @@ fprintf('\t\t%20s %10.2f m/lb \n','Max Fuel Eff',gml(25e3,mxgm))
 % Max Fuel Efficiency speed
 fprintf('\t\t%20s %10.2f mph \n','Max Fuel Eff Speed',mxgm*a(25e3)/1.4666)
 
-%% Record to Excel
-% 
-% xlswrite('testing.xlsx',...
-%     [scsc;
-%     mx_mc;
-%     mxp(2,ind)*1e3;
-%     mx_sp/1.4666;
-%     mxp(2,ind)*1e3;
-%     n_t(ri,ci);
-%     nturn(1,nn)*a(nturn(2,nn))/1.4666;
-%     ppl(25e3,366/a(25e3))*100;
-%     gml(25e3,366/a(25e3));
-%     taa(25e3,366/a(25e3));
-%     ppval(ntnl2,25)*a(25e3)/1.46666;
-%     ppval(mxpin,25)*a(25e3)/1.46666;
-%     gml(25e3,mxgm);
-%     mxgm*a(25e3)/1.4666]',...
-%     'Sheet1',['A',num2str(n)])
-    
+%% Loiter Calculations
+% Determine Altitude and Velocity of Best Loiter, for minutes per pound of
+% fuel
+fprintf('\n\tLOITER CONDITIONS: \n')
+[loit_x,loit_gm]=fmincon(@(X) -60/SFC_eq(...
+    D(fzero(@(rr) L(rr,X(2),X(1),ne)-W0(19),[Cl0-incd Clmax-incd],optimoptions('fsolve','display','off')),...
+    X(1),X(2),2)/Tc(X(1),X(2))*680),...
+    [300;10000],[],[],[],[],[0;8000],[450;16000],[],optimset('Display','off','UseParallel',true));
+% Loiter Altitude
+fprintf('\t\t%20s %10.0f ft \n','Loiter Altitude',loit_x(2))
+% Loiter Speed
+fprintf('\t\t%20s %10.2f mph \n','Loiter Speed',loit_x(1)/1.4666)
+% Loiter Fuel Econ
+fprintf('\t\t%20s %7.0f:%02.0f min/lb \n','Loiter Fuel Econ',floor(-loit_gm),mod(-loit_gm,1)*60)
 
-
+%%
+beep

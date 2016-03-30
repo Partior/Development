@@ -46,7 +46,7 @@ K=1/(AR*e*pi);
 
 %   Airfoil
 incd=5.45;     % incidence angle of wing strucutre
-airfoil_polar_file='Q1wingpolar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
+airfoil_polar_file='Q1fullpolar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
 clms=[1,3,6,9]; %colums for alpha, Cl, Cd, Cm
 
 %% FUSELAGE

@@ -9,10 +9,10 @@ cl=dta.data(:,clms(2));
 CD=dta.data(:,clms(3));
 cm=dta.data(:,clms(4));
 
-Cd0=min(CD);
+Cla=griddedInterpolant(alfa(4:end),cl(4:end),'spline','none');
+Cda=griddedInterpolant(alfa(4:end),CD(4:end),'spline','none');
+Cma=griddedInterpolant(alfa(4:end),cm(4:end),'spline','none');
 
-Cla=griddedInterpolant(alfa(4:end),cl(4:end),'pchip','none');
-Cda=griddedInterpolant(alfa(4:end),CD(4:end),'pchip','none');
-Cl0=fzero(@(a) Cla(a),-1);
-
-Cma=griddedInterpolant(alfa(4:end),cm(4:end),'pchip','none');
+Cl0=fzero(@(a) Cla(a),[-5 0]);
+Cd0=fminsearch(@(a) Cda(a),0);
+Clmax=fminsearch(@(a) -Cla(a),20);
