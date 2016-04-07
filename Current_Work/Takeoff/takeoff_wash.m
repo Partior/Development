@@ -30,7 +30,7 @@ save('takeoff_const.mat')
 disp('Evaluating Ground Run')
 ne=8;
 opts=odeset('Events',@events_grnd_wash,'RelTol',1e-3);
-[t,r]=ode45(@groundrun_wash,[0 360],[W0(19),0.1,0],opts,ne);
+[t,r]=ode45(@groundrun_wash,[0 40],[W0(19),0.1,0],opts,ne);
 
 Wt=r(:,1);
 Vt=r(:,2);
@@ -44,7 +44,7 @@ if isempty(poolobj)
     parpool('local')
 end
 
-itr1=find(Vt>5,1,'first');
+itr1=find(Vt>VLOF/1.2,1,'first');
 % determine stopping distances for every instance from the ground run
 parfor itr=itr1:length(t)
     [tSss,Sss]=ode45(@sbrake_wash,[0 45],[Wt(itr),Vt(itr),St(itr)],...
@@ -81,13 +81,13 @@ end
 
  % for graphout
 [~,ind]=min(abs(3000-S_b2));    % determine more presicion decision point
-[tbr_disp,Sbr_disp]=ode45(@sbrake_wash,[0 45],[wtdom(ind),vtdom(ind),stdom(ind)],...
+[tbr_disp,Sbr_disp]=ode45(@sbrake_wash,[0 30],[wtdom(ind),vtdom(ind),stdom(ind)],...
     odeset('Events',@events_sbrk_wash,'RelTol',1e-4),ne);
 
 %% One Engine Inoperable
 disp('Evaluating OEI Ground Run')
 % Worst Case Scenario, engine out at S_br
-[t_oei,r_oei]=ode45(@groundrun_wash,[0 360],[wtdom(ind),vtdom(ind),stdom(ind)],...
+[t_oei,r_oei]=ode45(@groundrun_wash,[0 40],[wtdom(ind),vtdom(ind),stdom(ind)],...
     odeset('Events',@events_grnd_wash,'RelTol',1e-3),ne-1);
 
 t_oei=t_oei+t(ind);
@@ -98,8 +98,8 @@ St_oei=r_oei(:,3);
 %% Airborne Distance
 disp('Evaluating Airborne Distances')
 opts_a=odeset('Events',@events_airborne_wash,'RelTol',1e-3);
-[t_a,r_a]=ode45(@airborne_wash,[0 50],[r(end,:),0,0],opts_a,ne);
-[t_aoei,r_aoei]=ode45(@airborne_wash,[0 50],[r_oei(end,:),0,0],opts_a,ne-1);
+[t_a,r_a]=ode45(@airborne_wash,[0 20],[r(end,:),0,0],opts_a,ne);
+[t_aoei,r_aoei]=ode45(@airborne_wash,[0 20],[r_oei(end,:),0,0],opts_a,ne-1);
 
 %% Graphs
 disp('Graphing...')
@@ -151,5 +151,3 @@ xlabel('Dist, ft'); ylabel('Vel, mph')
 xl=xlim; xlim([0 xl(2)])
 legend({'Braking','Takeoff'},'location','south')
 grid on
-
-clc
