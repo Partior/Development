@@ -3,7 +3,7 @@
 
 %   Generator
 % Avalibe power for the propellors
-Pa=900*737.562149; % conversion from kW to lbf ft/s
+Pa=1050; % conversion from kW to lbf ft/s
 
 %% Motor Constants
 % Ideal RPM

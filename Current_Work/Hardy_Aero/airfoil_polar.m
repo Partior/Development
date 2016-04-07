@@ -13,6 +13,6 @@ Cla=griddedInterpolant(alfa(4:end),cl(4:end),'spline','none');
 Cda=griddedInterpolant(alfa(4:end),CD(4:end),'spline','none');
 Cma=griddedInterpolant(alfa(4:end),cm(4:end),'spline','none');
 
-Cl0=fzero(@(a) Cla(a),[-5 0]);
+Cl0=fzero(@(a) Cla(a),[-10 0]);
 Cd0=fminsearch(@(a) Cda(a),0);
 Clmax=fminsearch(@(a) -Cla(a),20);
