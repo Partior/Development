@@ -1,4 +1,4 @@
-modificationCL=0.3;
+modificationCL=0.2;
 
 Lf=@(aoa,h,v) 1/2*p(h)*v.^2*Cla(aoa+Cl0)*(S)*0.2; % Approximation for Fuselage lift
 Lw=@(aoa,h,v,on) ...
