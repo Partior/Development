@@ -5,7 +5,7 @@ curve_read
 % cruise thrust
 Cr_T=@(V,h,n) C_Tc(j_ratio(V,n,Rmax(1)))*p(h).*(n/60).^2*(2*Rmax(1))^4;
 % Takeoff thrust
-Tk_T=@(V,h,n,pt) C_Tt(j_ratio(V,n,Rmax(2)),pt)*p(h).*(n/60).^2*(2*Rmax(2))^4;
+Tk_T=@(V,h,n) C_Tt(j_ratio(V,n,Rmax(2)),1.55)*p(h).*(n/60).^2*(2*Rmax(2))^4;
 
 % Power Coefficient
 Cr_P=@(V,h,n) C_Pc(j_ratio(V,n,Rmax(1)))*p(h).*(n/60).^3*(2*Rmax(1))^5;
@@ -14,7 +14,7 @@ Tk_P=@(V,h,n,pt) C_Pt(j_ratio(V,n,Rmax(2)),pt)*p(h).*(n/60).^3*(2*Rmax(2))^5;
 SHP_C=@(V,h,n) n_motor*n_Pc(j_ratio(V,n,Rmax(1)))/100;
 SHP_T=@(V,h,n) n_motor*n_Pt(j_ratio(V,n,Rmax(2)))/100;
 
-package={Cr_T;Tk_T;Cr_P;Tk_P};
+package={Cr_P;Tk_P};
 %% Test to see if we have already determined optimum rpm
 if exist('Brown_Propulsion\RPM\rpm_curves.mat','file')
     load('Brown_Propulsion\RPM\rpm_curves.mat')

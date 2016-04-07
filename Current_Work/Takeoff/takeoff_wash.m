@@ -44,7 +44,7 @@ if isempty(poolobj)
     parpool('local')
 end
 
-itr1=find(Vt>70,1,'first');
+itr1=find(Vt>5,1,'first');
 % determine stopping distances for every instance from the ground run
 parfor itr=itr1:length(t)
     [tSss,Sss]=ode45(@sbrake_wash,[0 45],[Wt(itr),Vt(itr),St(itr)],...
@@ -59,7 +59,6 @@ if ind==1;
 elseif ind==length(t)
     ind=length(t)-1;
 end
-t_soei=t(ind);
 tF=griddedInterpolant((ind-1:ind+1),t(ind-1:ind+1));
 vtF=griddedInterpolant((ind-1:ind+1),Vt(ind-1:ind+1));
 stF=griddedInterpolant((ind-1:ind+1),St(ind-1:ind+1));
@@ -137,9 +136,9 @@ figure(2); clf
 subplot(1,2,1)
 hold on
 plot(St,t,'b-'); 
-plot(St_oei,t_oei+t_soei,'g-')
+plot(St_oei,t_oei+tdom(ind),'g-')
 plot(r_a(:,3),t_a+t(end),'b--')
-plot(r_aoei(:,3),t_oei(end)+t_aoei+t_soei,'g--')
+plot(r_aoei(:,3),tdom(ind)+t_aoei,'g--')
 plot(Sbr_disp(:,3),tbr_disp+tdom(ind),'r')
 xlabel('Dist, ft'); ylabel('time, s')
 grid on
