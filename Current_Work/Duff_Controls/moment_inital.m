@@ -35,7 +35,7 @@ resol=30;
 %% Text Output...
 v=1.2*VLOF;
 h=0;
-ne=0;
+ne=8;
 loc=2;  %1=about cg, 2 = about landing gear
 opts=optimoptions('fsolve','display','off');
 taoa=fsolve(@(aa) L(aa,h,v,ne)-W0(19),1,opts);

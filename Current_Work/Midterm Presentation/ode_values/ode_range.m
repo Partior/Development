@@ -10,7 +10,7 @@ equations_wash
 
 [t,fl]=ode45(@iterr,[0 2.5e4],Wf,...
     odeset('Events',@events_empty_fuel,'RelTol',1e-6),...
-    {L,T,D,SFC_eq,W0,Wf});
+    {L,Tc,D,SFC_eq,W0,Wf});
     
 r=t(end)*250*1.4666/5280;
 

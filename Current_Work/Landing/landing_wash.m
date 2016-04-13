@@ -58,14 +58,20 @@ ylbl={'Angle of Attack, \alpha - deg';
     'Distance Traveled, S - ft';
     'Velocity - ft/s'};
 ylm=[0 15;-4 0;0 3000;0 Vx*1.1];
+pltorder=[1,3,2,4];
 for itr=1:4
-    subplot(2,2,itr)
-    plot(t_a+t,r(:,itr))
+    subplot(2,2,pltorder(itr))
+    if itr<3
+        plot(t_a+t(t<te(1)*1.1),r(t<te(1)*1.1,itr))
+    else
+        plot(t_a+t,r(:,itr))
+    end
     xlabel('Time')
     ylabel(ylbl{itr})
     ylim(ylm(itr,:))
-    xlim([0 ceil(t_a+t(end))])
+    x2=xlim;
+    xlim([0 x2(2)])
     if itr>2
-        text(t_a+te(1),ye(1,itr),'Nose Touch','VerticalAlignment','middle','HorizontalAlignment','center')
+        text(t_a+te(1),ye(1,itr),'. Nose Touch','VerticalAlignment','bottom','HorizontalAlignment','left')
     end
 end

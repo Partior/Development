@@ -22,11 +22,11 @@ end
 
 % When do we start braking
 if y(1)<0.25
-    dv(4)=-D(y(1),0,y(4),0)/(WLAND/32.2)-32.2*muTire*(1-L(y(1),0,y(4),2)/WLAND);
+    dv(4)=-D(y(1),0,y(4),0)/(WLAND/32.2)-32.2*(muTire+0.02)*(1-L(y(1),0,y(4),2)/WLAND);
 else
-    dv(4)=-D(y(1),0,y(4),0)/(WLAND/32.2);
+    dv(4)=-D(y(1),0,y(4),0)/(WLAND/32.2)-32.2*0.02*(1-L(y(1),0,y(4),2)/WLAND);
 end
 
 dv(3)=y(4);
 
-disp([t,y'])
+% disp([t,y'])
