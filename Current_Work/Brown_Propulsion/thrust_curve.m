@@ -26,7 +26,7 @@ end
 veldom=0:5:450;
 hdom=0:5e3:45e3;
 
-pow_ava=[155,60];xc 
+pow_ava=[155,60];
 
 opit=1.55*ones(length(hdom),length(veldom));
 orpm=zeros(length(hdom),length(veldom));
