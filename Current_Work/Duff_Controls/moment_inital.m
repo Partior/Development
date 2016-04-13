@@ -33,9 +33,9 @@ resol=30;
 [hmat,mmat]=meshgrid(linspace(0,40e3,30),linspace(0.15,0.5,30));
 
 %% Text Output...
-v=180.3439;
+v=1.2*VLOF;
 h=0;
-ne=8;
+ne=0;
 loc=2;  %1=about cg, 2 = about landing gear
 opts=optimoptions('fsolve','display','off');
 taoa=fsolve(@(aa) L(aa,h,v,ne)-W0(19),1,opts);
