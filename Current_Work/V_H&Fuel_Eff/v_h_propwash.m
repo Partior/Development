@@ -23,9 +23,9 @@ equations_wash  % sets up lift and drag functions
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 50% power levels
 
-resol=60;
-mdom=linspace(0.15,0.5,resol);
-hdom=linspace(0,35e3,resol);
+resol=50;
+mdom=linspace(0.10,0.425,resol);
+hdom=linspace(0e3,40e3,resol);
 [m_msh,h_msh]=meshgrid(mdom,hdom);
 % started at 0.1 mach to not have to deal with wierd AoAs
 
@@ -43,7 +43,7 @@ if isempty(pll)
     parpool('local')
 end
 %% Execution
-ne=2;
+ne=8;
 
 taoa=NaN(resol);
 pl=NaN(resol);
@@ -110,8 +110,12 @@ for ita=1:resol
         if n_t(ita,itb)>1;
             tt=fzero(@(rr) L(rr,hi,vi,ne)-W0(19),[Cl0-incd Clmax-incd],optimoptions('fsolve','display','off'));
             taoa(ita,itb)=tt;
-            pl(ita,itb)=D(tt,hi,vi,ne)/Tc(vi,hi);
-            gm(ita,itb)=gmma(vi,pl(ita,itb)*680+100);
+            if ne==2
+                pl(ita,itb)=D(tt,hi,vi,2)/(2*Cr_T(vi,hi,opmt_rpm_pow(vi,hi,{Cr_P;Tk_P},1,500)));
+            else
+                pl(ita,itb)=D(tt,hi,vi,ne)/T(vi,hi,ne);
+            end
+            gm(ita,itb)=gmma(vi,pl(ita,itb)*680);
         end
     end
     refreshdata
@@ -136,14 +140,10 @@ for ita=1:5
     end
 end
 title({t0;ttlt})
-t_cruise=text(366/a(25e3),25,'Cruise');
-set(t_cruise,...
-    'HorizontalAlignment','center',...
-    'VerticalAlignment','middle',...
-    'EdgeColor','k',...
-    'Color','r',...
-    'FontSize',12,...
-    'BackgroundColor',0.9*[1 1 1]);
 
-perfor_out
+% cruise_optimum
+% figure(2)
+% plot(xsol(1,:)./a(xsol(2,:)),xsol(2,:)/1e3)
+
+% perfor_out
 

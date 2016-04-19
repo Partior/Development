@@ -22,7 +22,7 @@ clear all; clc
 prop_const
 
 prop_T
-v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
+v2=@(v,t,h,pt) sqrt(t/(1/2*p(h)*A(pt))+v.^2);   % velocity ratio, velocity, thrust, h
 
 airfoil_polar_file='Q1TOpolar.txt';
 airfoil_polar   % sets up fuselage drag
@@ -33,7 +33,7 @@ equations_wash  % sets up lift and drag functions
 
 muTire=0.55;    % Braking resistance
 WLAND=W0(19)-0.9*Wf;
-Vx=fzero(@(v) L(15,50,v,2)-WLAND,[100 200]);  % Velocity to maintain 15 deg AoA
+Vx=fsolve(@(v) L(14,50,v,2)-WLAND,200);  % Velocity to maintain 15 deg AoA
 %% Approach
 S_a=50/tand(2.5);
 t_a=S_a/(1.1*Vx);
@@ -48,7 +48,7 @@ CM=@(taoa,v) Mw(taoa,0,v,0)+L(taoa,0,v,2)*5.4+WLAND*-5+D(taoa,0,v,2)*10;
 save('Landing/land_const.mat','II','CM','D','L','muTire','WLAND')
 
 %% Main Gear Down
-y0=[15;0;S_a;Vx];   % [AoA,r.o.rotat; S; V]
+y0=[14-2.5;0;S_a;Vx];   % [AoA,r.o.rotat; S; V]
 [t,r,te,ye,ie]=ode45(@landing_ode,[0 120],y0,...
     odeset('RelTol',1e-3,'Events',@events_lander));
 

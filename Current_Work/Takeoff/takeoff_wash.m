@@ -6,35 +6,28 @@ add_Paths
 
 %% INIT
 prop_const
-
 prop_T
-v2=@(v,t,h) sqrt(t/(1/2*p(h)*A)+v^2);   % velocity ratio, velocity, thrust, h
+v2=@(v,t,h,pt) sqrt(t/(1/2*p(h)*A(pt))+v.^2);   % velocity ratio, velocity, thrust, h
 
-airfoil_polar_file='210_30Flaps.txt';   %#ok<NASGU> % for Airborne
+airfoil_polar_file='210_30Flaps.txt';   %#ok<NASGU> % for Airbor
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
-Cda=@(a) Cda(a)-0.0016; % equation 20 from http://www.dept.aoe.vt.edu/~lutze/AOE3104/takeoff&landing.pdf
 equations_wash  % sets up lift and drag functions
-
 VLOF=fsolve(@(v) L(Clmax-incd,0,v,8)-W0(19),200,...
     optimoptions('fsolve','display','none')); % liftoff speed to which ground run goes to
 
-airfoil_polar_file='210_10Flaps.txt';   % for Ground run
+airfoil_polar_file='210_NoFlaps.txt';   %#ok<NASGU> % for Airbor
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
-Cda=@(a) Cda(a)-0.0016; % equation 20 from http://www.dept.aoe.vt.edu/~lutze/AOE3104/takeoff&landing.pdf
 equations_wash  % sets up lift and drag functions
 
-% Lift for the entire airplane will be approximated as the lift for the
-% airfoil alone with imperical factor
-
 mu=0.02;    % rolling resistance
-muTire=0.55;    % Braking resistance,
+muTire=0.4;    % Braking resistance,
 save('takeoff_const.mat','mu','muTire','SFC_eq','Pa','L','T','Df','Dw','incd','Clmax','VLOF')
 %% Ground Run
 disp('Evaluating Ground Run')
 ne=8;
-opts=odeset('Events',@events_grnd_wash,'RelTol',1e-3);
+opts=odeset('Events',@events_grnd_wash,'RelTol',1e-5);
 [t,r]=ode45(@groundrun_wash,[0 40],[W0(19),0.1,0],opts,ne);
 
 Wt=r(:,1);
@@ -79,7 +72,7 @@ disp('Evaluating Higher Resolution Stopping Distance')
 % rerun decision point at newer resoltuion
 parfor itr=1:newres
     [tSss,Sss]=ode45(@sbrake_wash,[0 45],[wtdom(itr),vtdom(itr),stdom(itr)],...
-        odeset('Events',@events_sbrk_wash,'RelTol',1e-2),ne);
+        odeset('Events',@events_sbrk_wash,'RelTol',1e-4),ne);
     S_b2(itr,1)=Sss(end,3);
     t_b2(itr,1)=tSss(end);
 end
@@ -96,7 +89,7 @@ if ind==length(S_b2)
     ind=ind-2;
 end
 [t_oei,r_oei]=ode45(@groundrun_wash,[0 40],[wtdom(ind),vtdom(ind),stdom(ind)],...
-    odeset('Events',@events_grnd_wash,'RelTol',1e-3),ne-1);
+    odeset('Events',@events_grnd_wash,'RelTol',1e-4),ne-1);
 
 t_oei=t_oei+tdom(ind);
 Wt_oei=r_oei(:,1);
@@ -111,8 +104,9 @@ Cda=@(a) Cda(a)-0.0016; % equation 20 from http://www.dept.aoe.vt.edu/~lutze/AOE
 equations_wash  % sets up lift and drag functions
 disp('Evaluating Airborne Distances')
 save('takeoff_const.mat','mu','muTire','SFC_eq','Pa','L','T','Df','Dw','incd','Clmax','VLOF')
+clear functions
 
-opts_a=odeset('Events',@events_airborne_wash,'RelTol',1e-3);
+opts_a=odeset('Events',@events_airborne_wash,'RelTol',1e-4);
 [t_a,r_a]=ode45(@airborne_wash,[0 20],[r(end,:),0,0],opts_a,ne);
 [t_aoei,r_aoei]=ode45(@airborne_wash,[0 20],[r_oei(end,:),0,0],opts_a,ne-1);
 

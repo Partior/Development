@@ -10,9 +10,6 @@
 % Lift and Drag, then calculate Cl and Cd or L/D or Cl/Cd
 % Because Drag is a function of each component, and nothing to do with Cd
 % of each component.
-beta=@(m) sqrt(1-m.^2);
-
-v2=@(v,t,h,pt) sqrt(t/(1/2*p(h)*A(pt))+v.^2);
 
 % Cruise individual prop thrust
 CT=@(V,h,on) [on<3,on>3]*[Cr_T(V,h,opmt_rpm_pow(V,h,package,1,340));Cr_T(V,h,oprpm_CR(V,h))];
@@ -26,7 +23,6 @@ ang=@(v,h,pt,on) v/v2(v,fT{pt}(v,h,on),h,pt)*0.5;
 
 %% Spanwise Distrubution
 % Based on taper of the leading edge, determine surface area in prop wash
-
 %  function sur(engine_number(from root),Rmax) will output surface area
 %  under the prop wash of one of that specific engine
 

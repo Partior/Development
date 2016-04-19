@@ -1,13 +1,11 @@
 %% Power Constants
 % Hrovat's information specifci to the power plants.
 
-%   Generator
-% Avalibe power for the propellors
-Pa=1050; % conversion from kW to lbf ft/s
-
 %% Motor Constants
 % Ideal RPM
 rpm=2000;
+
+Pa=1050*550;
 
 % NEW DATA
 n_motor=0.95;   %Siemens Electric motor efficiency

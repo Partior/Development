@@ -86,14 +86,17 @@ fprintf('\t\t%20s %10.2f deg \n','Cruise AoA',taa(25e3,366/a(25e3)))
 %% Cruise Altitude
 fprintf('\n\tCRUISE ALTITUDE: \n')
 % Stall Speed
-ntnl2=pchip(nturn(2,:),nturn(1,:));
-fprintf('\t\t%20s %10.2f mph \n','Stall Speed',ppval(ntnl2,25)*a(25e3)/1.46666)
+[~,pk]=max(mxp(2,:));
+pp1=spline(mxp(1,1:pk),mxp(2,1:pk));
+m_st=fsolve(@(m) 25-ppval(pp1,m),0.32,optimset('display','off'));
+fprintf('\t\t%20s %10.2f mph \n','Stall Speed',m_st*a(25e3)/1.46666)
 % Max Speed
-[~,in,~]=unique(mxp(2,:),'stable');
-mxpin=pchip(mxp(2,in),mxp(1,in));
+[~,in,~]=unique(mxp(2,pk:end),'stable');
+mxp_2=mxp(:,pk:end);
+mxpin=pchip(mxp_2(2,in),mxp_2(1,in));
 fprintf('\t\t%20s %10.2f mph \n','Max Cruise',ppval(mxpin,25)*a(25e3)/1.46666)
 % Max Fuel Efficiency
-mxgm=fminbnd(@(m) -gml(25e3,m),ppval(ntnl2,25),ppval(mxpin,25));
+mxgm=fminbnd(@(m) -gml(25e3,m),0.3,0.39);
 fprintf('\t\t%20s %10.2f m/lb \n','Max Fuel Eff',gml(25e3,mxgm))
 % Max Fuel Efficiency speed
 fprintf('\t\t%20s %10.2f mph \n','Max Fuel Eff Speed',mxgm*a(25e3)/1.4666)
