@@ -11,7 +11,7 @@ ylabel('Climb Rate, ft/min')
 title('Rate of Climb at V_{mp}')
 
 for pl=[0,5,10,15,19]
-    fplot(@(h) climbr(h*1e3,pl),[18 28])    % avaaliabe rarte of climb
+    fplot(@(h) climbr(h*1e3,pl),[18 28])    % avaaliabe rate of climb
 end
 plot([18 28],[100 100],'k--')
 legend({'0','5','10','15','19','Service'},'Location','east')
