@@ -37,7 +37,7 @@ W0=@(pw) Wfix(pw)+We+Wf;    % Total
 %   Planeform
 S=240;
 AR=15;
-b=60;   % or 60.0 ft
+b=sqrt(AR*S);   % or 60.0 ft
 chrd=S/b;       % or 4.00 ft
 r_chrd=6;
 t_chrd=2;
@@ -45,7 +45,7 @@ e=1.78*(1-0.045*AR^0.68)-0.64; %eq 10b - http://faculty.dwc.edu/sadraey/Chapter%
 K=1/(AR*e*pi);
 
 %   Airfoil
-incd=5.45;     % incidence angle of wing strucutre
+incd=4.6;     % incidence angle of wing strucutre
 airfoil_polar_file='Q1fullpolar.txt';  % file name of Airfoil Cl/Cd polar data as run by XFOIL
 clms=[1,3,6,9]; %colums for alpha, Cl, Cd, Cm
 

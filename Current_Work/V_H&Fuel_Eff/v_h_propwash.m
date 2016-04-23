@@ -11,6 +11,7 @@ prop_const
 prop_T
 v2=@(v,t,h,pt) sqrt(t/(1/2*p(h)*A(pt))+v.^2);   % velocity ratio, velocity, thrust, h
 
+airfoil_polar_file='Q1TOpolar.txt';
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
 
@@ -23,9 +24,9 @@ equations_wash  % sets up lift and drag functions
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 50% power levels
 
-resol=50;
-mdom=linspace(0.10,0.425,resol);
-hdom=linspace(0e3,40e3,resol);
+resol=150;
+mdom=linspace(0.2,0.45,resol);
+hdom=linspace(10e3,40e3,resol);
 [m_msh,h_msh]=meshgrid(mdom,hdom);
 % started at 0.1 mach to not have to deal with wierd AoAs
 
@@ -43,7 +44,7 @@ if isempty(pll)
     parpool('local')
 end
 %% Execution
-ne=8;
+ne=2;
 
 taoa=NaN(resol);
 pl=NaN(resol);
@@ -62,44 +63,44 @@ set(h_s,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','pl',...
 if ~vals{1}
     set([h_m,h_s],'Visible','off')
 end
-
-% Angle of Attack
-[~,h_a]=contour(m_msh,h_msh/1e3,taoa,[0 2 4]);
-set(h_a,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','taoa',...
-    'LineColor','b','LineStyle','-','LineWidth',0.6,...
-    'ShowText','on','LabelSpacing',400);
-if ~vals{2}
-    set([h_a],'Visible','off')
-end
-
-% Fuel Efficiency
-[~,hg]=contour(m_msh,h_msh/1e3,gm,[1 1]);
-set(hg,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
-    'LineColor','r','LineStyle','-','LineWidth',1.5,...
-    'ShowText','on','LabelSpacing',400);
-[~,hgs]=contour(m_msh,h_msh/1e3,gm,[0.5:0.25:0.9]);
-set(hgs,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
-    'LineColor','r','LineStyle',':','LineWidth',0.1);
-if ~vals{3}
-    set([hg,hgs],'Visible','off')
-end
-
-% N-turns
-[~,hnp]=contour(m_msh,h_msh/1e3,n_t,[1 2 4]);
-set(hnp,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','n_t',...
-    'LineColor','g','LineStyle','-','LineWidth',1.5,...
-    'ShowText','on','LabelSpacing',400);
-if ~vals{4}
-    set([hnp],'Visible','off')
-end
-
-% mph lines across altitudes
-[~,hs]=contour(m_msh,h_msh/1e3,m_msh.*a(h_msh),[0,250,300]*1.4666);
-set(hs,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','m_msh.*a(h_msh)',...
-    'LineColor','m','LineStyle','-','LineWidth',0.6);
-if ~vals{5}
-    set([hs],'Visible','off')
-end
+% 
+% % Angle of Attack
+% [~,h_a]=contour(m_msh,h_msh/1e3,taoa,[0 2 4]);
+% set(h_a,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','taoa',...
+%     'LineColor','b','LineStyle','-','LineWidth',0.6,...
+%     'ShowText','on','LabelSpacing',400);
+% if ~vals{2}
+%     set([h_a],'Visible','off')
+% end
+% 
+% % Fuel Efficiency
+% [~,hg]=contour(m_msh,h_msh/1e3,gm,[1 1]);
+% set(hg,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
+%     'LineColor','r','LineStyle','-','LineWidth',1.5,...
+%     'ShowText','on','LabelSpacing',400);
+% [~,hgs]=contour(m_msh,h_msh/1e3,gm,[0.5:0.25:0.9]);
+% set(hgs,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','gm',...
+%     'LineColor','r','LineStyle',':','LineWidth',0.1);
+% if ~vals{3}
+%     set([hg,hgs],'Visible','off')
+% end
+% 
+% % N-turns
+% [~,hnp]=contour(m_msh,h_msh/1e3,n_t,[1 2 4]);
+% set(hnp,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','n_t',...
+%     'LineColor','g','LineStyle','-','LineWidth',1.5,...
+%     'ShowText','on','LabelSpacing',400);
+% if ~vals{4}
+%     set([hnp],'Visible','off')
+% end
+% 
+% % mph lines across altitudes
+% [~,hs]=contour(m_msh,h_msh/1e3,m_msh.*a(h_msh),[0,250,300]*1.4666);
+% set(hs,'XDataSource','m_msh','YDataSource','h_msh/1e3','ZDataSource','m_msh.*a(h_msh)',...
+%     'LineColor','m','LineStyle','-','LineWidth',0.6);
+% if ~vals{5}
+%     set([hs],'Visible','off')
+% end
 
 %% Calculate
 for ita=1:resol
@@ -107,19 +108,19 @@ for ita=1:resol
         hi=h_msh(ita,itb);
         vi=m_msh(ita,itb)*a(h_msh(ita,itb));
         n_t(ita,itb)=L(Clmax-incd,hi,vi,ne)/W0(19);
-        if n_t(ita,itb)>1;
+        if n_t(ita,itb)>1
             tt=fzero(@(rr) L(rr,hi,vi,ne)-W0(19),[Cl0-incd Clmax-incd],optimoptions('fsolve','display','off'));
             taoa(ita,itb)=tt;
-            if ne==2
-                pl(ita,itb)=D(tt,hi,vi,2)/(2*Cr_T(vi,hi,opmt_rpm_pow(vi,hi,{Cr_P;Tk_P},1,500)));
+            if Tk_T(vi,hi,oprpm_TK(vi,0))>200
+                pl(ita,itb)=D(fzero(@(rr) L(rr,hi,vi,8)-W0(19),[Cl0-incd Clmax-incd],optimoptions('fsolve','display','off')),hi,vi,8)/T(vi,hi,8);
             else
-                pl(ita,itb)=D(tt,hi,vi,ne)/T(vi,hi,ne);
+                pl(ita,itb)=D(fzero(@(rr) L(rr,hi,vi,2)-W0(19),[Cl0-incd Clmax-incd],optimoptions('fsolve','display','off')),hi,vi,2)/Tc(vi,hi);
             end
-            gm(ita,itb)=gmma(vi,pl(ita,itb)*680);
+%             gm(ita,itb)=gmma(vi,pl(ita,itb)*680);
         end
     end
     refreshdata
-    drawnow
+    drawnow limitrate
 end
 
 %% Pretty

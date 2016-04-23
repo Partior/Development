@@ -11,9 +11,9 @@ equations_wash
 clear functions
 [t,fl]=ode45(@iterr,[0 2.5e4],Wf,...
     odeset('Events',@events_empty_fuel,'RelTol',1e-6),...
-    {L,Tc,D,SFC_eq,W0,Wf});
+    {L,Cr_T,D,SFC_eq,W0,Wf,Cr_P});
     
-r=t(end)*250*1.4666/5280;
+r=t(end)*265*1.4666/5280;
 
 fprintf('\n\n\t After %.2f hours, we traveled: \n\t %.0f miles \n\n\t with %.1f lbs of leftover fuel\n',...
     t(end)/3600,r/1.151,fl(end))
