@@ -24,19 +24,19 @@ prop_const
 prop_T
 v2=@(v,t,h,pt) sqrt(t/(1/2*p(h)*A(pt))+v.^2);   % velocity ratio, velocity, thrust, h
 
-airfoil_polar_file='Q1TOpolar.txt';
+airfoil_polar_file='210_30Flaps.txt';
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
 
 Cda=@(a) Cda(a)-0.0016; % equation 20 from http://www.dept.aoe.vt.edu/~lutze/AOE3104/takeoff&landing.pdf
 equations_wash  % sets up lift and drag functions
 
-muTire=0.55;    % Braking resistance
+muTire=0.7;    % Braking resistance
 WLAND=W0(19)-0.9*Wf;
-Vx=fsolve(@(v) L(14,50,v,2)-WLAND,200);  % Velocity to maintain 15 deg AoA
+Vx=fzero(@(v) L(14,50,v,2)-WLAND,200);  % Velocity to maintain 15 deg AoA
 %% Approach
-S_a=50/tand(2.5);
-t_a=S_a/(1.1*Vx);
+S_a=50/tand(9);
+t_a=S_a/(1.2*Vx);
 
 %% Main Gear Down Setup
 II=(W0(19)-0.9*Wf)/32.2*10.2956^2; % Mass moment of Inertia

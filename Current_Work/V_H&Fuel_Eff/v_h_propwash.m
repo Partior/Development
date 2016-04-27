@@ -11,7 +11,7 @@ prop_const
 prop_T
 v2=@(v,t,h,pt) sqrt(t/(1/2*p(h)*A(pt))+v.^2);   % velocity ratio, velocity, thrust, h
 
-airfoil_polar_file='Q1TOpolar.txt';
+airfoil_polar_file='Fullplane polar.txt';
 airfoil_polar   % sets up fuselage drag
 cd_new      % sets up airfoil drag polar
 
@@ -24,7 +24,7 @@ equations_wash  % sets up lift and drag functions
 % Plotting a modified V-H Diagram
 % Plot various number of engines at 100 and 50% power levels
 
-resol=150;
+resol=50;
 mdom=linspace(0.2,0.45,resol);
 hdom=linspace(10e3,40e3,resol);
 [m_msh,h_msh]=meshgrid(mdom,hdom);
